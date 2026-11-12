@@ -3,383 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بطولة ركلات الترجيح المباشرة - أ. عبد الله عكور</title>
+    <title>بطولة ركلات الترجيح الواقعية 2026 - أ. عبد الله عكور</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #061a14; color: #ffffff; user-select: none; overflow-x: hidden; }
-        .stadium-bg { background: linear-gradient(180deg, #0b2e21 0%, #031610 60%, #020b08 100%); }
-        .crowd-banner { background: radial-gradient(circle, #10b981 10%, #047857 90%); }
-        .goal-frame { border: 10px solid #f8fafc; border-bottom: none; box-shadow: 0 0 40px rgba(255,255,255,0.6); }
-        .net-grid { background-image: linear-gradient(0deg, rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px); background-size: 20px 20px; }
-        @keyframes wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .flag-wave { animation: wave 1.5s infinite ease-in-out; }
+        body { font-family: 'Cairo', sans-serif; background: #030712; color: #ffffff; user-select: none; overflow-x: hidden; }
+        .stadium-3d { background: radial-gradient(circle at 50% 30%, #064e3b 0%, #022c22 40%, #000000 100%); perspective: 1000px; }
+        .crowd-section { background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border-bottom: 4px solid #059669; }
+        .goal-3d { border: 12px solid #ffffff; border-bottom: none; box-shadow: 0 25px 50px rgba(0,0,0,0.8), inset 0 0 30px rgba(255,255,255,0.3); background: rgba(5, 150, 105, 0.15); }
+        .net-mesh { background-image: radial-gradient(rgba(255,255,255,0.3) 1.5px, transparent 1.5px); background-size: 18px 18px; }
+        @keyframes wave { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+        .flag-anim { animation: wave 1.2s infinite ease-in-out; }
+        @keyframes bounce-ball { 0%, 100% { transform: scale(1); } 50% { transform: scale(0.9); } }
+        .ball-pulse { animation: bounce-ball 0.8s infinite; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between stadium-bg">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <header class="bg-slate-900/95 border-b border-emerald-800 py-3 px-6 flex justify-between items-center shadow-xl backdrop-blur-md z-50">
+    <!-- شريط العلو -->
+    <header class="bg-slate-900 border-b border-emerald-600/40 py-3 px-6 flex justify-between items-center shadow-2xl z-50">
         <div class="flex items-center gap-3">
-            <span class="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow">الصف الثالث الابتدائي</span>
-            <h1 class="text-xl font-black text-emerald-400 tracking-wider">⚽ ملعب ركلات الترجيح الواقعية</h1>
+            <span class="bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-full font-black shadow-lg">الصف الثالث الابتدائي</span>
+            <h1 class="text-xl font-black text-emerald-400 tracking-wider">⚽ نهائيات بطولة ركلات الترجيح الواقعية</h1>
         </div>
-        <div class="text-sm font-semibold text-emerald-200">
-            إعداد المعلم: <span class="text-white font-bold">أ. عبد الله عكور</span>
+        <div class="text-sm font-semibold text-slate-300">
+            إعداد المعلم المتميز: <span class="text-white font-bold">أ. عبد الله عكور</span>
         </div>
     </header>
 
     <main class="flex-1 flex flex-col items-center justify-center p-4">
-        <!-- شاشة البداية والاختيار -->
-        <div id="home-screen" class="w-full max-w-4xl bg-slate-900/95 border border-emerald-700/60 rounded-3xl p-8 shadow-2xl text-center backdrop-blur-xl">
+        <!-- شاشة البداية واختيار الفرق -->
+        <div id="home-screen" class="w-full max-w-4xl bg-slate-900/95 border border-emerald-500/40 rounded-3xl p-8 shadow-2xl text-center backdrop-blur-xl">
             <div class="mb-8">
-                <span class="bg-emerald-950 text-emerald-300 text-sm px-4 py-1.5 rounded-full border border-emerald-600">نهائيات بطولة المدارس لكرة القدم</span>
-                <h2 class="text-4xl font-black mt-4 text-white">اختر طريقة الدخول للملعب</h2>
-                <p class="text-emerald-200/80 mt-2">تحديات ممتعة ومشوقة في أسئلة لغتي والدراسات الإسلامية</p>
+                <span class="bg-emerald-950 text-emerald-300 text-xs px-4 py-2 rounded-full border border-emerald-600/50">أجواء ملاعب حقيقية 2026</span>
+                <h2 class="text-4xl font-black mt-4 text-white">اختر فريقك البطل للبدء</h2>
+                <p class="text-slate-400 mt-2">تحديات ممتعة في مادة لغتي والدراسات الإسلامية مع معلق رياضي وحكم ميداني</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <button onclick="showStudentLogin()" class="group bg-gradient-to-br from-emerald-600 to-emerald-800 hover:from-emerald-500 hover:to-emerald-700 p-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-emerald-400/40 flex flex-col items-center justify-center gap-4">
-                    <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">👟</div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-white">دخول البطل للملعب</h3>
-                        <p class="text-emerald-100 text-sm mt-1">سجل اسمك وانضم لفريقك لتسديد ركلات الترجيح</p>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+                <button onclick="selectTeam('blue', 'الفريق الأزرق الملكي')" class="group bg-slate-800 hover:bg-blue-900/40 border-2 border-blue-500/50 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 shadow-xl">
+                    <div class="w-16 h-16 bg-blue-600 rounded-full shadow-lg flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👕</div>
+                    <h3 class="text-xl font-bold text-white">الفريق الأزرق</h3>
+                    <span class="text-xs text-blue-300 font-semibold">طقم أزرق كامل</span>
                 </button>
 
-                <button onclick="showTeacherLogin()" class="group bg-gradient-to-br from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 p-8 rounded-2xl shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-slate-600 flex flex-col items-center justify-center gap-4">
-                    <div class="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center text-4xl group-hover:scale-110 transition-transform">⚙️</div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-white">لوحة تحكم المعلم</h3>
-                        <p class="text-slate-300 text-sm mt-1">إدارة الفرق، الأسئلة، وإطلاق صافرة البداية</p>
-                    </div>
+                <button onclick="selectTeam('yellow', 'الفريق الأصفر النمور')" class="group bg-slate-800 hover:bg-amber-900/40 border-2 border-amber-500/50 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 shadow-xl">
+                    <div class="w-16 h-16 bg-amber-400 rounded-full shadow-lg flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👕</div>
+                    <h3 class="text-xl font-bold text-white">الفريق الأصفر</h3>
+                    <span class="text-xs text-amber-300 font-semibold">طقم أصفر كامل</span>
+                </button>
+
+                <button onclick="selectTeam('red', 'الفريق الأحمر الأسود')" class="group bg-slate-800 hover:bg-red-900/40 border-2 border-red-500/50 p-6 rounded-2xl transition-all flex flex-col items-center gap-3 shadow-xl">
+                    <div class="w-16 h-16 bg-red-600 rounded-full shadow-lg flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">👕</div>
+                    <h3 class="text-xl font-bold text-white">الفريق الأحمر</h3>
+                    <span class="text-xs text-red-300 font-semibold">طقم أحمر كامل</span>
                 </button>
             </div>
-        </div>
 
-        <!-- شاشة تسجيل الطالب -->
-        <div id="student-login-screen" class="hidden w-full max-w-md bg-slate-900/95 border border-emerald-700/60 rounded-3xl p-8 shadow-2xl text-center">
-            <h3 class="text-2xl font-black text-emerald-400 mb-2">تسجيل دخول بطل الملعب</h3>
-            <p class="text-slate-300 text-sm mb-6">أدخل اسمك الثلاثي واختر فريقك المفضل</p>
-            <div class="space-y-4 text-right">
-                <div>
-                    <label class="block text-xs font-semibold text-emerald-300 mb-1">اسم الطالب الثلاثي</label>
-                    <input type="text" id="student-name-input" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-800 border border-emerald-600/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-400 font-medium">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-emerald-300 mb-1">اختر الفريق المفضل</label>
-                    <select id="student-team-select" class="w-full bg-slate-800 border border-emerald-600/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-400">
-                        <option value="blue">🔵 الفريق الأزرق (الملكي)</option>
-                        <option value="yellow">🟡 الفريق الأصفر (النمور)</option>
-                        <option value="red">🔴 الفريق الأحمر (الأسود)</option>
-                    </select>
-                </div>
-                <button onclick="joinMatch()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all mt-4">توجه إلى أرضية الملعب ⚽</button>
-                <button onclick="backToHome()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl transition-all text-sm">العودة للخلف</button>
+            <div class="max-w-md mx-auto space-y-4">
+                <input type="text" id="student-name-input" placeholder="اكتب اسم البطل الثلاثي هنا..." class="w-full bg-slate-800 border border-emerald-500/40 rounded-xl px-4 py-3.5 text-white text-center font-bold focus:outline-none focus:border-emerald-400">
+                <button onclick="startMatch()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl shadow-xl transition-all text-lg">انطلق إلى أرضية الملعب ⚽</button>
             </div>
         </div>
 
-        <!-- شاشة دخول المعلم -->
-        <div id="teacher-login-screen" class="hidden w-full max-w-md bg-slate-900/95 border border-slate-700 rounded-3xl p-8 shadow-2xl text-center">
-            <h3 class="text-2xl font-black text-amber-400 mb-2">دخول المعلم</h3>
-            <p class="text-slate-300 text-sm mb-6">أدخل رمز المرور للوصول للوحة التحكم</p>
-            <div class="space-y-4 text-right">
-                <div>
-                    <label class="block text-xs font-semibold text-amber-300 mb-1">رمز المرور</label>
-                    <input type="password" id="teacher-pass-input" placeholder="****" class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-3 text-white focus:outline-none text-center tracking-widest text-xl">
-                </div>
-                <button onclick="verifyTeacher()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all mt-4">فتح لوحة التحكم 🔒</button>
-                <button onclick="backToHome()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 rounded-xl transition-all text-sm">العودة للخلف</button>
-            </div>
-        </div>
-
-        <!-- لوحة تحكم المعلم -->
-        <div id="teacher-dashboard" class="hidden w-full max-w-5xl bg-slate-900/95 border border-slate-700 rounded-3xl p-6 shadow-2xl text-right">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-6">
-                <div>
-                    <h3 class="text-2xl font-black text-amber-400">لوحة تحكم المعلم - أ. عبد الله عكور</h3>
-                    <p class="text-xs text-slate-300 mt-1">التحكم الكامل بالشاشة، صافرة الحكم، وبنك الأسئلة</p>
-                </div>
-                <button onclick="backToHome()" class="bg-red-900/40 hover:bg-red-800 border border-red-600 text-red-200 px-4 py-2 rounded-xl text-sm font-semibold transition-all">خروج</button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <h4 class="font-bold text-emerald-400 text-lg mb-2">📺 شاشة الطلاب الأمامية</h4>
-                        <p class="text-xs text-slate-300 mb-4">فتح أو إيقاف الملعب لعرض شاشة التوقف في قاعة الفصل.</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="toggleMainScreen(true)" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-sm shadow">فتح الملعب</button>
-                        <button onclick="toggleMainScreen(false)" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-xl text-sm shadow">إيقاف مؤقت</button>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl">
-                    <h4 class="font-bold text-emerald-400 text-lg mb-2">📚 بنك الأسئلة والمادة</h4>
-                    <p class="text-xs text-slate-300 mb-3">اختر تصنيف أسئلة الصف الثالث الابتدائي:</p>
-                    <select id="question-mode-select" onchange="updateQuestionMode()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none mb-3">
-                        <option value="mixed">عشوائي (لغتي + الدراسات الإسلامية)</option>
-                        <option value="lugat">مادة لغتي فقط</option>
-                        <option value="islamic">الدراسات الإسلامية فقط</option>
-                    </select>
-                </div>
-
-                <div class="bg-slate-800/80 border border-slate-700 p-5 rounded-2xl flex flex-col justify-between">
-                    <div>
-                        <h4 class="font-bold text-emerald-400 text-lg mb-2">🟨 صافرة الحكم والمعلق</h4>
-                        <p class="text-xs text-slate-300 mb-4">إطلاق صافرة الحكم الحقيقية مع نداء المعلق الرياضي بصوت فارس عوض.</p>
-                    </div>
-                    <button onclick="teacherBlowWhistle()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl text-sm shadow-lg transition-all flex items-center justify-center gap-2">
-                        <span>📢 إطلاق صافرة الحكم الآن</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="mt-6 bg-slate-800/80 border border-slate-700 p-5 rounded-2xl">
-                <div class="flex justify-between items-center mb-4">
-                    <h4 class="font-bold text-emerald-400 text-lg">👥 كشف أبطال الملعب المسجلين</h4>
-                    <span id="students-count-badge" class="bg-emerald-950 text-emerald-300 text-xs px-3 py-1 rounded-full font-bold">0 طلاب مسجلين</span>
-                </div>
-                <div id="students-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto text-xs text-slate-300"></div>
-            </div>
-        </div>
-
-        <!-- أرضية الملعب الحقيقية وضربات الترجيح -->
-        <div id="pitch-screen" class="hidden w-full max-w-4xl bg-slate-900/95 border border-emerald-700/60 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <!-- أرضية الملعب الواقعية الثلاثية الأبعاد -->
+        <div id="pitch-screen" class="hidden w-full max-w-5xl bg-slate-950 border border-emerald-600/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden stadium-3d">
             
-            <!-- خلفية الجمهور والأعلام في المدرجات -->
-            <div class="absolute top-0 left-0 right-0 h-20 crowd-banner flex justify-around items-center px-4 border-b-2 border-emerald-500/30 overflow-hidden">
-                <div class="flex gap-2 text-xs font-bold text-white items-center"><span class="flag-wave text-lg">🚩</span> جماهير حماسية تشجع الأبطال <span class="flag-wave text-lg">🎉</span></div>
-                <div class="flex gap-4">
-                    <span class="flag-wave bg-red-600 px-3 py-1 rounded shadow text-xs font-black">أعلام تلوح 🇦🇪</span>
-                    <span class="flag-wave bg-emerald-600 px-3 py-1 rounded shadow text-xs font-black">أعلام تلوح 🇸🇦</span>
+            <!-- مدرجات الجمهور والأعلام المتحركة -->
+            <div class="absolute top-0 left-0 right-0 h-24 crowd-section flex justify-between items-center px-6 shadow-inner">
+                <div class="flex items-center gap-3 text-xs font-bold text-emerald-300">
+                    <span class="flag-anim text-2xl">🚩</span> جماهير غفيرة تشجع الأبطال بحماس <span class="flag-anim text-2xl">🎉</span>
+                </div>
+                <div class="flex gap-3">
+                    <span class="flag-anim bg-red-600/80 px-3 py-1 rounded-md text-xs font-black shadow">أعلام تلوح 🇦🇪</span>
+                    <span class="flag-anim bg-emerald-600/80 px-3 py-1 rounded-md text-xs font-black shadow">أعلام تلوح 🇸🇦</span>
                 </div>
             </div>
 
-            <!-- لوحة النتيجة العلوية داخل الملعب -->
-            <div class="relative z-10 flex justify-between items-center bg-slate-950/90 px-6 py-3 rounded-2xl border border-emerald-500/40 mb-4 mt-16 shadow-lg">
-                <div class="text-emerald-400 font-bold text-sm">البطل المسدد: <span id="current-player-name" class="text-white">--</span></div>
-                <div class="flex gap-4 font-black text-lg">
-                    <span id="team-display-label" class="text-emerald-300">الفريق: --</span>
+            <!-- لوحة النتيجة ومعلومات البطل -->
+            <div class="relative z-20 flex justify-between items-center bg-slate-900/90 px-6 py-3 rounded-2xl border border-emerald-500/40 mt-16 mb-4 shadow-xl">
+                <div class="text-emerald-400 font-bold text-sm">البطل المسدد: <span id="display-name" class="text-white font-black">--</span> | <span id="display-team" class="text-amber-300">--</span></div>
+                <div class="flex gap-6 font-black text-lg">
+                    <span class="text-emerald-400">🎯 الأهداف: <span id="score-counter">0</span></span>
                     <span class="text-slate-500">|</span>
-                    <span class="text-amber-400">النقاط: <span id="current-score">0</span></span>
+                    <span class="text-sky-400">⭐ النقاط: <span id="points-counter">0</span></span>
                 </div>
             </div>
 
-            <!-- الملعب والمرمى (حارس، لاعب، حكم، كورة) -->
-            <div class="relative w-full h-80 bg-emerald-900/60 rounded-2xl border-t-4 border-slate-100 overflow-hidden flex flex-col items-center justify-end pb-4 goal-frame shadow-2xl">
-                <div class="absolute inset-0 net-grid pointer-events-none"></div>
+            <!-- منطقة المرمى واللاعبين (3D View) -->
+            <div class="relative w-full h-96 rounded-2xl overflow-hidden flex flex-col items-center justify-end pb-6 goal-3d shadow-2xl">
+                <div class="absolute inset-0 net-mesh pointer-events-none"></div>
 
-                <!-- حارس المرمى (بزي مغاير ومميز) -->
-                <div id="goalkeeper" class="absolute bottom-36 left-[calc(50%-30px)] transition-all duration-300 z-30 flex flex-col items-center">
-                    <div class="w-6 h-6 bg-pink-500 rounded-full border border-white"></div>
-                    <div class="w-14 h-20 bg-purple-700 border-2 border-white rounded-t-xl shadow-lg flex items-center justify-center text-[10px] font-black text-white">حارس</div>
-                </div>
-
-                <!-- حكم اللقاء بزي أسود وشورت وصافرة -->
-                <div class="absolute bottom-28 right-16 z-20 flex flex-col items-center">
-                    <div class="w-5 h-5 bg-amber-300 rounded-full"></div>
-                    <div class="w-10 h-16 bg-black border-2 border-slate-600 rounded-t-lg flex flex-col items-center justify-center">
-                        <span class="text-[8px] font-bold text-white">الحكم</span>
-                    </div>
-                    <div class="w-10 h-4 bg-slate-900 rounded-b"></div>
-                </div>
-
-                <!-- اللاعب المسدد (بصورة إنسان وبزي الفريق المختار) -->
-                <div id="shooter-player" class="absolute bottom-10 left-[calc(50%-25px)] z-40 flex flex-col items-center transition-all duration-700">
-                    <div class="w-7 h-7 bg-amber-200 rounded-full border border-slate-800 mb-0.5"></div>
-                    <div id="shooter-shirt" class="w-12 h-16 bg-blue-600 border-2 border-white rounded-t-lg shadow-xl flex items-center justify-center text-[10px] font-black text-white">لاعب</div>
-                    <div class="w-10 h-6 bg-slate-900 rounded-b flex justify-around pt-1">
-                        <div class="w-3 h-4 bg-slate-300 rounded-t"></div>
-                        <div class="w-3 h-4 bg-slate-300 rounded-t"></div>
+                <!-- حارس المرمى (بزي مغاير ومحترف) -->
+                <div id="goalkeeper" class="absolute top-28 left-[calc(50%-35px)] transition-all duration-300 z-30 flex flex-col items-center">
+                    <div class="w-8 h-8 bg-amber-400 rounded-full border-2 border-white shadow-md"></div>
+                    <div class="w-16 h-24 bg-purple-800 border-2 border-white rounded-t-2xl shadow-2xl flex items-center justify-center text-xs font-black text-white">حارس مرمى</div>
+                    <div class="w-12 h-8 bg-slate-900 rounded-b flex justify-around pt-1">
+                        <div class="w-4 h-6 bg-purple-950 rounded-t"></div>
+                        <div class="w-4 h-6 bg-purple-950 rounded-t"></div>
                     </div>
                 </div>
 
-                <!-- كرة القدم -->
-                <div id="match-ball" class="w-8 h-8 bg-white border-2 border-slate-900 rounded-full absolute bottom-12 left-[calc(50%-16px)] shadow-2xl transition-all duration-700 z-50 flex items-center justify-center text-[8px]">⚽</div>
+                <!-- حكم المباراة (طقم أسود كامل مع الشورت والصافرة) -->
+                <div class="absolute top-36 right-20 z-20 flex flex-col items-center">
+                    <div class="w-6 h-6 bg-amber-200 rounded-full border border-slate-800"></div>
+                    <div class="w-12 h-20 bg-slate-950 border-2 border-amber-500 rounded-t-lg flex flex-col items-center justify-center shadow-lg">
+                        <span class="text-[9px] font-bold text-amber-400">الحكم</span>
+                        <span class="text-[10px]">🟨</span>
+                    </div>
+                    <div class="w-10 h-6 bg-black rounded-b flex justify-around pt-1">
+                        <div class="w-3 h-5 bg-slate-800 rounded-t"></div>
+                        <div class="w-3 h-5 bg-slate-800 rounded-t"></div>
+                    </div>
+                </div>
+
+                <!-- اللاعب المسدد (بشخصية إنسان ولبس الفريق المختار) -->
+                <div id="shooter-player" class="absolute bottom-6 left-[calc(50%-30px)] z-40 flex flex-col items-center transition-all duration-500">
+                    <div class="w-8 h-8 bg-amber-200 rounded-full border border-slate-900 mb-0.5 shadow-md"></div>
+                    <div id="shooter-shirt" class="w-14 h-20 bg-blue-600 border-2 border-white rounded-t-xl shadow-2xl flex items-center justify-center text-xs font-black text-white">اللاعب</div>
+                    <div class="w-12 h-8 bg-slate-900 rounded-b flex justify-around pt-1">
+                        <div class="w-4 h-7 bg-slate-300 rounded-t"></div>
+                        <div class="w-4 h-7 bg-slate-300 rounded-t"></div>
+                    </div>
+                </div>
+
+                <!-- كرة القدم الواقعية -->
+                <div id="match-ball" class="w-10 h-10 bg-white border-2 border-slate-900 rounded-full absolute bottom-8 left-[calc(50%-20px)] shadow-2xl transition-all duration-700 z-50 flex items-center justify-center text-xs ball-pulse">⚽</div>
             </div>
 
-            <!-- أسئلة المنهج وخيارات التسديد في زوايا المرمى -->
-            <div class="mt-4 bg-slate-950/95 border border-emerald-500/50 rounded-2xl p-5 shadow-xl relative z-20">
-                <div id="question-text" class="text-base font-bold text-center text-white mb-3">في انتظار إشارة المعلق وصافرة الحكم...</div>
+            <!-- السؤال وخيارات التسديد في زوايا المرمى الأربع -->
+            <div class="mt-4 bg-slate-900/95 border border-emerald-500/50 rounded-2xl p-5 shadow-2xl relative z-30">
+                <div id="question-text" class="text-lg font-black text-center text-white mb-4">في انتظار إطلاق صافرة الحكم...</div>
                 <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
             </div>
         </div>
-
-        <div id="paused-screen" class="hidden text-center p-12 bg-slate-900/95 border border-amber-600/50 rounded-3xl shadow-2xl max-w-lg">
-            <div class="text-5xl mb-4">⏸️</div>
-            <h3 class="text-3xl font-black text-amber-400 mb-2">الملعب متوقف مؤقتاً</h3>
-            <p class="text-slate-300 text-sm">طلب المعلم إيقاف اللعبة مؤقتاً من لوحة التحكم. في انتظار فتح الملعب مجدداً.</p>
-        </div>
     </main>
 
-    <footer class="py-4 text-center text-xs text-emerald-400/80 border-t border-emerald-900/50">
-        جميع الحقوق محفوظة © بطولة ركلات الترجيح الواقعية - أ. عبد الله عكور
+    <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-800">
+        جميع الحقوق محفوظة © بطولة ركلات الترجيح الواقعية 2026 - أ. عبد الله عكور
     </footer>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyDummyKeyForRealPenalty", authDomain: "penalty-shootout-school.firebaseapp.com", databaseURL: "https://penalty-shootout-school-default-rtdb.firebaseio.com", projectId: "penalty-shootout-school" };
+        const firebaseConfig = { apiKey: "AIzaSyRealPenalty2026", authDomain: "penalty-2026.firebaseapp.com", databaseURL: "https://penalty-2026-default-rtdb.firebaseio.com", projectId: "penalty-2026" };
         let db;
         try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
 
-        const questionBank = {
-            lugat: [
-                { q: "ما مفرد كلمة 'عصافير'؟", options: ["عصفورة", "عصفور", "عصافير", "عصافة"], correct: 1 },
-                { q: "الكلمة التي تبدأ بلام شمسية هي:", options: ["الرجل", "الولد", "الكتاب", "المعلم"], correct: 0 },
-                { q: "نوع كلمة 'تكتبُ' من حيث الفعل:", options: ["فعل ماض", "فعل مضارع", "فعل أمر", "اسم"], correct: 1 },
-                { q: "ضد كلمة 'نظيف' هو:", options: ["جميل", "وسخ", "كبير", "طويل"], correct: 1 }
-            ],
-            islamic: [
-                { q: "كم عدد ركعات صلاة الفجر؟", options: ["ركعتان", "ثلاث ركعات", "أربع ركعات", "ركعة واحدة"], correct: 0 },
-                { q: "من هو خاتم الأنبياء والمرسلين؟", options: ["إبراهيم عليه السلام", "عيسى عليه السلام", "محمد صلى الله عليه وسلم", "موسى عليه السلام"], correct: 2 },
-                { q: "أول سور القرآن الكريم في المصحف الشريف:", options: ["سورة الناس", "سورة الفاتحة", "سورة الإخلاص", "سورة البقرة"], correct: 1 },
-                { q: "قبلة المسلمين التي يستقبلونها في الصلاة هي:", options: ["المسجد النبوي", "المسجد الأقصى", "البيت الحرام بمكة المكرمة", "مسجد قباء"], correct: 2 }
-            ]
-        };
+        const questionBank = [
+            { q: "ما مفرد كلمة 'عصافير'؟", options: ["عصفورة", "عصفور", "عصافير", "عصافة"], correct: 1 },
+            { q: "الكلمة التي تبدأ بلام شمسية هي:", options: ["الرجل", "الولد", "الكتاب", "المعلم"], correct: 0 },
+            { q: "نوع كلمة 'تكتبُ' من حيث الفعل:", options: ["فعل ماض", "فعل مضارع", "فعل أمر", "اسم"], correct: 1 },
+            { q: "ضد كلمة 'نظيف' هو:", options: ["جميل", "وسخ", "كبير", "طويل"], correct: 1 },
+            { q: "كم عدد ركعات صلاة الفجر؟", options: ["ركعتان", "ثلاث ركعات", "أربع ركعات", "ركعة واحدة"], correct: 0 },
+            { q: "من هو خاتم الأنبياء والمرسلين؟", options: ["إبراهيم عليه السلام", "عيسى عليه السلام", "محمد صلى الله عليه وسلم", "موسى عليه السلام"], correct: 2 }
+        ];
 
-        let state = { playerName: '', playerTeam: 'blue', questionMode: 'mixed', score: 0, isScreenOpen: true, currentQuestion: null };
+        let state = { playerName: '', teamColor: 'blue', teamName: 'الفريق الأزرق الملكي', score: 0, points: 0, currentQ: null };
 
-        function showStudentLogin() { hideAll(); document.getElementById('student-login-screen').classList.remove('hidden'); }
-        function showTeacherLogin() { hideAll(); document.getElementById('teacher-login-screen').classList.remove('hidden'); }
-        function backToHome() { hideAll(); document.getElementById('home-screen').classList.remove('hidden'); }
-        function hideAll() {
-            document.getElementById('home-screen').classList.add('hidden');
-            document.getElementById('student-login-screen').classList.add('hidden');
-            document.getElementById('teacher-login-screen').classList.add('hidden');
-            document.getElementById('teacher-dashboard').classList.add('hidden');
-            document.getElementById('pitch-screen').classList.add('hidden');
-            document.getElementById('paused-screen').classList.add('hidden');
-        }
-
-        function verifyTeacher() {
-            const pass = document.getElementById('teacher-pass-input').value;
-            if (pass === '1234' || pass === 'admin' || pass === '') {
-                hideAll();
-                document.getElementById('teacher-dashboard').classList.remove('hidden');
-                syncStudentsList();
-            } else { alert('رمز المرور غير صحيح!'); }
-        }
-
-        function toggleMainScreen(status) {
-            state.isScreenOpen = status;
-            if (db) db.ref('penaltyGameStatus').set({ isOpen: status });
-            alert(status ? 'تم فتح الملعب للطلاب بنجاح!' : 'تم إيقاف الملعب مؤقتاً.');
-        }
-
-        function updateQuestionMode() {
-            state.questionMode = document.getElementById('question-mode-select').value;
-        }
-
-        function joinMatch() {
-            const name = document.getElementById('student-name-input').value.trim();
-            const team = document.getElementById('student-team-select').value;
-            if (!name) { alert('الرجاء كتابة الاسم الثلاثي!'); return; }
-            state.playerName = name; state.playerTeam = team;
-
-            // تحديث لون لبس اللاعب حسب الفريق المختار
+        function selectTeam(color, name) {
+            state.teamColor = color;
+            state.teamName = name;
             const shirt = document.getElementById('shooter-shirt');
-            const teamLabel = document.getElementById('team-display-label');
-            if (team === 'blue') {
-                shirt.className = "w-12 h-16 bg-blue-600 border-2 border-white rounded-t-lg shadow-xl flex items-center justify-center text-[10px] font-black text-white";
-                teamLabel.innerText = "الفريق: الأزرق الملكي";
-            } else if (team === 'yellow') {
-                shirt.className = "w-12 h-16 bg-amber-400 border-2 border-slate-900 rounded-t-lg shadow-xl flex items-center justify-center text-[10px] font-black text-slate-950";
-                teamLabel.innerText = "الفريق: الأصفر النمور";
-            } else {
-                shirt.className = "w-12 h-16 bg-red-600 border-2 border-white rounded-t-lg shadow-xl flex items-center justify-center text-[10px] font-black text-white";
-                teamLabel.innerText = "الفريق: الأحمر الأسود";
-            }
-
-            if (db) db.ref('penaltyStudents/' + Date.now()).set({ name: name, team: team });
-            hideAll();
-            if (!state.isScreenOpen) {
-                document.getElementById('paused-screen').classList.remove('hidden');
-            } else {
-                document.getElementById('pitch-screen').classList.remove('hidden');
-                document.getElementById('current-player-name').innerText = name;
-                playWhistleSound();
-                speakFaresAwad("أهلاً بكم في ملعب الركلات الحماسية، الحكم يطلق صافرة البداية للبطل " + name + "!");
-                loadNextQuestion();
-            }
+            if (color === 'blue') shirt.className = "w-14 h-20 bg-blue-600 border-2 border-white rounded-t-xl shadow-2xl flex items-center justify-center text-xs font-black text-white";
+            else if (color === 'yellow') shirt.className = "w-14 h-20 bg-amber-400 border-2 border-slate-900 rounded-t-xl shadow-2xl flex items-center justify-center text-xs font-black text-slate-950";
+            else shirt.className = "w-14 h-20 bg-red-600 border-2 border-white rounded-t-xl shadow-2xl flex items-center justify-center text-xs font-black text-white";
         }
 
-        function syncStudentsList() {
-            if (db) {
-                db.ref('penaltyStudents').on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    let list = [], count = 0;
-                    if (data) {
-                        Object.values(data).forEach(s => {
-                            count++;
-                            list.push(`<div class="bg-slate-900 p-2.5 rounded-xl border border-slate-700 flex justify-between items-center"><span>${s.name}</span><span class="text-xs font-bold text-amber-400">${s.team}</span></div>`);
-                        });
-                    }
-                    document.getElementById('students-list-container').innerHTML = list.join('') || '<span class="text-slate-500">لا يوجد طلاب مسجلين بعد</span>';
-                    document.getElementById('students-count-badge').innerText = count + ' طلاب مسجلين';
-                });
-            }
-        }
+        function startMatch() {
+            const name = document.getElementById('student-name-input').value.trim();
+            if (!name) { alert('الرجاء كتابة اسم البطل الثلاثي!'); return; }
+            state.playerName = name;
 
-        function teacherBlowWhistle() {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('pitch-screen').classList.remove('hidden');
+            document.getElementById('display-name').innerText = name;
+            document.getElementById('display-team').innerText = state.teamName;
+
             playWhistleSound();
-            speakFaresAwad("يا إلهي! أطلق الحكم صافرة الانطلاق، الكل يترقب هذه اللحظة الحاسمة!");
-            alert('صفّر الحكم! انتبهوا يا أبطال.');
+            speakFaresAwad("يا إلهي! أطلق الحكم صافرة الانطلاق، البطل " + name + " يتقدم لتسديد ركلة الترجيح الحاسمة!");
+            loadQuestion();
         }
 
-        function loadNextQuestion() {
-            let pool = [];
-            if (state.questionMode === 'lugat') pool = questionBank.lugat;
-            else if (state.questionMode === 'islamic') pool = questionBank.islamic;
-            else pool = [...questionBank.lugat, ...questionBank.islamic];
-
-            const qObj = pool[Math.floor(Math.random() * pool.length)];
-            state.currentQuestion = qObj;
+        function loadQuestion() {
+            const qObj = questionBank[Math.floor(Math.random() * questionBank.length)];
+            state.currentQ = qObj;
 
             document.getElementById('question-text').innerText = qObj.q;
             const container = document.getElementById('options-container');
             container.innerHTML = '';
 
+            const cornerNames = ["🟨 الزاوية العليا اليمنى", "🟨 الزاوية العليا اليسرى", "🟩 الزاوية السفلى اليمنى", "🟩 الزاوية السفلى اليسرى"];
+
             qObj.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
-                btn.className = "bg-slate-900 hover:bg-emerald-900/80 border border-emerald-600/40 text-white font-bold p-3 rounded-xl transition-all shadow text-right flex items-center justify-between";
-                btn.innerHTML = `<span>${opt}</span><span class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-xs text-emerald-400">زاوية ${idx + 1}</span>`;
-                btn.onclick = () => submitAnswer(idx, qObj.correct);
+                btn.className = "bg-slate-900 hover:bg-emerald-900/80 border border-emerald-500/50 text-white font-bold p-3.5 rounded-xl transition-all shadow-lg text-right flex items-center justify-between";
+                btn.innerHTML = `<span>${opt}</span><span class="text-xs bg-emerald-950 px-3 py-1 rounded-lg text-emerald-400 font-black">${cornerNames[idx]}</span>`;
+                btn.onclick = () => shootBall(idx, qObj.correct);
                 container.appendChild(btn);
             });
         }
 
-        function submitAnswer(chosenIdx, correctIdx) {
+        function shootBall(chosenIdx, correctIdx) {
             const ball = document.getElementById('match-ball');
             const keeper = document.getElementById('goalkeeper');
             const shooter = document.getElementById('shooter-player');
             const isCorrect = (chosenIdx === correctIdx);
 
-            // حركة اللاعب والكورة نحو الزوايا (يمين، يسار، أعلى، أسفل)
-            shooter.style.transform = "translateY(-15px)";
+            shooter.style.transform = "translateY(-20px)";
+
+            // توجيه الكرة لزوايا المرمى بدقة حسب اختيار الطالب
+            if (chosenIdx === 0) { ball.style.top = "30px"; ball.style.left = "20%"; }
+            else if (chosenIdx === 1) { ball.style.top = "30px"; ball.style.left = "80%"; }
+            else if (chosenIdx === 2) { ball.style.top = "120px"; ball.style.left = "25%"; }
+            else { ball.style.top = "120px"; ball.style.left = "75%"; }
 
             if (isCorrect) {
-                // الكورة تتجه لزوايا المرمى العلوية أو السفلية بدقة
-                if(chosenIdx === 0) { ball.style.bottom = "235px"; ball.style.left = "25%"; }
-                else if(chosenIdx === 1) { ball.style.bottom = "235px"; ball.style.left = "75%"; }
-                else if(chosenIdx === 2) { ball.style.bottom = "180px"; ball.style.left = "20%"; }
-                else { ball.style.bottom = "180px"; ball.style.left = "80%"; }
-
-                keeper.style.bottom = "120px"; keeper.style.left = "40%";
+                keeper.style.top = "60px"; keeper.style.left = "45%";
                 playGoalSound();
-                state.score += 10;
-                document.getElementById('current-score').innerText = state.score;
-                speakFaresAwad("يا سلام يا سلام! تسديدة صاروخية في الشباك! جوووووووووول رائع!");
+                state.score++;
+                state.points += 10;
+                document.getElementById('score-counter').innerText = state.score;
+                document.getElementById('points-counter').innerText = state.points;
+                speakFaresAwad("يا سلام يا سلام! تسديدة صاروخية لا تصدق في شباك المرمى! جوووووووووول رائع!");
 
-                setTimeout(() => { alert('🎉 جووووول رائع في الزاوية المقصورة!'); resetPitch(); loadNextQuestion(); }, 1800);
+                setTimeout(() => { alert('🎉 جووووول! إجابة صحيحة وتسديدة رائعة في الزاوية المقصودة!'); resetPitch(); loadQuestion(); }, 2000);
             } else {
-                ball.style.bottom = "170px"; ball.style.left = "calc(50% - 16px)";
-                keeper.style.bottom = "190px"; keeper.style.left = "calc(50% - 30px)";
+                keeper.style.top = chosenIdx < 2 ? "35px" : "110px";
+                keeper.style.left = chosenIdx % 2 === 0 ? "25%": "70%";
                 playSaveSound();
-                speakFaresAwad("أمسكها الحارس ببراعة! تصدي مذهل يمنع هدفاً محققاً!");
+                speakFaresAwad("أمسكها حارس المرمى ببراعة! تصدي مذهل يمنع هدفاً محققاً!");
 
-                setTimeout(() => { alert('❌ تصدى لها حارس المرمى ببراعة! الإجابة الصحيحة هي: ' + state.currentQuestion.options[correctIdx]); resetPitch(); loadNextQuestion(); }, 2200);
+                setTimeout(() => { alert('❌ تصدى لها الحارس ببراعة! الإجابة الصحيحة هي: ' + state.currentQ.options[correctIdx]); resetPitch(); loadQuestion(); }, 2500);
             }
         }
 
@@ -387,8 +242,8 @@
             const ball = document.getElementById('match-ball');
             const keeper = document.getElementById('goalkeeper');
             const shooter = document.getElementById('shooter-player');
-            ball.style.bottom = "48px"; ball.style.left = "calc(50% - 16px)";
-            keeper.style.bottom = "144px"; keeper.style.left = "calc(50% - 30px)";
+            ball.style.top = "auto"; ball.style.bottom = "32px"; ball.style.left = "calc(50% - 20px)";
+            keeper.style.top = "112px"; keeper.style.left = "calc(50% - 35px)";
             shooter.style.transform = "translateY(0)";
         }
 
@@ -396,9 +251,9 @@
         function playWhistleSound() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.frequency.setValueAtTime(2600, audioCtx.currentTime);
-            osc.frequency.setValueAtTime(2900, audioCtx.currentTime + 0.15);
-            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(2700, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(3100, audioCtx.currentTime + 0.15);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.5);
@@ -407,9 +262,9 @@
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(450, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.4);
-            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(850, audioCtx.currentTime + 0.4);
+            gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.6);
@@ -418,7 +273,7 @@
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
             osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.4);
             gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
@@ -429,7 +284,7 @@
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA'; utterance.rate = 1.2; utterance.pitch = 1.1;
+                utterance.lang = 'ar-SA'; utterance.rate = 1.25; utterance.pitch = 1.1;
                 window.speechSynthesis.speak(utterance);
             }
         }
