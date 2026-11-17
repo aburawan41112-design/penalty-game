@@ -29,13 +29,13 @@
     </header>
 
     <main class="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-5 gap-4 items-center my-4 z-20">
-        <div class="hidden lg:flex lg:col-span-1 h-[680px] rounded-3xl side-img-right flex-col justify-end p-4 text-center">
+        <div class="hidden lg:flex lg:col-span-1 h-[700px] rounded-3xl side-img-right flex-col justify-end p-4 text-center">
             <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">ملعب ركلات الترجيح ⚽</span>
         </div>
 
         <div id="app-center" class="lg:col-span-3 quiz-main-card rounded-3xl p-5 md:p-7 text-center space-y-5 text-white relative overflow-hidden"></div>
 
-        <div class="hidden lg:flex lg:col-span-1 h-[680px] rounded-3xl side-img-left flex-col justify-end p-4 text-center">
+        <div class="hidden lg:flex lg:col-span-1 h-[700px] rounded-3xl side-img-left flex-col justify-end p-4 text-center">
             <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">منطقة التتويج 🏆</span>
         </div>
     </main>
@@ -116,12 +116,12 @@
                 { id: 4, name: 'الفريق الرابع', color: '#dc2626', score: 0 }
             ],
             totalRounds: 5,
-            shotTimeMinutes: 1, // وقت التسديد لكل طالب (دقيقة أو دقيقتين)
+            shotTimeMinutes: 1,
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
             isShootingOpen: false,
-            roundQueue: [], // قائمة التسديد التلقائية (تضم الطالب، الفريق، والسؤال بدون تكرار)
+            roundQueue: [],
             currentQueueIndex: 0,
             lastShotResult: 'في انتظار بدء الجولة...',
             studentAssignments: {},
@@ -174,7 +174,7 @@
         }
 
         // ==========================================
-        // لوحة تحكم المعلم (مع المربعات الصغيرة تحت كل فريق وأزرار الحفظ الثلاثة)
+        // لوحة تحكم المعلم (مع عرض قوائم الفريقين والمربعات الصغيرة وأزرار الحفظ والاستيراد)
         // ==========================================
         function renderTeacherDashboard() {
             state.view = 'teacher';
@@ -187,15 +187,18 @@
                     <button onclick="changeTeamColor(${i}, '${c.hex}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition" style="background:${c.hex}" title="${c.name}"></button>
                 `).join('');
 
-                // استخراج الطلاب التابعين لهذا الفريق لعرضهم في المربعات الصغيرة
-                const teamStudents = studentsList.filter(s => (state.studentAssignments[s] === t.id));
+                // عرض الطلاب في هذا الفريق مع تمييز الدور الحالي في قائمة المعلم
                 const studentsCheckboxes = studentsList.map(s => {
-                    const isChecked = (state.studentAssignments[s] === t.id);
+                    const isAssigned = (state.studentAssignments[s] === t.id);
+                    const isCurrentActive = (state.activeShooter === s);
                     return `
-                        <label class="flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer text-[10px] font-bold ${isChecked ? 'bg-emerald-900/80 border-emerald-400 text-white' : 'bg-slate-950 border-white/20 text-slate-400'}">
-                            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleStudentTeamDirect('${s}', ${t.id})" class="w-3 h-3 rounded text-emerald-600">
-                            <span class="truncate">${s.split(' ')[0]} ${s.split(' ')[1] || ''}</span>
-                        </label>
+                        <div class="flex items-center justify-between px-2 py-1 rounded border text-[11px] font-bold ${isCurrentActive ? 'bg-amber-600 border-amber-300 text-white animate-pulse' : (isAssigned ? 'bg-emerald-900/80 border-emerald-400 text-white' : 'bg-slate-950 border-white/20 text-slate-400')}">
+                            <label class="flex items-center gap-1.5 cursor-pointer truncate">
+                                <input type="checkbox" ${isAssigned ? 'checked' : ''} onchange="toggleStudentTeamDirect('${s}', ${t.id})" class="w-3 h-3 rounded text-emerald-600">
+                                <span class="truncate">${s}</span>
+                            </label>
+                            ${isCurrentActive ? '<span class="bg-black/60 px-1 rounded text-[9px] text-amber-300">دور التسديد الآن</span>' : ''}
+                        </div>
                     `;
                 }).join('');
 
@@ -207,8 +210,8 @@
                         </div>
                         <input type="text" id="team-name-${i}" value="${t.name}" oninput="updateTeamNamesLive()" class="w-full bg-slate-950 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold text-white">
                         <div class="flex flex-wrap gap-1">${swatches}</div>
-                        <div class="text-[11px] text-amber-300 font-bold pt-1 border-t border-white/10">مربعات توزيع الطلاب يدوياً:</div>
-                        <div class="grid grid-cols-1 gap-1 max-h-36 overflow-y-auto bg-black/40 p-1.5 rounded-lg border border-white/10">
+                        <div class="text-[11px] text-amber-300 font-bold pt-1 border-t border-white/10">قائمة طلاب الفريق (توزيع يدوي بالمربعات):</div>
+                        <div class="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto bg-black/40 p-1.5 rounded-lg border border-white/10">
                             ${studentsCheckboxes}
                         </div>
                     </div>
@@ -224,11 +227,11 @@
                         </button>
                     </div>
 
-                    <!-- شاشة المراقبة المباشرة للركلات مع المعلم -->
+                    <!-- شاشة المراقبة المباشرة للركلات -->
                     <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-3 shadow-lg space-y-1.5">
                         <span class="text-xs font-black text-amber-300">📺 شاشة المراقبة المباشرة (ركلات الترجيح الحالية أمامك):</span>
                         <div class="bg-black/40 p-2.5 rounded-xl border border-white/15 space-y-1">
-                            <p class="text-xs text-purple-200">المسدد الآن: <strong id="mon-shooter-name" class="text-amber-300 text-sm">${state.activeShooter || 'لم يُحدد بعد'}</strong></p>
+                            <p class="text-xs text-purple-200">الدور الحالي (المسدد): <strong id="mon-shooter-name" class="text-amber-300 text-base">${state.activeShooter || 'لم يُحدد بعد'}</strong></p>
                             <p class="text-xs text-emerald-300 font-bold">الحالة: <span id="mon-shot-status" class="text-white">${state.lastShotResult}</span></p>
                             <div class="mt-1 pt-1 border-t border-white/15">
                                 <p class="text-[11px] text-sky-300 font-bold">السؤال الحالي (اقرأه للطالب صوتياً):</p>
@@ -238,25 +241,18 @@
                         </div>
                     </div>
 
-                    <!-- تسمية الفرق، الألوان، والمربعات الصغيرة لتوزيع الطلاب -->
+                    <!-- تسمية الفرق، الألوان، وقوائم الطلاب يميناً ويساراً -->
                     <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-2">
                         <div class="flex justify-between items-center flex-wrap gap-2">
-                            <h3 class="text-xs font-black text-emerald-300">⚙️ تسمية الفرق وألوانها وتوزيع الطلاب بالمربعات الصغيرة:</h3>
-                            <div class="flex gap-2">
-                                <select id="teams-count-box" onchange="state.teamsCount = parseInt(this.value); renderTeacherDashboard();" class="bg-slate-950 border border-white/30 rounded-lg p-1 text-xs font-bold text-white">
-                                    <option value="2" ${state.teamsCount==2?'selected':''}>فريقان</option>
-                                    <option value="3" ${state.teamsCount==3?'selected':''}>3 فرق</option>
-                                    <option value="4" ${state.teamsCount==4?'selected':''}>4 فرق</option>
-                                </select>
-                                <button onclick="randomDistributeStudents()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded-lg text-xs">🎲 توزيع عشوائي للجميع</button>
-                            </div>
+                            <h3 class="text-xs font-black text-emerald-300">⚙️ تسمية الفرق وألوانها وتوزيع الطلاب (يمين ويسار):</h3>
+                            <button onclick="randomDistributeStudents()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded-lg text-xs">🎲 توزيع عشوائي للجميع</button>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${teamConfigHtml}</div>
                     </div>
 
-                    <!-- إعدادات الجولة، زر استيراد أسئلة منصة مدرستي، ووقت التسديد -->
+                    <!-- استيراد الأسئلة من مدرستي، الوقت، والتجهيز التلقائي -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📚 استيراد الأسئلة وتجهيز الجولة وتحديد الوقت:</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 استيراد الأسئلة وتجهيز الجولة كاملة تلقائياً:</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                             <div>
@@ -271,7 +267,7 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">مصدر بنك الأسئلة:</label>
+                                <label class="text-[11px] text-purple-200 block mb-1">بنك الأسئلة الشامل:</label>
                                 <button onclick="importMadrasatiQuestions()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2 rounded-xl text-xs shadow">
                                     📥 استيراد أسئلة منصة مدرستي
                                 </button>
@@ -284,7 +280,7 @@
                         </div>
                     </div>
 
-                    <!-- أزرار الحفظ الثلاثة والتحكم -->
+                    <!-- أزرار الحفظ الثلاثة والتحكم التلقائي -->
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <button onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">
@@ -293,14 +289,14 @@
                             <button onclick="saveQuestionSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">
                                 💾 2. حفظ واستيراد بنك الأسئلة
                             </button>
-                            <button onclick="saveAndBroadcastAllSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow border-2 border-emerald-300 animate-pulse">
+                            <button onclick="saveAndBroadcastAllSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border-2 border-emerald-300 animate-pulse">
                                 🚀 3. حفظ وتعميم جميع إعدادات اللعبة للجميع
                             </button>
                         </div>
 
                         <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                             <button onclick="nextAutoShooterTurn()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-black py-3 rounded-xl text-xs shadow">
-                                ⚽ انتقال تلقائي للبطل التالي في الدور
+                                ⚽ الانتقال التلقائي للبطل التالي في الدور
                             </button>
                             <button onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-4 py-3 rounded-xl text-xs shadow">
                                 🔒 إغلاق اللعبة
@@ -344,7 +340,7 @@
             });
             renderTeacherDashboard();
             syncCloud();
-            alert("🎲 تم توزيع جميع الـ 29 طالباً عشوائياً وتلقائياً على الفرق بنجاح!");
+            alert("🎲 تم توزيع جميع الـ 29 طالباً عشوائياً وتلقائياً على الفريقين يميناً ويساراً بنجاح!");
         }
 
         function importMadrasatiQuestions() {
@@ -369,7 +365,7 @@
             alert("🚀 تمت عملية حفظ وتعميم جميع إعدادات اللعبة للجميع بنجاح فوراً!");
         }
 
-        // تجهيز الجولة وتوزيع التسديدات تلقائياً وبالتبادل على الطلاب
+        // تجهيز الجولة وتوزيع التسديدات تلقائياً بالتبادل بين الطلاب وبدون تكرار
         function prepareAndLaunchFullRound() {
             const rounds = parseInt(document.getElementById('cfg-rounds').value) || 5;
             state.totalRounds = rounds;
@@ -377,14 +373,12 @@
 
             updateTeamNamesLive();
 
-            // دمج أسئلة لغتي والإسلامية وخلطها عشوائياً بدون تكرار
             let pool = [...lughatiBank, ...islamicBank];
             for (let i = pool.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [pool[i], pool[j]] = [pool[j], pool[i]];
             }
 
-            // توزيع الطلاب على قائمة الدور تلقائياً بالتبادل بين الفريق 1 والفريق 2
             let team1Students = studentsList.filter(s => state.studentAssignments[s] === 1);
             let team2Students = studentsList.filter(s => state.studentAssignments[s] === 2);
             if (team1Students.length === 0) team1Students = studentsList.slice(0, 15);
@@ -408,21 +402,21 @@
                 state.activeTeamId = first.teamId;
                 state.activeQuestion = first.question;
                 state.isShootingOpen = true;
-                state.lastShotResult = `⏳ بانتظار تسديدة البطل الأول (${first.shooter})...`;
+                state.lastShotResult = `⏳ بانتظار تسديدة البطل (${first.shooter})...`;
             }
 
             syncCloud();
-            alert(`🚀 تم تجهيز الجولة وتوزيع التسديدات تلقائياً بالترتيب لجميع الطلاب (${state.roundQueue.length} ركلة)!`);
+            renderTeacherDashboard();
+            alert(`🚀 تم تجهيز الجولة وتوزيع التسديدات تلقائياً وبالتبادل (${state.roundQueue.length} ركلة)!`);
         }
 
-        // الانتقال التلقائي للبطل التالي في الدور
         function nextAutoShooterTurn() {
             if (!state.roundQueue || state.roundQueue.length === 0) {
                 return alert("⚠️ يرجى تجهيز الجولة أولاً بالضغط على (تجهيز الجولة وتوزيع التسديدات تلقائياً)!");
             }
             state.currentQueueIndex++;
             if (state.currentQueueIndex >= state.roundQueue.length) {
-                state.currentQueueIndex = 0; // حلقة مستمرة
+                state.currentQueueIndex = 0;
             }
             const nextTurn = state.roundQueue[state.currentQueueIndex];
             state.activeShooter = nextTurn.shooter;
@@ -433,7 +427,8 @@
 
             playWhistle();
             syncCloud();
-            alert(`✅ تم الانتقال تلقائياً للبطل التالي: ${nextTurn.shooter}`);
+            renderTeacherDashboard();
+            alert(`✅ تم الانتقال التلقائي للبطل التالي: ${nextTurn.shooter}`);
         }
 
         function closeTournamentLock() {
@@ -441,6 +436,7 @@
             state.activeShooter = '';
             state.lastShotResult = '🔒 اللعبة مغلقة من المعلم';
             syncCloud();
+            renderTeacherDashboard();
             alert("🔒 تم إغلاق اللعبة عند جميع الطلاب.");
         }
 
@@ -456,7 +452,7 @@
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v11').set({
+            db.ref('akkour_penalty_v12').set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
@@ -473,7 +469,7 @@
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v11').on('value', (snap) => {
+            db.ref('akkour_penalty_v12').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
@@ -483,7 +479,7 @@
         }
 
         // ==========================================
-        // دخول الطالب المباشر (مع اسم الفريق وطقم الملابس المطابق للون المعلم)
+        // دخول الطالب المباشر (مع طقم بنفس لون الفريق فقط دون عبارة ملابس)
         // ==========================================
         function enterStudentArenaDirectly() {
             const studentNameInput = prompt("أدخل اسمك الثلاثي تماماً كما في كشف الفصل لتفتح لك لوحة التسديد:");
@@ -552,7 +548,7 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v11').on('value', (snap) => {
+            db.ref('akkour_penalty_v12').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
@@ -644,7 +640,7 @@
             }
 
             if (db) {
-                db.ref('akkour_penalty_v11').update({
+                db.ref('akkour_penalty_v12').update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
