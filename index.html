@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نهائي ركلات الترجيح - أ. عبد الله محمد عكور</title>
+    <title>نهائي ركلات الترجيح - أ. عبد الله عكور</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -51,28 +51,21 @@
 </head>
 <body class="purple-backdrop flex flex-col justify-between items-center p-3 md:p-5">
 
-    <!-- شريط علوي نظيف -->
     <header class="w-full max-w-7xl bg-[#2a174a]/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40">
         <span class="text-xs md:text-sm font-black text-white">أ. عبد الله محمد عكور</span>
         <span class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
     </header>
 
-    <!-- المحتوى الرئيسي -->
     <main class="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-5 gap-4 items-center my-4 z-20">
-        
-        <!-- صورة الملعب على اليمين -->
         <div class="hidden lg:flex lg:col-span-1 h-[580px] rounded-3xl side-img-right flex-col justify-end p-4 text-center">
             <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">ملعب ركلات الترجيح ⚽</span>
         </div>
 
-        <!-- الصندوق الرئيسي في المنتصف -->
         <div id="app-center" class="lg:col-span-3 quiz-main-card rounded-3xl p-5 md:p-7 text-center space-y-5 text-white"></div>
 
-        <!-- صورة المرمى على اليسار -->
         <div class="hidden lg:flex lg:col-span-1 h-[580px] rounded-3xl side-img-left flex-col justify-end p-4 text-center">
             <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">منطقة التتويج 🏆</span>
         </div>
-
     </main>
 
     <!-- نافذة رقم المعلم السري -->
@@ -82,8 +75,8 @@
             <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم (4112):</p>
             <input type="password" id="pin-box" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-2.5 text-center text-white font-black text-xl tracking-widest">
             <div class="flex gap-2">
-                <button onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow">دخول</button>
-                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 hover:bg-purple-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs">إلغاء</button>
+                <button onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 text-white font-black py-2.5 rounded-xl text-xs">دخول</button>
+                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs">إلغاء</button>
             </div>
         </div>
     </div>
@@ -93,7 +86,6 @@
         let db;
         try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
 
-        // كشف طلابك الـ 29 الحقيقيين (بدون كلمة بن)
         const studentsList = [
             "أديب عبدالله العمري", "بتال الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
             "حسين عناد السراني", "سلمان فيصل الحربي", "طلال حريس القحطاني", "عبد السلام مسعد العتيبي",
@@ -104,117 +96,35 @@
             "مصبح محمد المنهالي", "مناف محمد الغامدي", "ناصر فواز الحربي", "يوسف حاتم الرويلي", "يوسف محمد العنزي"
         ];
 
-        // لوحة الألوان المتكررة لكل فريق
-        const teamColorPalette = [
-            { name: "أزرق", hex: "#2563eb" },
-            { name: "أحمر", hex: "#dc2626" },
-            { name: "أصفر", hex: "#eab308" },
-            { name: "أخضر", hex: "#16a34a" },
-            { name: "برتقالي", hex: "#ea580c" },
-            { name: "بنفسجي", hex: "#9333ea" },
-            { name: "سماوي", hex: "#0891b2" },
-            { name: "وردي", hex: "#db2777" }
-        ];
-
-        // ==========================================
-        // بنك أسئلة لغتي الشامل (45 سؤالاً - ثالث ابتدائي ف1 - الوحدات 1 إلى 4)
-        // ==========================================
         const lughatiBank = [
-            { text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correct: 0 },
+            { text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correct: 1 },
             { text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق وتكون ساكنة.", options: ["صح", "خطأ"], correct: 0 },
             { text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correct: 1 },
             { text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correct: 1 },
             { text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correct: 0 },
             { text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correct: 1 },
             { text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correct: 0 },
-            { text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف"], correct: 2 },
-            { text: "الكلمة التي تحتوي على مد بالألف هي:", options: ["كِتَاب", "عُلُوم", "تِلْمِيذ", "بَيْت"], correct: 0 },
-            { text: "الكلمة التي تحتوي على مد بالياء هي:", options: ["حَقِيبَة", "سَمَاء", "عُصْفُور", "شَمْس"], correct: 0 },
-            { text: "الكلمة التي تحتوي على مد بالواو هي:", options: ["خَرُوف", "كِتَاب", "قَلَم", "طَبِيب"], correct: 0 },
-            { text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correct: 1 },
-            { text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correct: 0 },
-            { text: "مرادف (معنى) كلمة (يُشَاهِدُ) هو:", options: ["يَسْمَعُ", "يَرَى", "يَكْتُبُ", "يَلْعَبُ"], correct: 1 },
             { text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correct: 0 },
             { text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correct: 1 },
-            { text: "اسم الإشارة المناسب للجمع العاقل (.... طلاب متفوقون):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correct: 2 },
-            { text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correct: 0 },
-            { text: "ضمير المتكلم المناسب للجمع (.... نحافظ على نظافة مدرستنا):", options: ["أنا", "نحن", "أنتَ", "هم"], correct: 1 },
-            { text: "ضمير الغائب المناسب للمفرد المذكر (.... يذاكر دروسه):", options: ["هو", "هي", "هما", "هن"], correct: 0 },
-            { text: "ضمير المخاطب المناسب للمفردة المؤنثة (.... طالبة ذكية):", options: ["أنتَ", "أنتِ", "أنتما", "أنتم"], correct: 1 },
-            { text: "من حروف الجر في اللغة العربية:", options: ["في - على - إلى", "هذا - هذه", "أنا - نحن", "كتب - قرأ"], correct: 0 },
-            { text: "أسلوب التعجب ينتهي دائماً بعلامة:", options: ["؟", "!", ".", "،"], correct: 1 },
-            { text: "أسلوب الاستفهام (السؤال) ينتهي دائماً بعلامة:", options: ["؟", "!", ".", "؛"], correct: 0 },
-            { text: "أداة الاستفهام المناسبة للسؤال عن المكان (.... تقع مدينة أبها؟):", options: ["أين", "متى", "كم", "من"], correct: 0 },
-            { text: "أداة الاستفهام المناسبة للسؤال عن الزمان (.... تذهب إلى المدرسة؟):", options: ["أين", "متى", "ماذا", "كيف"], correct: 1 },
-            { text: "أداة الاستفهام المناسبة للسؤال عن العدد (.... ركعة في صلاة الفجر؟):", options: ["كم", "أين", "متى", "هل"], correct: 0 },
-            { text: "الكلمة المختومة بتاء مفتوحة فيما يلي:", options: ["بَيْت", "مَدْرَسَة", "حَدِيقَة", "شَجَرَة"], correct: 0 },
-            { text: "الكلمة المختومة بهاء في آخرها فيما يلي:", options: ["مِيَاه", "بِنْت", "كُرَة", "سَيَّارَة"], correct: 0 },
-            { text: "الحرف المشدد (المضعّف) يتكون من حرفين الأول ساكن والثاني متحرك.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "تنوين الفتح يحتاج إلى ألف زائدة في آخر الكلمة إلا في التاء المربوطة والهمزة بعد ألف.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عاصمة المملكة العربية السعودية هي مدينة:", options: ["الرياض", "جدة", "الدمام", "أبها"], correct: 0 },
-            { text: "تقع مدينة أبها في منطقة:", options: ["عسير", "القصيم", "تبوك", "حائل"], correct: 0 },
-            { text: "تشتهر المنطقة الشرقية بإنتاج:", options: ["النفط", "الذهب", "القطن", "الأخشاب"], correct: 0 },
-            { text: "تُلقب مدينة الطائف بـ:", options: ["عروس المصايف", "عروس البحر", "طيبة الطيبة", "أم القرى"], correct: 0 },
-            { text: "تُسمى مكة المكرمة بـ:", options: ["أم القرى", "عروس المصايف", "الدرعية", "العلا"], correct: 0 },
-            { text: "في قصة (عادل في الطائرة)، التزم عادل بربط حزام الأمان عند الإقلاع والهبوط.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الأمانة والصدق من الأخلاق الحميدة التي حث عليها الإسلام.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "في درس (التعاون)، تعاون الطلاب في زراعة ساحة المدرسة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الاسم الموصول المناسب للمفرد المذكر (فاز الطالب .... اجتهد):", options: ["الذي", "التي", "الذين", "اللتان"], correct: 0 },
-            { text: "الاسم الموصول المناسب للمفردة المؤنثة (نجحت الطالبة .... ذاكرت):", options: ["الذي", "التي", "الذين", "اللذان"], correct: 1 },
-            { text: "مثنى كلمة (كِتَاب) هو:", options: ["كِتَابَان", "كُتُب", "مَكْتَبَة", "كَاتِب"], correct: 0 },
-            { text: "مثنى كلمة (شَجَرَة) هو:", options: ["شَجَرَتَان", "أَشْجَار", "شَجَر", "مُشَجَّر"], correct: 0 },
-            { text: "أسلوب النهي يبدأ بـ (لا) الناهية مثل: لا تُهمل واجباتك.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "كلمة (مُعَلِّمُون) تدل على:", options: ["مفرد", "مثنى", "جمع مذكر", "حرف"], correct: 2 }
+            { text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correct: 0 }
         ];
 
-        // ==========================================
-        // بنك أسئلة الدراسات الإسلامية الشامل (35 سؤالاً - ثالث ابتدائي ف1 - توحيد وفقه)
-        // ==========================================
         const islamicBank = [
             { text: "مراتب الدين الإسلامي ثلاث مراتب هي: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "أعظم مراتب الدين هو:", options: ["الإسلام", "الإيمان", "الإحسان", "الصدقة"], correct: 2 },
-            { text: "عدد أركان الإسلام هو:", options: ["ثلاثة أركان", "خمسة أركان", "ستة أركان", "سبعة أركان"], correct: 1 },
-            { text: "الركن الأول من أركان الإسلام هو:", options: ["إقام الصلاة", "شهادة أن لا إله إلا الله وأن محمداً رسول الله", "إيتاء الزكاة", "صوم رمضان"], correct: 1 },
-            { text: "الركن الثاني من أركان الإسلام هو:", options: ["إقام الصلاة", "إيتاء الزكاة", "صوم رمضان", "حج البيت"], correct: 0 },
-            { text: "الركن الثالث من أركان الإسلام هو:", options: ["إيتاء الزكاة", "صوم رمضان", "حج البيت", "الشهادتان"], correct: 0 },
-            { text: "الركن الرابع من أركان الإسلام هو:", options: ["صوم رمضان", "حج البيت", "إقام الصلاة", "إيتاء الزكاة"], correct: 0 },
-            { text: "الركن الخامس من أركان الإسلام هو:", options: ["حج بيت الله الحرام", "صوم رمضان", "إيتاء الزكاة", "إقام الصلاة"], correct: 0 },
-            { text: "معنى شهادة أن لا إله إلا الله: لا معبود بحق إلا الله وحده.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "معنى شهادة أن محمداً رسول الله: طاعته فيما أمر وتصديقه فيما أخبر.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عدد أركان الإيمان هو:", options: ["خمسة أركان", "ستة أركان", "سبعة أركان", "أربعة أركان"], correct: 1 },
-            { text: "أول ركن من أركان الإيمان هو:", options: ["الإيمان بالله", "الإيمان بالملائكة", "الإيمان بالكتب", "الإيمان بالرسل"], correct: 0 },
-            { text: "من أركان الإيمان: الإيمان باليوم الآخر وبالقدر خيره وشره.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "معنى الإحسان: أن تعبد الله كأنك تراه فإن لم تكن تراه فإنه يراك.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "يجب إخلاص العبادة لله تعالى وحده لا شريك له.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الدعاء والصلاة والذبح والاستعانة من أنواع العبادة التي لا تُصرف إلا لله.", options: ["صح", "خطأ"], correct: 0 },
+            { text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correct: 0 },
+            { text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correct: 0 },
+            { text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correct: 0 },
+            { text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correct: 0 },
             { text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "من آداب قضاء الحاجة: قول (اللهم إني أعوذ بك من الخبث والخبائث) عند الدخول.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عند الخروج من الخلاء نقول:", options: ["غفرانك", "بسم الله", "الحمد لله", "سبحان الله"], correct: 0 },
-            { text: "الاستنجاء هو إزالة الخارج من السبيلين بالماء الطهور.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "يُشرع المسح على الخفين أو الجوربين إذا لُبسا على طهارة كاملة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "مدة المسح على الخفين للمقيم هي:", options: ["يوم وليلة (24 ساعة)", "ثلاثة أيام بلياليهن", "أسبوع", "ساعة واحدة"], correct: 0 },
-            { text: "مدة المسح على الخفين للمسافر هي:", options: ["يوم وليلة", "ثلاثة أيام بلياليهن (72 ساعة)", "خمسة أيام", "يومان"], correct: 1 },
-            { text: "التيمم يكون بالتراب الطاهر عند فقد الماء أو العجز عن استعماله.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عدد الصلوات المفروضة في اليوم والليلة:", options: ["ثلاث صلوات", "خمس صلوات", "سبع صلوات", "أربع صلوات"], correct: 1 },
-            { text: "عدد ركعات صلاة الفجر:", options: ["ركعتان", "ثلاث ركعات", "أربع ركعات", "ركعة واحدة"], correct: 0 },
-            { text: "عدد ركعات صلاة المغرب:", options: ["ركعتان", "ثلاث ركعات", "أربع ركعات", "خمس ركعات"], correct: 1 },
-            { text: "الصلوات التي عدد ركعاتها أربع ركعات هي: الظهر والعصر والعشاء.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "نقول في الركوع:", options: ["سبحان ربي العظيم", "سبحان ربي الأعلى", "سمع الله لمن حمده", "رب اغفر لي"], correct: 0 },
-            { text: "نقول في السجود:", options: ["سبحان ربي العظيم", "سبحان ربي الأعلى", "الله أكبر", "التحيات لله"], correct: 1 },
-            { text: "نقول بين السجدتين:", options: ["رب اغفر لي", "سبحان ربي الأعلى", "سمع الله لمن حمده", "السلام عليكم"], correct: 0 },
-            { text: "من آداب دخول المسجد: تقديم الرجل اليمنى وقول (اللهم افتح لي أبواب رحمتك).", options: ["صح", "خطأ"], correct: 0 },
-            { text: "من آداب الخروج من المسجد: تقديم الرجل اليسرى وقول (اللهم إني أسألك من فضلك).", options: ["صح", "خطأ"], correct: 0 },
-            { text: "صلاة الجماعة في المسجد أفضل من صلاة الفذ (المنفرد) بسبع وعشرين درجة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الأذان هو الإعلام بدخول وقت الصلاة المفروضة.", options: ["صح", "خطأ"], correct: 0 }
+            { text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correct: 0 }
         ];
 
         let state = {
-            view: 'home', // home | teacher | student
-            studentTab: 'watch', // shoot | watch
+            view: 'home',
             teamsCount: 2,
             teams: [
-                { id: 1, name: 'الفريق الأول', color: '#2563eb', score: 0 },
-                { id: 2, name: 'الفريق الثاني', color: '#dc2626', score: 0 },
+                { id: 1, name: 'فريق لغتي', color: '#2563eb', score: 0 },
+                { id: 2, name: 'فريق الإسلامية', color: '#dc2626', score: 0 },
                 { id: 3, name: 'الفريق الثالث', color: '#eab308', score: 0 },
                 { id: 4, name: 'الفريق الرابع', color: '#16a34a', score: 0 }
             ],
@@ -222,20 +132,14 @@
             timePerKick: 60,
             activeShooter: '',
             activeTeamId: 1,
+            activeSubject: 'lughati',
             activeQuestion: lughatiBank[0],
             isShootingOpen: false,
             lastShotResult: 'في انتظار تحديد الطالب وبث السؤال...',
             lughatiQuestions: [...lughatiBank],
-            islamicQuestions: [...islamicBank],
-            studentAssignments: {}
+            islamicQuestions: [...islamicBank]
         };
 
-        // تهيئة توزيع افتراضي للطلاب
-        studentsList.forEach((s, i) => { state.studentAssignments[s] = (i % 2) + 1; });
-
-        // ==========================================
-        // 1. الواجهة الأساسية (بدون أي تشتت)
-        // ==========================================
         function renderHome() {
             state.view = 'home';
             const box = document.getElementById('app-center');
@@ -254,12 +158,11 @@
                     </div>
 
                     <div class="space-y-3 pt-4 max-w-md mx-auto">
-                        <!-- دخول مباشر للطلاب بدون كتابة أو اختيار اسم -->
+                        <!-- دخول مباشر للطالب بدون اختيار اسم أو فريق -->
                         <button onclick="enterStudentArenaDirectly()" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
                             <span>⚽ دخول اللاعبين (التسديد والمتابعة)</span>
                         </button>
 
-                        <!-- دخول المعلم برقم سري -->
                         <button onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
                             <span>🔐 لوحة تحكم المعلم (أ. عبد الله عكور)</span>
                         </button>
@@ -268,50 +171,41 @@
             `;
         }
 
-        // ==========================================
-        // 2. لوحة تحكم المعلم الشاملة + شاشة المراقبة المباشرة للمعلم
-        // ==========================================
         function openPinModal() {
             document.getElementById('pin-box').value = '';
             document.getElementById('pin-modal').classList.remove('hidden');
         }
 
         function verifyTeacherPin() {
-            const pin = document.getElementById('pin-box').value;
-            if (pin === '4112' || pin === '') {
+            if (document.getElementById('pin-box').value === '4112' || document.getElementById('pin-box').value === '') {
                 document.getElementById('pin-modal').classList.add('hidden');
                 renderTeacherDashboard();
                 listenCloudForTeacherMonitor();
             } else {
-                alert("❌ الرقم السري غير صحيح!");
+                alert("❌ الرقم السري خاطئ!");
             }
         }
 
+        // ==========================================
+        // لوحة تحكم المعلم الشاملة (تسمية الفرق وتحديد المادة)
+        // ==========================================
         function renderTeacherDashboard() {
             state.view = 'teacher';
             const box = document.getElementById('app-center');
 
-            let teamColorsHtml = '';
+            let teamNamesHtml = '';
             for (let i = 0; i < state.teamsCount; i++) {
                 const t = state.teams[i];
-                const swatches = teamColorPalette.map(c => `
-                    <button onclick="changeTeamColor(${i}, '${c.hex}', '${c.name}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition" style="background:${c.hex}" title="${c.name}"></button>
-                `).join('');
-                teamColorsHtml += `
-                    <div class="bg-slate-900/90 p-2.5 rounded-xl border border-white/20 space-y-1.5 text-right">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[11px] font-black text-amber-300">الفريق ${i+1}:</span>
-                            <span class="w-5 h-3.5 rounded border border-white" style="background:${t.color}"></span>
-                        </div>
-                        <input type="text" value="${t.name}" onchange="state.teams[${i}].name = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/20 rounded-lg px-2 py-1 text-[11px] font-bold text-white">
-                        <div class="flex flex-wrap gap-1 pt-0.5">${swatches}</div>
+                teamNamesHtml += `
+                    <div class="bg-slate-900/90 p-2.5 rounded-xl border border-white/20 space-y-1 text-right">
+                        <span class="text-[11px] font-black text-amber-300">تسمية الفريق ${i+1}:</span>
+                        <input type="text" value="${t.name}" onchange="state.teams[${i}].name = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold text-white">
                     </div>
                 `;
             }
 
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
-                    <!-- رأس اللوحة مع زر العودة -->
                     <div class="flex justify-between items-center border-b border-white/20 pb-2">
                         <h2 class="text-sm md:text-base font-black text-amber-300">🎛️ لوحة تحكم المعلم - أ. عبد الله عكور</h2>
                         <button onclick="renderHome()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow cursor-pointer">
@@ -319,94 +213,70 @@
                         </button>
                     </div>
 
-                    <!-- النقطة 7: شاشة المراقبة المباشرة للمعلم في الوسط لقراءة السؤال ومتابعة الطالب -->
-                    <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-3.5 shadow-lg space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-black text-amber-300">📺 شاشة المراقبة المباشرة للمعلم (لقراءة السؤال ومتابعة التسديد):</span>
-                            <span id="teacher-live-badge" class="text-[11px] font-black px-2.5 py-0.5 rounded-full bg-emerald-600 text-white">متصل مباشر</span>
-                        </div>
+                    <!-- شاشة المراقبة المباشرة للمعلم -->
+                    <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-3 shadow-lg space-y-1.5">
+                        <span class="text-xs font-black text-amber-300">📺 شاشة المراقبة المباشرة (لقراءة السؤال ومتابعة البطل):</span>
                         <div class="bg-black/40 p-2.5 rounded-xl border border-white/15 space-y-1">
-                            <p class="text-xs text-purple-200">الطالب المسدد الآن: <strong id="mon-shooter-name" class="text-amber-300 text-sm">${state.activeShooter || 'لم يُحدد بعد'}</strong></p>
-                            <p class="text-xs text-emerald-300 font-bold">حالة التسديدة: <span id="mon-shot-status" class="text-white">${state.lastShotResult}</span></p>
-                            <div class="mt-2 pt-2 border-t border-white/15">
-                                <p class="text-[11px] text-sky-300 font-bold">نص السؤال المعروض للطالب (اقرأه له صوتياً):</p>
-                                <p id="mon-question-text" class="text-sm font-black text-white mt-0.5">${state.activeQuestion ? state.activeQuestion.text : '---'}</p>
-                                <p id="mon-question-options" class="text-xs text-amber-200 mt-1 font-bold">الخيارات: ${state.activeQuestion ? state.activeQuestion.options.join('  |  ') : '---'}</p>
+                            <p class="text-xs text-purple-200">المسدد الآن: <strong id="mon-shooter-name" class="text-amber-300 text-sm">${state.activeShooter || 'لم يُحدد بعد'}</strong></p>
+                            <p class="text-xs text-emerald-300 font-bold">الحالة: <span id="mon-shot-status" class="text-white">${state.lastShotResult}</span></p>
+                            <div class="mt-1 pt-1 border-t border-white/15">
+                                <p class="text-[11px] text-sky-300 font-bold">السؤال (اقرأه للطالب صوتياً):</p>
+                                <p id="mon-question-text" class="text-xs font-black text-white mt-0.5">${state.activeQuestion ? state.activeQuestion.text : '---'}</p>
+                                <p id="mon-question-options" class="text-[11px] text-amber-200 mt-1 font-bold">الخيارات: ${state.activeQuestion ? state.activeQuestion.options.join('  |  ') : '---'}</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- إعدادات الفرق، التوزيع (عشوائي/يدوي)، الركلات، والزمن -->
-                    <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-2.5">
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                            <div>
-                                <label class="text-[10px] text-purple-200 block">عدد الفرق (1-4):</label>
-                                <select onchange="state.teamsCount = parseInt(this.value); renderTeacherDashboard();" class="w-full bg-slate-950 border border-white/30 rounded-lg p-1.5 text-xs font-bold text-white">
-                                    <option value="2" ${state.teamsCount==2?'selected':''}>فريقان (2)</option>
-                                    <option value="3" ${state.teamsCount==3?'selected':''}>3 فرق</option>
-                                    <option value="4" ${state.teamsCount==4?'selected':''}>4 فرق</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-purple-200 block">عدد الركلات (5-15):</label>
-                                <input type="number" id="cfg-rounds" min="5" max="15" value="${state.totalRounds}" onchange="state.totalRounds = this.value" class="w-full bg-slate-950 border border-white/30 rounded-lg p-1.5 text-xs font-bold text-white text-center">
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-purple-200 block">وقت التفكير (ثانية):</label>
-                                <input type="number" id="cfg-time" min="10" max="180" value="${state.timePerKick}" onchange="state.timePerKick = this.value" class="w-full bg-slate-950 border border-white/30 rounded-lg p-1.5 text-xs font-bold text-white text-center">
-                            </div>
-                            <div class="flex flex-col justify-end gap-1">
-                                <button onclick="randomDistribute()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-1.5 rounded-lg text-[11px] shadow">🎲 توزيع عشوائي</button>
-                            </div>
-                        </div>
-
-                        <!-- ألوان الفرق -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">${teamColorsHtml}</div>
-                    </div>
-
-                    <!-- بنك الأسئلة المفصول (لغتي 45 سؤالاً + الإسلامية 35 سؤالاً) -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5 bg-black/45 p-3 rounded-2xl border border-sky-500/40">
-                        <div class="space-y-1.5">
-                            <h3 class="text-xs font-black text-sky-300">📖 بنك أسئلة لغتي (${state.lughatiQuestions.length} سؤالاً - الوحدات 1-4):</h3>
-                            <select id="lughati-q-select" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
-                                ${state.lughatiQuestions.map((q, i) => `<option value="${i}">${i+1}. ${q.text}</option>`).join('')}
+                    <!-- تسمية الفرق وتحديد المادة والأسئلة -->
+                    <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-black text-emerald-300">⚙️ تسمية الفرق وتحديد نوع الأسئلة (لغتي أو الإسلامية):</h3>
+                            <select onchange="state.teamsCount = parseInt(this.value); renderTeacherDashboard();" class="bg-slate-950 border border-white/30 rounded-lg p-1 text-xs font-bold text-white">
+                                <option value="2" ${state.teamsCount==2?'selected':''}>فريقان (2)</option>
+                                <option value="3" ${state.teamsCount==3?'selected':''}>3 فرق</option>
+                                <option value="4" ${state.teamsCount==4?'selected':''}>4 فرق</option>
                             </select>
-                            <button onclick="selectQuestionFromBank('lughati')" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-1.5 rounded-xl text-xs shadow">اعتماد سؤال لغتي</button>
                         </div>
-                        <div class="space-y-1.5">
-                            <h3 class="text-xs font-black text-amber-300">🕌 بنك أسئلة الإسلامية (${state.islamicQuestions.length} سؤالاً - توحيد وفقه):</h3>
-                            <select id="islamic-q-select" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
-                                ${state.islamicQuestions.map((q, i) => `<option value="${i}">${i+1}. ${q.text}</option>`).join('')}
-                            </select>
-                            <button onclick="selectQuestionFromBank('islamic')" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-1.5 rounded-xl text-xs shadow">اعتماد سؤال الإسلامية</button>
-                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">${teamNamesHtml}</div>
                     </div>
 
-                    <!-- اختيار الطالب المسدد وحفظ وتعميم الدور للجميع -->
-                    <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
+                    <!-- اختيار المادة والبنك -->
+                    <div class="bg-black/45 p-3 rounded-2xl border border-sky-500/40 space-y-2">
+                        <div class="flex gap-2">
+                            <button onclick="state.activeSubject='lughati'; renderTeacherDashboard();" class="flex-1 py-2 rounded-xl text-xs font-black ${state.activeSubject==='lughati'?'bg-sky-600 text-white':'bg-slate-900 text-slate-400'}">أسئلة مادة لغتي فقط</button>
+                            <button onclick="state.activeSubject='islamic'; renderTeacherDashboard();" class="flex-1 py-2 rounded-xl text-xs font-black ${state.activeSubject==='islamic'?'bg-amber-500 text-slate-950':'bg-slate-900 text-slate-400'}">أسئلة الدراسات الإسلامية فقط</button>
+                        </div>
+                        <select id="subject-q-select" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                            ${(state.activeSubject === 'lughati' ? state.lughatiQuestions : state.islamicQuestions).map((q, i) => `<option value="${i}">${i+1}. ${q.text}</option>`).join('')}
+                        </select>
+                        <button onclick="selectQuestion()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-1.5 rounded-xl text-xs shadow">اعتماد وبث السؤال المختار</button>
+                    </div>
+
+                    <!-- حفظ وتعميم الدور -->
+                    <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <div>
-                                <label class="text-xs font-black text-emerald-300 block mb-1">🏃‍♂️ اختر الطالب الذي حان دوره للتسديد الآن:</label>
+                                <label class="text-xs font-black text-emerald-300 block mb-1">🏃‍♂️ اختر الطالب الذي سيشوت:</label>
                                 <select id="cfg-shooter" class="w-full bg-slate-950 border border-emerald-400 rounded-xl p-2 text-xs font-black text-white">
                                     ${studentsList.map(s => `<option value="${s}" ${state.activeShooter===s?'selected':''}>${s}</option>`).join('')}
                                 </select>
                             </div>
                             <div>
-                                <label class="text-xs font-black text-amber-300 block mb-1">🚩 فريق الطالب المسدد:</label>
+                                <label class="text-xs font-black text-amber-300 block mb-1">🚩 يتبع لأي فريق:</label>
                                 <select id="cfg-shooter-team" class="w-full bg-slate-950 border border-amber-400 rounded-xl p-2 text-xs font-black text-white">
                                     ${state.teams.slice(0, state.teamsCount).map(t => `<option value="${t.id}">${t.name}</option>`).join('')}
                                 </select>
                             </div>
                         </div>
 
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="saveAndBroadcastTurn()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs md:text-sm shadow-lg border border-emerald-300">
-                                ✅ موافق، حفظ وتعميم (فتح التسديد للطالب المختار) ⚽
+                        <div class="flex flex-wrap gap-2 pt-1">
+                            <button onclick="saveAndBroadcastTurn()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow-lg">
+                                ✅ موافق، حفظ وتعميم (فتح التسديد للطالب) ⚽
                             </button>
-                            <button onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-4 py-3 rounded-xl text-xs shadow">
+                            <button onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-3 py-2.5 rounded-xl text-xs shadow">
                                 🔒 إغلاق اللعبة
                             </button>
-                            <button onclick="resetAllScores()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-3 py-3 rounded-xl text-xs shadow">
+                            <button onclick="resetAllScores()" class="bg-slate-800 text-white font-bold px-3 py-2.5 rounded-xl text-xs shadow">
                                 🔄 تصفير
                             </button>
                         </div>
@@ -415,44 +285,22 @@
             `;
         }
 
-        function changeTeamColor(idx, hex, colorName) {
-            state.teams[idx].color = hex;
-            state.teams[idx].name = `الفريق ال${colorName}`;
-            renderTeacherDashboard();
-            syncCloud();
-        }
-
-        function randomDistribute() {
-            const shuffled = [...studentsList].sort(() => Math.random() - 0.5);
-            shuffled.forEach((s, idx) => {
-                state.studentAssignments[s] = (idx % state.teamsCount) + 1;
-            });
-            alert(`🎲 تم توزيع الـ 29 طالباً عشوائياً على (${state.teamsCount}) فرق بنجاح!`);
-        }
-
-        function selectQuestionFromBank(subject) {
-            if (subject === 'lughati') {
-                const idx = parseInt(document.getElementById('lughati-q-select').value) || 0;
-                state.activeQuestion = state.lughatiQuestions[idx];
-            } else {
-                const idx = parseInt(document.getElementById('islamic-q-select').value) || 0;
-                state.activeQuestion = state.islamicQuestions[idx];
-            }
+        function selectQuestion() {
+            const idx = parseInt(document.getElementById('subject-q-select').value) || 0;
+            state.activeQuestion = state.activeSubject === 'lughati' ? state.lughatiQuestions[idx] : state.islamicQuestions[idx];
             document.getElementById('mon-question-text').innerText = state.activeQuestion.text;
             document.getElementById('mon-question-options').innerText = "الخيارات: " + state.activeQuestion.options.join('  |  ');
-            alert("✅ تم اعتماد السؤال في شاشة البث! اختر الطالب الآن واضغط (حفظ وتعميم).");
+            alert("✅ تم اعتماد السؤال بنجاح!");
         }
 
         function saveAndBroadcastTurn() {
             const shooter = document.getElementById('cfg-shooter').value;
             const teamId = parseInt(document.getElementById('cfg-shooter-team').value) || 1;
-            const timeSec = parseInt(document.getElementById('cfg-time').value) || 60;
 
             state.activeShooter = shooter;
             state.activeTeamId = teamId;
-            state.timePerKick = timeSec;
             state.isShootingOpen = true;
-            state.lastShotResult = `⏳ جاري انتظار تسديدة البطل (${shooter})...`;
+            state.lastShotResult = `⏳ بانتظار تسديدة (${shooter})...`;
 
             playWhistle();
             syncCloud();
@@ -464,40 +312,39 @@
         function closeTournamentLock() {
             state.isShootingOpen = false;
             state.activeShooter = '';
-            state.lastShotResult = '🔒 البطولة مغلقة من المعلم حالياً';
+            state.lastShotResult = '🔒 اللعبة مغلقة من المعلم';
             syncCloud();
             document.getElementById('mon-shooter-name').innerText = 'مغلق';
             document.getElementById('mon-shot-status').innerText = state.lastShotResult;
-            alert("🔒 تم إغلاق اللعبة عند جميع الطلاب حتى تفتحها مرة أخرى.");
+            alert("🔒 تم إغلاق اللعبة عند جميع الطلاب.");
         }
 
         function resetAllScores() {
             state.teams.forEach(t => t.score = 0);
             state.isShootingOpen = false;
             state.activeShooter = '';
-            state.lastShotResult = '🔄 تم تصفير النتائج لبدء جولة جديدة';
+            state.lastShotResult = '🔄 تم تصفير النتائج';
             syncCloud();
             renderTeacherDashboard();
-            alert("🔄 تم تصفير جميع الأهداف والجولات بنجاح!");
+            alert("🔄 تم تصفير النتائج بنجاح!");
         }
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v5').set({
+            db.ref('akkour_penalty_v6').set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
                 activeTeamId: state.activeTeamId,
                 activeQuestion: state.activeQuestion,
                 isShootingOpen: state.isShootingOpen,
-                timePerKick: state.timePerKick,
                 lastShotResult: state.lastShotResult
             });
         }
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v5').on('value', (snap) => {
+            db.ref('akkour_penalty_v6').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
@@ -507,42 +354,38 @@
         }
 
         // ==========================================
-        // 3. دخول الطالب المباشر (بدون اختيار اسم - أيقونتان فقط)
+        // 3. دخول الطالب المباشر (أيقونتان فقط بدون اختيار اسم)
         // ==========================================
         function enterStudentArenaDirectly() {
             state.view = 'student';
             const box = document.getElementById('app-center');
             box.innerHTML = `
                 <div class="space-y-4 text-white">
-                    <!-- الأيقونتان العلويتان للطالب مباشرة -->
                     <div class="grid grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
-                        <!-- أيقونة التسديد: تبقى مظللة ومغلقة حتى يفتحها المعلم -->
+                        <!-- أيقونة التسديد مظللة ومعطلة حتى يختار المعلم الطالب -->
                         <button id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow transition">
                             ⚽ أيقونة التسديد (مظللة / مغلقة)
                         </button>
-
-                        <!-- أيقونة متابعة ركلات الترجيح المباشرة: مفتوحة دائماً -->
+                        <!-- أيقونة المتابعة مفتوحة دائماً -->
                         <button id="btn-student-watch" onclick="switchStudentTab('watch')" class="bg-amber-500 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow transition">
                             📊 متابعة ركلات الترجيح المباشرة
                         </button>
                     </div>
 
-                    <!-- شاشة التسديد (تفتح تلقائياً عندما يضغط المعلم حفظ وتعميم) -->
+                    <!-- شاشة التسديد -->
                     <div id="pane-student-shoot" class="hidden space-y-4">
                         <div class="bg-emerald-600 text-white py-2.5 px-4 rounded-2xl font-black text-base md:text-xl shadow-lg animate-pulse border-2 border-white">
                             ⚽ سَدِّدْ يَا بَطَل: <span id="target-shooter-banner" class="text-amber-300 underline">---</span>
                         </div>
-
                         <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-lg">
                             <p id="student-q-text" class="text-base md:text-xl font-black">---</p>
                         </div>
-
                         <div class="relative w-full max-w-md mx-auto h-52 goal-frame rounded-t-lg p-3 flex flex-col justify-between">
                             <div id="student-goal-corners" class="grid grid-cols-2 gap-3 w-full h-full items-center"></div>
                         </div>
                     </div>
 
-                    <!-- شاشة متابعة ركلات الترجيح المباشرة (مفتوحة دائماً) -->
+                    <!-- شاشة متابعة البطولة -->
                     <div id="pane-student-watch" class="space-y-4 bg-black/45 p-5 rounded-2xl border border-white/20">
                         <h3 class="text-base md:text-lg font-black text-amber-300">📊 البث المباشر لركلات الترجيح</h3>
                         <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
@@ -568,14 +411,13 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v5').on('value', (snap) => {
+            db.ref('akkour_penalty_v6').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
                 if (d.teams) state.teams = d.teams;
                 if (d.teamsCount) state.teamsCount = d.teamsCount;
 
-                // تحديث لوحة النتائج المباشرة
                 const grid = document.getElementById('live-teams-grid');
                 if (grid) {
                     grid.innerHTML = '';
@@ -595,14 +437,12 @@
                 if (!shootBtn || !banner) return;
 
                 if (d.isShootingOpen && d.activeShooter) {
-                    // فتح أيقونة التسديد وتلوينها وإظهار اسم الطالب المطلوب
                     shootBtn.disabled = false;
                     shootBtn.className = "bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow-lg animate-bounce cursor-pointer";
                     shootBtn.innerText = `⚽ سدد الآن يا ${d.activeShooter}`;
 
-                    banner.innerText = `🎯 الدور الآن للبطل: ${d.activeShooter} — (${d.lastShotResult || 'يستعد للتسديد'})`;
+                    banner.innerText = `🎯 الدور للبطل: ${d.activeShooter} — (${d.lastShotResult || 'يستعد'})`;
 
-                    // تعبئة المرمى والسؤال تلقائياً
                     document.getElementById('target-shooter-banner').innerText = d.activeShooter;
                     document.getElementById('student-q-text').innerText = d.activeQuestion ? d.activeQuestion.text : '';
 
@@ -617,11 +457,8 @@
                             corners.appendChild(btn);
                         });
                     }
-
-                    // فتح شاشة المرمى مباشرة ليراها الطالب الذي جاء دوره
                     switchStudentTab('shoot');
                 } else {
-                    // إغلاق وتظليل أيقونة التسديد والعودة لمتابعة البطولة
                     shootBtn.disabled = true;
                     shootBtn.className = "bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow";
                     shootBtn.innerText = "⚽ أيقونة التسديد (مظللة / مغلقة)";
@@ -646,7 +483,7 @@
             }
 
             if (db) {
-                db.ref('akkour_penalty_v5').update({
+                db.ref('akkour_penalty_v6').update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
