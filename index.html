@@ -26,18 +26,10 @@
         <span class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
     </header>
 
-    <!-- الهيكل الرئيسي: بيانات الفريق الأول والنتائج في أقصى اليمين، والثاني في أقصى اليسار مكان العشب -->
     <main class="w-full max-w-[98%] flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 items-center my-3 z-20">
-        
-        <!-- أقصى اليمين: الفريق الأول -->
         <div id="left-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
-
-        <!-- المنتصف: لوحة التحكم أو شاشة اللعب -->
         <div id="app-center" class="lg:col-span-6 quiz-main-card rounded-3xl p-4 md:p-6 text-center space-y-4 text-white relative overflow-hidden"></div>
-
-        <!-- أقصى اليسار: الفريق الثاني -->
         <div id="right-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
-
     </main>
 
     <!-- الأيقونة الزرقاء للتوزيع اليدوي بالمربعات لـ 29 طالباً -->
@@ -100,9 +92,7 @@
             { name: "وردي", hex: "#db2777" }
         ];
 
-        // بنك الأسئلة الموسع (أكثر من 75 سؤالاً)
         const masterQuestionBank = [
-            // مادة لغتي
             { subject: "لغتي", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
@@ -154,7 +144,6 @@
             { subject: "لغتي", text: "الكلمة المنونة بالكسر:", options: ["قلمٍ", "قلمٌ", "قلمأ", "القلم"], correctIndex: 0 },
             { subject: "لغتي", text: "الفعل الماضي من (يشرب):", options: ["شَرِبَ", "يشرب", "اشرب", "شارب"], correctIndex: 0 },
 
-            // الدراسات الإسلامية
             { subject: "إسلامية", text: "مراتب الدين الإسلامي ثلاث: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -199,13 +188,11 @@
             teamsCount: 2,
             teams: [
                 { id: 1, name: 'الفريق الأزرق', color: '#2563eb', score: 0 },
-                { id: 2, name: 'الفريق الأصفر', color: '#eab308', score: 0 },
-                { id: 3, name: 'الفريق الثالث', color: '#16a34a', score: 0 },
-                { id: 4, name: 'الفريق الرابع', color: '#dc2626', score: 0 }
+                { id: 2, name: 'الفريق الأصفر', color: '#eab308', score: 0 }
             ],
             totalRounds: 5,
             shotTimeMinutes: 1,
-            selectedSubjectFilter: 'all', // all, لغتي, إسلامية
+            selectedSubjectFilter: 'all',
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -240,7 +227,7 @@
 
                     <div class="space-y-3 pt-4 max-w-md mx-auto">
                         <button onclick="enterStudentArenaDirectly()" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
-                            <span>⚽ دخول اللاعبين (التسديد والمتابعة)</span>
+                            <span>⚽ دخول اللاعبين ومتابعة الركلات</span>
                         </button>
 
                         <button onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
@@ -393,7 +380,6 @@
             }
         }
 
-        // نافذة التوزيع اليدوي بالمربعات الصغيرة لـ 29 طالباً
         let activeTabForManualModal = 1;
         function openManualModal() {
             activeTabForManualModal = 1;
@@ -440,7 +426,6 @@
             syncCloud();
         }
 
-        // عرض الفرق والنتائج في أقصى اليمين وأقصى اليسار مكان العشب
         function renderWingsForTeacher() {
             const leftWing = document.getElementById('left-wing-team');
             const rightWing = document.getElementById('right-wing-team');
@@ -687,16 +672,9 @@
         }
 
         // ==========================================
-        // دخول الطالب المباشر (مع الأجنحة الجانبية للنتائج والدوائر)
+        // دخول الطالب المباشر (بدون طلب كتابة اسم تماماً)
         // ==========================================
         function enterStudentArenaDirectly() {
-            const studentNameInput = prompt("أدخل اسمك الثلاثي تماماً كما في كشف الفصل:");
-            if (!studentNameInput || !studentsList.includes(studentNameInput.trim())) {
-                alert("❌ الاسم غير موجود في كشف الفصل!");
-                return;
-            }
-            state.currentStudentDeviceName = studentNameInput.trim();
-
             state.view = 'student';
             renderWingsForStudent();
 
@@ -706,7 +684,7 @@
                     <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
                     <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
-                        <span>أهلاً بك يا بطلنا: <span class="text-amber-300 text-sm">${state.currentStudentDeviceName}</span></span>
+                        <span>⚽ ساحة تفاعل الطلاب المباشرة</span>
                         <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
                     </div>
 
@@ -790,7 +768,7 @@
         function switchStudentTab(tab) {
             const shootBtn = document.getElementById('btn-student-shoot');
             if (shootBtn.disabled && tab === 'shoot') {
-                return alert("⏳ أيقونة التسديد مظللة ومغلقة الآن لأن الدور ليس دورك أو لم ينادِ المعلم باسمك!");
+                return alert("⏳ أيقونة التسديد مظللة ومغلقة لأن الدور ليس دورك الحالي!");
             }
             document.getElementById('pane-student-shoot').classList.toggle('hidden', tab !== 'shoot');
             document.getElementById('pane-student-watch').classList.toggle('hidden', tab !== 'watch');
@@ -819,20 +797,21 @@
                 const banner = document.getElementById('watch-status-banner');
                 if (!shootBtn || !banner) return;
 
-                const isMyTurn = (d.isShootingOpen && d.activeShooter === state.currentStudentDeviceName);
+                const activeShooter = d.activeShooter;
+                const isShootingOpen = d.isShootingOpen;
 
-                if (isMyTurn) {
+                if (isShootingOpen && activeShooter) {
                     shootBtn.disabled = false;
                     shootBtn.className = "bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow-lg animate-bounce cursor-pointer";
-                    shootBtn.innerText = `⚽ سدد الآن يا ${d.activeShooter} (دورك حصرياً)`;
+                    shootBtn.innerText = `⚽ سدد الآن يا ${activeShooter} (دورك حصرياً)`;
 
-                    banner.innerText = `🎯 الدور للبطل: ${d.activeShooter} — هيا سدد الآن!`;
+                    banner.innerText = `🎯 الدور الحالي للبطل: ${activeShooter} — هيا سدد الآن!`;
 
                     const activeTeamObj = state.teams.find(t => t.id === d.activeTeamId) || state.teams[0];
                     const bannerBox = document.getElementById('shooter-banner-box');
                     if (bannerBox) bannerBox.style.backgroundColor = activeTeamObj.color;
 
-                    document.getElementById('target-shooter-banner').innerText = `${d.activeShooter} (${activeTeamObj.name})`;
+                    document.getElementById('target-shooter-banner').innerText = `${activeShooter} (${activeTeamObj.name})`;
                     document.getElementById('student-q-text').innerText = d.activeQuestion ? d.activeQuestion.text : '';
 
                     const corners = document.getElementById('student-goal-corners');
@@ -843,7 +822,7 @@
                             btn.className = "corner-btn rounded-xl py-3 text-sm md:text-base font-black";
                             btn.innerText = opt;
                             const isCorrectAnswer = (idx === d.activeQuestion.correctIndex);
-                            btn.onclick = () => executeStudentKick(isCorrectAnswer, d.activeShooter, d.activeTeamId);
+                            btn.onclick = () => executeStudentKick(isCorrectAnswer, activeShooter, d.activeTeamId);
                             corners.appendChild(btn);
                         });
                     }
@@ -852,12 +831,7 @@
                     shootBtn.disabled = true;
                     shootBtn.className = "bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow";
                     shootBtn.innerText = "⚽ أيقونة التسديد (مظللة / مغلقة)";
-
-                    if (d.isShootingOpen && d.activeShooter) {
-                        banner.innerText = `⏳ الدور الحالي للبطل: ${d.activeShooter} (تابع ركلته)`;
-                    } else {
-                        banner.innerText = d.lastShotResult || "🔒 البطولة مغلقة حالياً في انتظار المعلم...";
-                    }
+                    banner.innerText = d.lastShotResult || "🔒 البطولة مغلقة حالياً في انتظار المعلم...";
                     switchStudentTab('watch');
                 }
             });
