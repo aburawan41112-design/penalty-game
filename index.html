@@ -79,30 +79,44 @@
             { name: "وردي", hex: "#db2777" }
         ];
 
+        // بنك أسئلة لغتي الشامل (منصة مدرستي / منصة لغتي - ثالث ابتدائي ف1)
         const lughatiBank = [
-            { text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق وتكون ساكنة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correct: 1 },
-            { text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correct: 1 },
-            { text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correct: 1 },
-            { text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correct: 0 },
-            { text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correct: 0 },
-            { text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correct: 1 },
-            { text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correct: 0 },
-            { text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correct: 1 },
-            { text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correct: 0 }
+            { text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق وتكون ساكنة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
+            { text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correctIndex: 1 },
+            { text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correctIndex: 1 },
+            { text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 0 },
+            { text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 2 },
+            { text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correctIndex: 0 },
+            { text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correctIndex: 1 },
+            { text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correctIndex: 0 },
+            { text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correctIndex: 1 },
+            { text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correctIndex: 0 },
+            { text: "مرادف (معنى) كلمة (يُشَاهِدُ) هو:", options: ["يَسْمَعُ", "يَرَى", "يَكْتُبُ", "يَلْعَبُ"], correctIndex: 1 },
+            { text: "من حروف الجر في اللغة العربية:", options: ["في - على - إلى", "هذا - هذه", "أنا - نحن", "كتب - قرأ"], correctIndex: 0 },
+            { text: "أسلوب التعجب ينتهي دائماً بعلامة:", options: ["؟", "!", ".", "،"], correctIndex: 1 },
+            { text: "أسلوب الاستفهام (السؤال) ينتهي دائماً بعلامة:", options: ["؟", "!", ".", "؛"], correctIndex: 0 },
+            { text: "أداة الاستفهام المناسبة للسؤال عن المكان (.... تقع مدينة أبها؟):", options: ["أين", "متى", "كم", "من"], correctIndex: 0 },
+            { text: "الكلمة المختومة بتاء مفتوحة فيما يلي:", options: ["بَيْت", "مَدْرَسَة", "حَدِيقَة", "شَجَرَة"], correctIndex: 0 }
         ];
 
+        // بنك أسئلة الدراسات الإسلامية الشامل (توحيد وفقه - منصة مدرستي)
         const islamicBank = [
-            { text: "مراتب الدين الإسلامي ثلاث مراتب هي: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correct: 0 },
-            { text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correct: 0 }
+            { text: "مراتب الدين الإسلامي ثلاث مراتب هي: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "معنى شهادة أن لا إله إلا الله: لا معبود بحق إلا الله وحده.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "عدد أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "الاستنجاء هو إزالة الخارج من السبيلين بالماء الطهور.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "التيمم يكون بالتراب الطاهر عند فقد الماء.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { text: "عدد ركعات صلاة الفجر ركعتان.", options: ["صح", "خطأ"], correctIndex: 0 }
         ];
 
         let state = {
@@ -117,7 +131,7 @@
             totalRounds: 5,
             activeShooter: '',
             activeTeamId: 1,
-            activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correct: 0 },
+            activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
             isShootingOpen: false,
             roundQuestionsQueue: [],
             lastShotResult: 'في انتظار بدء الجولة...',
@@ -170,7 +184,7 @@
         }
 
         // ==========================================
-        // لوحة تحكم المعلم المحدثة بالملي (تسمية الفرق، ألوان، توزيع عشوائي/يدوي، تجهيز جولة كاملة)
+        // لوحة تحكم المعلم (تسمية الفرق، ألوان، توزيع عشوائي/يدوي، بنك الأسئلة كامل)
         // ==========================================
         function renderTeacherDashboard() {
             state.view = 'teacher';
@@ -237,7 +251,7 @@
 
                     <!-- تجهيز الجولة بضغطة زر (بدون تكرار الأسئلة) -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📚 تجهيز الجولة بالكامل بضغطة زر واحدة (بدون اختيار سؤال لكل طالب):</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة الشامل وتجهيز الجولة كاملة بضغطة زر:</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
@@ -245,10 +259,10 @@
                                 <input type="number" id="cfg-rounds" min="5" max="15" value="${state.totalRounds}" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white text-center">
                             </div>
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">تحديد بنك الأسئلة:</label>
+                                <label class="text-[11px] text-purple-200 block mb-1">تحديد المادة المطلوبة:</label>
                                 <select id="cfg-subject" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
-                                    <option value="lughati">أسئلة مادة لغتي فقط</option>
-                                    <option value="islamic">الدراسات الإسلامية فقط</option>
+                                    <option value="lughati">أسئلة مادة لغتي فقط (منصة مدرستي)</option>
+                                    <option value="islamic">الدراسات الإسلامية فقط (فقه وتوحيد)</option>
                                     <option value="both" selected>جميع المواد (لغتي + إسلامية)</option>
                                 </select>
                             </div>
@@ -260,7 +274,7 @@
                         </div>
                     </div>
 
-                    <!-- اختيار الطالب المسدد وتعميم الدور (أسماء الفرق مترابطة هنا بالملي) -->
+                    <!-- اختيار الطالب المسدد وتعميم الدور -->
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <div>
@@ -403,7 +417,7 @@
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v8').set({
+            db.ref('akkour_penalty_v9').set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
@@ -416,7 +430,7 @@
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v8').on('value', (snap) => {
+            db.ref('akkour_penalty_v9').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
@@ -484,7 +498,7 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v8').on('value', (snap) => {
+            db.ref('akkour_penalty_v9').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
@@ -532,7 +546,9 @@
                             const btn = document.createElement('button');
                             btn.className = "corner-btn rounded-xl py-3 text-sm md:text-base font-black";
                             btn.innerText = opt;
-                            btn.onclick = () => executeStudentKick(idx === d.activeQuestion.correct, d.activeShooter, d.activeTeamId);
+                            // التأكد الدقيق من المطابقة مع correctIndex
+                            const isCorrectAnswer = (idx === d.activeQuestion.correctIndex);
+                            btn.onclick = () => executeStudentKick(isCorrectAnswer, d.activeShooter, d.activeTeamId);
                             corners.appendChild(btn);
                         });
                     }
@@ -549,21 +565,22 @@
         }
 
         function executeStudentKick(isCorrect, shooterName, teamId) {
-            playWhistle();
             let resultMsg = '';
             if (isCorrect) {
+                playGoalSound();
                 const tIdx = (teamId || 1) - 1;
                 if (state.teams[tIdx]) state.teams[tIdx].score = (state.teams[tIdx].score || 0) + 1;
                 resultMsg = `🎉 جوووووول! سجل البطل (${shooterName}) هدفاً رائعاً!`;
                 alert(resultMsg);
                 triggerFireworks();
             } else {
+                playMissSound();
                 resultMsg = `❌ ضاعت الركلة! ارتطمت كرة البطل (${shooterName}) بالقائم!`;
                 alert(resultMsg);
             }
 
             if (db) {
-                db.ref('akkour_penalty_v8').update({
+                db.ref('akkour_penalty_v9').update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
@@ -573,12 +590,42 @@
             switchStudentTab('watch');
         }
 
+        // أصوات الاحتفال والتصفيق للهدف
+        function playGoalSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+                g.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } catch(e) {}
+        }
+
+        // صوت العارضة / الصفير عند ضياع الركلة
+        function playMissSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.4);
+                g.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } catch(e) {}
+        }
+
         function triggerFireworks() {
             const container = document.getElementById('fireworks-container');
             if (!container) return;
             container.classList.remove('hidden');
             container.innerHTML = '';
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 35; i++) {
                 const fw = document.createElement('div');
                 fw.className = 'firework';
                 fw.style.left = Math.random() * 100 + '%';
