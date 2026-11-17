@@ -12,8 +12,6 @@
         body { font-family: 'Cairo', sans-serif; background-color: #1e1035; color: #ffffff; user-select: none; overflow-x: hidden; }
         .purple-backdrop { background: radial-gradient(circle at top, #3b1d6e 0%, #1e1035 55%, #130924 100%); min-height: 100vh; }
         .quiz-main-card { background-color: #11221c; border: 3px solid #23473a; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75); }
-        .side-img-right { background: linear-gradient(180deg, rgba(6,78,59,0.3), rgba(6,78,59,0.7)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=500&auto=format&fit=crop') center/cover no-repeat; border: 3px solid rgba(255,255,255,0.85); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        .side-img-left { background: linear-gradient(180deg, rgba(6,78,59,0.3), rgba(6,78,59,0.7)), url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=500&auto=format&fit=crop') center/cover no-repeat; border: 3px solid rgba(255,255,255,0.85); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
         .goal-frame { border-top: 10px solid #f8fafc; border-left: 10px solid #f8fafc; border-right: 10px solid #f8fafc; box-shadow: 0 -4px 15px rgba(0,0,0,0.4), inset 0 8px 20px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.55); background-image: linear-gradient(0deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px); background-size: 16px 16px; position: relative; }
         .corner-btn { background: rgba(255, 255, 255, 0.96); color: #064e3b; border: 3px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.45); transition: all 0.2s; cursor: pointer; }
         .corner-btn:hover { transform: scale(1.04); background: #ffffff; border-color: #facc15; }
@@ -21,24 +19,37 @@
         .firework { position: absolute; width: 14px; height: 14px; border-radius: 50%; animation: fireworks 0.8s infinite; }
     </style>
 </head>
-<body class="purple-backdrop flex flex-col justify-between items-center p-3 md:p-5">
+<body class="purple-backdrop flex flex-col justify-between items-center p-2 md:p-4">
 
-    <header class="w-full max-w-7xl bg-[#2a174a]/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40">
+    <header class="w-full max-w-7xl bg-[#2a174a]/90 backdrop-blur-md px-5 py-2.5 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40">
         <span class="text-xs md:text-sm font-black text-white">أ. عبد الله محمد عكور</span>
         <span class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
     </header>
 
-    <main class="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-5 gap-4 items-center my-4 z-20">
-        <div class="hidden lg:flex lg:col-span-1 h-[720px] rounded-3xl side-img-right flex-col justify-end p-4 text-center">
-            <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">ملعب ركلات الترجيح ⚽</span>
-        </div>
+    <!-- الهيكل الرئيسي: بيانات الفريق الأول والنتائج في أقصى اليمين، والثاني في أقصى اليسار مكان العشب -->
+    <main class="w-full max-w-[98%] flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 items-center my-3 z-20">
+        
+        <!-- أقصى اليمين: الفريق الأول -->
+        <div id="left-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
 
-        <div id="app-center" class="lg:col-span-3 quiz-main-card rounded-3xl p-5 md:p-7 text-center space-y-5 text-white relative overflow-hidden"></div>
+        <!-- المنتصف: لوحة التحكم أو شاشة اللعب -->
+        <div id="app-center" class="lg:col-span-6 quiz-main-card rounded-3xl p-4 md:p-6 text-center space-y-4 text-white relative overflow-hidden"></div>
 
-        <div class="hidden lg:flex lg:col-span-1 h-[720px] rounded-3xl side-img-left flex-col justify-end p-4 text-center">
-            <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">منطقة التتويج 🏆</span>
-        </div>
+        <!-- أقصى اليسار: الفريق الثاني -->
+        <div id="right-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
+
     </main>
+
+    <!-- الأيقونة الزرقاء للتوزيع اليدوي بالمربعات لـ 29 طالباً -->
+    <div id="manual-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-black text-sky-300">🟦 التوزيع اليدوي للطلاب بالمربعات (29 طالباً)</h3>
+            <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على مربعات أسماء الطلاب لتتلوّن بلون الفريق، ثم أغلق النافذة:</p>
+            <div class="flex justify-center gap-2 flex-wrap" id="modal-teams-tabs"></div>
+            <div id="modal-students-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-right max-h-80 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
+            <button onclick="document.getElementById('manual-modal').classList.add('hidden'); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع اليدوي ✓</button>
+        </div>
+    </div>
 
     <!-- نافذة الرقم السري للمعلم -->
     <div id="pin-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -53,13 +64,13 @@
         </div>
     </div>
 
-    <!-- نافذة استعراض بنك أسئلة منصة مدرستي (شاملة وبدون تكرار) -->
+    <!-- نافذة استعراض بنك الأسئلة الشامل (>75 سؤالاً) -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-black text-sky-300">📥 بنك أسئلة منصة مدرستي الشامل (لغتي وإسلامية)</h3>
-            <p class="text-xs text-purple-200">تم استيراد جميع الأسئلة بدون تكرار وبإجابات موثوقة لصف ثالث ابتدائي:</p>
+            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (أكثر من 75 سؤالاً - لغتي وإسلامية)</h3>
+            <p class="text-xs text-purple-200">تم تجهيز بنك الأسئلة بالكامل بدون تكرار لتغطية المنهج:</p>
             <div id="questions-list-container" class="space-y-2 text-right max-h-96 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
-            <button onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-sky-600 text-white font-black py-2 px-6 rounded-xl text-xs">إغلاق واستخدام بنك الأسئلة</button>
+            <button onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-sky-600 text-white font-black py-2 px-6 rounded-xl text-xs">إغلاق وحفظ البنك</button>
         </div>
     </div>
 
@@ -89,31 +100,98 @@
             { name: "وردي", hex: "#db2777" }
         ];
 
-        const lughatiBank = [
-            { text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق وتكون ساكنة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
-            { text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correctIndex: 1 },
-            { text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correctIndex: 1 },
-            { text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 0 },
-            { text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 2 },
-            { text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correctIndex: 0 },
-            { text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correctIndex: 1 },
-            { text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correctIndex: 0 },
-            { text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correctIndex: 1 },
-            { text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correctIndex: 0 }
-        ];
+        // بنك الأسئلة الموسع (أكثر من 75 سؤالاً)
+        const masterQuestionBank = [
+            // مادة لغتي
+            { subject: "لغتي", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
+            { subject: "لغتي", text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correctIndex: 1 },
+            { subject: "لغتي", text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correctIndex: 1 },
+            { subject: "لغتي", text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 2 },
+            { subject: "لغتي", text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correctIndex: 0 },
+            { subject: "لغتي", text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correctIndex: 1 },
+            { subject: "لغتي", text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correctIndex: 1 },
+            { subject: "لغتي", text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correctIndex: 0 },
+            { subject: "لغتي", text: "المد في كلمة (قالَ) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الفتح"], correctIndex: 2 },
+            { subject: "لغتي", text: "المد في كلمة (صَغِير) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الكسر"], correctIndex: 1 },
+            { subject: "لغتي", text: "المد في كلمة (عُصْفُور) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الضم"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (جَمِيل) هو:", options: ["قَبِيح", "حَسَن", "صَغِير", "بَعِيد"], correctIndex: 1 },
+            { subject: "لغتي", text: "مرادف كلمة (سَرِيع) هو:", options: ["بَطِيء", "مُسْرِع", "كَسْلَان", "نَائِم"], correctIndex: 1 },
+            { subject: "لغتي", text: "حرف العطف المناسب (دخل محمد ثُمَّ عليٌّ): يفيد:", options: ["الترتيب والتراخي", "السرعة", "التشكيك", "التخيير"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف العطف المناسب (جاء أحمد فَـخالدٌ): يفيد:", options: ["السرعة والتعقيب", "التراخي", "الشك", "النفي"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (كتاب) تنون بالفتح هكذا:", options: ["كتاباً", "كتابٌ", "كتابٍ", "الكتاب"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (مدرسة) تنون بالضم هكذا:", options: ["مدرسةً", "مدرسةٌ", "مدرسةٍ", "المدرسة"], correctIndex: 1 },
+            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سَأَلَ) كتبت على:", options: ["الألف", "الواو", "الياء", "السطر"], correctIndex: 0 },
+            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سُؤال) كتبت على:", options: ["الواو", "الألف", "الياء", "السطر"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (أَقْلَام) هو:", options: ["قَلَم", "قَلَمان", "أَقْلَامَة", "مِقْلَمَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (بَيْت) هو:", options: ["بُيُوت", "أبوات", "بيات", "بياوت"], correctIndex: 0 },
+            { subject: "لغتي", text: "المذكر من كلمة (طبيبة) هو:", options: ["طبيب", "معلم", "مهندس", "مدير"], correctIndex: 0 },
+            { subject: "لغتي", text: "المؤنث من كلمة (معلم) هو:", options: ["معلمة", "طالبة", "مديرة", "طبيبة"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العاقل (.... زارنا اليوم؟):", options: ["مَنْ", "مَا", "هَل", "أين"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن المكان (.... الكتاب؟):", options: ["أَيْنَ", "مَنْ", "مَتَى", "لِمَاذَا"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن الزمن (.... تبدأ الحصة؟):", options: ["مَتَى", "مَنْ", "كَيْف", "كم"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العدد (.... تلميذاً بالفصل؟):", options: ["كَمْ", "مَنْ", "أين", "كيف"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب النهي يبدأ بـ:", options: ["لا الناهية", "ما النافية", "نعم", "ليت"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب التمني يبدأ بـ:", options: ["لَيْتَ", "لعل", "أن", "قد"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدأة بتاء مفتوحة هي:", options: ["بَنَات", "مدرسة", "فاطمة", "سفينة"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المختومة بهاء هجائية (ه) هي:", options: ["مُنَبَّه", "وجهة", "زهرة", "قاعة"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (ذَكَاء) هو:", options: ["غَبَاء", "سُرْعَة", "فَهْم", "نجاح"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (قَوِيّ) هو:", options: ["ضَعِيف", "بَطِيء", "صَغِير", "فقير"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (شَجَاعَة) هو:", options: ["جُرْأَة", "خَوْف", "حُزْن", "كسل"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (مسلم) هو:", options: ["مُسْلِمُون", "مسلمات", "مسلمان", "إسلام"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (مساجد) هو:", options: ["مَسْجِد", "ساجد", "سجادة", "مسجدان"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة التي تحوي مداً بالواو:", options: ["عُصُور", "كتاب", "توت", "شمس"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (سافرتُ .... المطار):", options: ["إِلَى", "في", "على", "عن"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (الكتاب .... الطاولة):", options: ["عَلَى", "إلى", "في", "من"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (الماء .... الإناء):", options: ["فِي", "على", "إلى", "الباء"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع الشدة في كلمة (رُمَّان):", options: ["حرف مضعف مشدد", "مد بالالف", "تنوين", "همزة"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة قطع هي:", options: ["أحمد", "المدرسة", "الكتاب", "البيت"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة وصل هي:", options: ["انطلق", "أحمد", "إبراهيم", "أقبل"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المنونة بالكسر:", options: ["قلمٍ", "قلمٌ", "قلمأ", "القلم"], correctIndex: 0 },
+            { subject: "لغتي", text: "الفعل الماضي من (يشرب):", options: ["شَرِبَ", "يشرب", "اشرب", "شارب"], correctIndex: 0 },
 
-        const islamicBank = [
-            { text: "مراتب الدين الإسلامي ثلاث مراتب هي: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 }
+            // الدراسات الإسلامية
+            { subject: "إسلامية", text: "مراتب الدين الإسلامي ثلاث: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الأول من أركان الإيمان هو الإيمان بالله.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نبينا؟ نبينا محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "ما ديننا؟ ديننا الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من ربك؟ ربي الله الذي رباني وربى العالمين.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "القبلة التي نتوجه إليها في صلاتنا هي الكعبة بمكة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الصلاة تجب على كل مسلم عاقل بالغ.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "مفتاح الجنة هو الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من آداب قضاء الحاجة الاستنجاء بالماء أو الاستجمار.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "دخول الخلاء يكون بتقديم الرجل اليسرى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الخروج من الخلاء يكون بتقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الدعاء عند دخول الخلاء: (اللهم إني أعوذ بك من الخبث والخبائث).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الذكر عند الخروج من الخلاء: (غفرانك).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الوضوء يكون قبل الصلاة وهو طهارة بالماء.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نواقض الوضوء: الخارج من السبيلين.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نواقض الوضوء: النوم العميق الزال للعقل.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة الفجر ركعتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة الظهر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة العصر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة المغرب ثلاث ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة العشاء أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الزكاة هي الركن الثالث من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "صيام رمضان هو الركن الرابع من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "حج بيت الله الحرام لمن استطاع إليه سبيلاً هو الركن الخامس.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نبينا محمد صلى الله عليه وسلم ولد في مكة المكرمة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عام الفيل هو العام الذي ولد فيه النبي صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم أم النبي صلى الله عليه وسلم هو آمنة بنت وهب.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم أب النبي صلى الله عليه وسلم هو عبد الله.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "كفل النبي صلى الله عليه وسلم بعد أمه جده عبد المطلب ثم عمه أبو طالب.", options: ["صح", "خطأ"], correctIndex: 0 }
         ];
 
         let state = {
@@ -127,6 +205,7 @@
             ],
             totalRounds: 5,
             shotTimeMinutes: 1,
+            selectedSubjectFilter: 'all', // all, لغتي, إسلامية
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -135,12 +214,15 @@
             currentQueueIndex: 0,
             lastShotResult: 'في انتظار بدء الجولة...',
             studentAssignments: {},
-            studentResults: {}, // لتتبع دوائر وإكسات كل طالب
+            studentResults: {},
             isTournamentFinished: false
         };
 
         function renderHome() {
             state.view = 'home';
+            document.getElementById('left-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-4">ملعب الترجيح ⚽</div>`;
+            document.getElementById('right-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-4">منطقة التتويج 🏆</div>`;
+
             const box = document.getElementById('app-center');
             box.innerHTML = `
                 <div class="space-y-6 py-4">
@@ -152,7 +234,7 @@
                             نهائي ركلات الترجيح ⚽
                         </h2>
                         <p class="text-amber-300 text-xs md:text-base font-bold mt-3">
-                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية (الفقه والتوحيد) - الصف الثالث الابتدائي
+                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية (أكثر من 75 سؤالاً) - الصف الثالث الابتدائي
                         </p>
                     </div>
 
@@ -184,54 +266,11 @@
             }
         }
 
-        // ==========================================
-        // لوحة تحكم المعلم المتقدمة (قوائم يمين ويسار مع الدوائر والإكسات)
-        // ==========================================
         function renderTeacherDashboard() {
             state.view = 'teacher';
+            renderWingsForTeacher();
+
             const box = document.getElementById('app-center');
-
-            let teamConfigHtml = '';
-            for (let i = 0; i < state.teamsCount; i++) {
-                const t = state.teams[i];
-                const swatches = teamColorPalette.map(c => `
-                    <button onclick="changeTeamColor(${i}, '${c.hex}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition" style="background:${c.hex}" title="${c.name}"></button>
-                `).join('');
-
-                // عرض الطلاب التابعين لهذا الفريق في الجانب الأيمن والأيسر مع نتائجهم (دوائر وأكسات)
-                const teamStudentsList = studentsList.filter(s => (state.studentAssignments[s] === t.id));
-                const studentsDisplay = teamStudentsList.length === 0 ? '<p class="text-[10px] text-slate-500">لا توجد أسماء مسندة هنا بعد</p>' : teamStudentsList.map(s => {
-                    const isCurrentActive = (state.activeShooter === s);
-                    const results = state.studentResults[s] || [];
-                    const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
-
-                    return `
-                        <div onclick="selectShooterDirectly('${s}', ${t.id})" class="flex items-center justify-between p-1.5 rounded border text-xs font-bold cursor-pointer transition ${isCurrentActive ? 'bg-amber-600 border-amber-300 text-white animate-pulse shadow-lg scale-105' : 'bg-slate-950 border-white/20 text-slate-300 hover:bg-slate-900'}">
-                            <span class="truncate">${s}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px]">${resIcons}</span>
-                                ${isCurrentActive ? '<span class="bg-black px-1.5 py-0.5 rounded text-[9px] text-amber-300 font-black">دور التسديد الآن</span>' : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                teamConfigHtml += `
-                    <div class="bg-slate-900/90 p-3 rounded-xl border border-white/20 space-y-2 text-right">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-black" style="color:${t.color}">الفريق ${i+1}:</span>
-                            <span class="w-5 h-3.5 rounded border border-white" style="background:${t.color}"></span>
-                        </div>
-                        <input type="text" id="team-name-${i}" value="${t.name}" oninput="updateTeamNamesLive()" class="w-full bg-slate-950 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold text-white">
-                        <div class="flex flex-wrap gap-1">${swatches}</div>
-                        <div class="text-[11px] text-amber-300 font-bold pt-1 border-t border-white/10">قائمة الفريق والنتائج (اضغط على الاسم لاختياره):</div>
-                        <div class="flex flex-col gap-1 max-h-48 overflow-y-auto bg-black/40 p-1.5 rounded-lg border border-white/10">
-                            ${studentsDisplay}
-                        </div>
-                    </div>
-                `;
-            }
-
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
                     <div class="flex justify-between items-center border-b border-white/20 pb-2">
@@ -241,7 +280,6 @@
                         </button>
                     </div>
 
-                    <!-- شاشة المراقبة المباشرة -->
                     <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-3 shadow-lg space-y-1.5">
                         <span class="text-xs font-black text-amber-300">📺 شاشة المراقبة المباشرة وحالة الجولة:</span>
                         <div class="bg-black/40 p-2.5 rounded-xl border border-white/15 space-y-1">
@@ -254,23 +292,32 @@
                         </div>
                     </div>
 
-                    <!-- قوائم الفرق يميناً ويساراً -->
-                    <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-2">
+                    <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-3">
                         <div class="flex justify-between items-center flex-wrap gap-2">
-                            <h3 class="text-xs font-black text-emerald-300">⚙️ إعدادات الفرق وقوائم الطلاب المسددة (يمين ويسار):</h3>
-                            <button onclick="randomDistributeStudents()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-2.5 py-1 rounded-lg text-xs">🎲 توزيع عشوائي للجميع</button>
+                            <h3 class="text-xs font-black text-emerald-300">⚙️ إعدادات الفرق والتوزيع اليدوي بالمربعات:</h3>
+                            <div class="flex gap-2">
+                                <button onclick="openManualModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-3.5 py-1.5 rounded-xl text-xs shadow">
+                                    🟦 التوزيع اليدوي بالمربعات (29 طالباً)
+                                </button>
+                                <button onclick="randomDistributeStudents()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">
+                                    🎲 توزيع عشوائي
+                                </button>
+                            </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${teamConfigHtml}</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="teams-inputs-grid"></div>
                     </div>
 
-                    <!-- استيراد الأسئلة وتجهيز الجولة -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📚 استيراد الأسئلة وتجهيز الجولة:</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة:</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">عدد الركلات للجولة:</label>
-                                <input type="number" id="cfg-rounds" min="5" max="15" value="${state.totalRounds}" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white text-center">
+                                <label class="text-[11px] text-purple-200 block mb-1">حدد المادة المطلوبة:</label>
+                                <select id="cfg-subject" onchange="state.selectedSubjectFilter = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                    <option value="all" ${state.selectedSubjectFilter=='all'?'selected':''}>جميع المواد (لغتي + إسلامية)</option>
+                                    <option value="لغتي" ${state.selectedSubjectFilter=='لغتي'?'selected':''}>مادة لغتي فقط</option>
+                                    <option value="إسلامية" ${state.selectedSubjectFilter=='إسلامية'?'selected':''}>الدراسات الإسلامية فقط</option>
+                                </select>
                             </div>
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">وقت التسديد لكل طالب:</label>
@@ -280,9 +327,9 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">بنك الأسئلة الشامل:</label>
+                                <label class="text-[11px] text-purple-200 block mb-1">استعراض بنك الأسئلة (>75):</label>
                                 <button onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2 rounded-xl text-xs shadow">
-                                    📥 استيراد أسئلة منصة مدرستي
+                                    📥 استيراد وعرض بنك الأسئلة
                                 </button>
                             </div>
                             <div class="flex items-end">
@@ -293,7 +340,6 @@
                         </div>
                     </div>
 
-                    <!-- أزرار الحفظ والتحكم -->
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <button onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">
@@ -321,6 +367,123 @@
                     </div>
                 </div>
             `;
+            renderTeamsInputsInTeacher();
+        }
+
+        function renderTeamsInputsInTeacher() {
+            const grid = document.getElementById('teams-inputs-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let i = 0; i < state.teamsCount; i++) {
+                const t = state.teams[i];
+                const swatches = teamColorPalette.map(c => `
+                    <button onclick="changeTeamColor(${i}, '${c.hex}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition" style="background:${c.hex}" title="${c.name}"></button>
+                `).join('');
+
+                grid.innerHTML += `
+                    <div class="bg-slate-900 p-3 rounded-xl border border-white/20 space-y-2 text-right">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black" style="color:${t.color}">الفريق ${i+1}:</span>
+                            <span class="w-5 h-3.5 rounded border border-white" style="background:${t.color}"></span>
+                        </div>
+                        <input type="text" id="team-name-${i}" value="${t.name}" oninput="updateTeamNamesLive()" class="w-full bg-slate-950 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                        <div class="flex flex-wrap gap-1">${swatches}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // نافذة التوزيع اليدوي بالمربعات الصغيرة لـ 29 طالباً
+        let activeTabForManualModal = 1;
+        function openManualModal() {
+            activeTabForManualModal = 1;
+            renderManualModalContent();
+            document.getElementById('manual-modal').classList.remove('hidden');
+        }
+
+        function renderManualModalContent() {
+            const tabsContainer = document.getElementById('modal-teams-tabs');
+            tabsContainer.innerHTML = '';
+            for (let i = 0; i < state.teamsCount; i++) {
+                const t = state.teams[i];
+                const isSel = (activeTabForManualModal === t.id);
+                tabsContainer.innerHTML += `
+                    <button onclick="activeTabForManualModal = ${t.id}; renderManualModalContent();" class="px-3 py-1.5 rounded-xl text-xs font-black border ${isSel ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-slate-900 text-white border-white/20'}">
+                        ${t.name}
+                    </button>
+                `;
+            }
+
+            const grid = document.getElementById('modal-students-grid');
+            grid.innerHTML = '';
+            studentsList.forEach(s => {
+                const assignedTeam = state.studentAssignments[s];
+                const isSelectedByThisTeam = (assignedTeam === activeTabForManualModal);
+                const currentTeamObj = state.teams.find(t => t.id === activeTabForManualModal) || state.teams[0];
+                
+                grid.innerHTML += `
+                    <button onclick="toggleStudentAssignment('${s}', ${activeTabForManualModal})" class="p-2.5 rounded-xl border text-xs font-bold text-right truncate transition ${isSelectedByThisTeam ? 'border-amber-400 text-white shadow-lg' : (assignedTeam ? 'bg-slate-900 border-white/10 text-slate-500' : 'bg-slate-950 border-white/20 text-slate-300 hover:bg-slate-900')}" style="background-color: ${isSelectedByThisTeam ? currentTeamObj.color : ''}">
+                        ${s} ${isSelectedByThisTeam ? ' ✓' : ''}
+                    </button>
+                `;
+            });
+        }
+
+        function toggleStudentAssignment(studentName, teamId) {
+            if (state.studentAssignments[studentName] === teamId) {
+                delete state.studentAssignments[studentName];
+            } else {
+                state.studentAssignments[studentName] = teamId;
+            }
+            renderManualModalContent();
+            renderWingsForTeacher();
+            syncCloud();
+        }
+
+        // عرض الفرق والنتائج في أقصى اليمين وأقصى اليسار مكان العشب
+        function renderWingsForTeacher() {
+            const leftWing = document.getElementById('left-wing-team');
+            const rightWing = document.getElementById('right-wing-team');
+            if (!leftWing || !rightWing) return;
+
+            const t1 = state.teams[0] || { name: 'الفريق الأول', color: '#2563eb', score: 0, id: 1 };
+            const t2 = state.teams[1] || { name: 'الفريق الثاني', color: '#eab308', score: 0, id: 2 };
+
+            leftWing.innerHTML = renderSingleWingHTML(t1);
+            rightWing.innerHTML = renderSingleWingHTML(t2);
+        }
+
+        function renderSingleWingHTML(teamObj) {
+            const teamStudents = studentsList.filter(s => state.studentAssignments[s] === teamObj.id);
+            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة هنا بعد</p>' : teamStudents.map(s => {
+                const isCurrentActive = (state.activeShooter === s);
+                const results = state.studentResults[s] || [];
+                const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
+                return `
+                    <div onclick="selectShooterDirectly('${s}', ${teamObj.id})" class="p-1.5 rounded border text-xs font-bold cursor-pointer transition flex items-center justify-between ${isCurrentActive ? 'bg-amber-600 border-amber-300 text-white animate-pulse shadow-lg' : 'bg-slate-950 border-white/20 text-slate-300 hover:bg-slate-900'}">
+                        <span class="truncate">${s}</span>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px]">${resIcons}</span>
+                            ${isCurrentActive ? '<span class="bg-black px-1 rounded text-[9px] text-amber-300">دور التسديد</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="space-y-3">
+                    <div class="p-3 rounded-2xl border-2 text-center shadow-lg" style="background:${teamObj.color}33; border-color:${teamObj.color}">
+                        <h4 class="font-black text-sm text-white">${teamObj.name}</h4>
+                        <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">قائمة اللاعبين والنتائج (دوائر/إكسات):</span>
+                        <div class="space-y-1 max-h-[520px] overflow-y-auto pr-1">
+                            ${studentsListHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function changeTeamColor(idx, hex) {
@@ -334,6 +497,7 @@
                 const input = document.getElementById(`team-name-${i}`);
                 if (input) state.teams[i].name = input.value;
             }
+            renderWingsForTeacher();
             syncCloud();
         }
 
@@ -343,17 +507,16 @@
             });
             renderTeacherDashboard();
             syncCloud();
-            alert("🎲 تم توزيع جميع الطلاب عشوائياً وتلقائياً على الفريقين يميناً ويساراً بنجاح!");
+            alert("🎲 تم توزيع جميع الطلاب عشوائياً وتلقائياً على الفرق بنجاح!");
         }
 
         function openQuestionsModal() {
             const container = document.getElementById('questions-list-container');
             container.innerHTML = '';
-            const allQ = [...lughatiBank, ...islamicBank];
-            allQ.forEach((q, idx) => {
+            masterQuestionBank.forEach((q, idx) => {
                 container.innerHTML += `
                     <div class="p-2 rounded bg-slate-900 border border-white/10 text-xs">
-                        <span class="text-amber-300 font-bold">سؤال ${idx+1}:</span> ${q.text}
+                        <span class="text-amber-300 font-bold">سؤال ${idx+1} [${q.subject}]:</span> ${q.text}
                         <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')}</div>
                     </div>
                 `;
@@ -367,8 +530,10 @@
             state.isShootingOpen = true;
             state.lastShotResult = `⏳ بانتظار تسديدة البطل (${studentName})...`;
 
-            // اختيار سؤال جديد عشوائي غير مكرر
-            let pool = [...lughatiBank, ...islamicBank];
+            let pool = masterQuestionBank;
+            if (state.selectedSubjectFilter !== 'all') {
+                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
+            }
             state.activeQuestion = pool[Math.floor(Math.random() * pool.length)];
 
             playWhistle();
@@ -385,7 +550,7 @@
 
         function saveQuestionSettings() {
             syncCloud();
-            alert("💾 تم حفظ واستيراد بنك الأسئلة بنجاح!");
+            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل بنجاح!");
         }
 
         function saveAndBroadcastAllSettings() {
@@ -396,12 +561,14 @@
         }
 
         function prepareAndLaunchFullRound() {
-            const rounds = parseInt(document.getElementById('cfg-rounds').value) || 5;
+            const rounds = parseInt(document.getElementById('cfg-rounds')?.value || 5);
             state.totalRounds = rounds;
-            state.shotTimeMinutes = parseInt(document.getElementById('cfg-time').value) || 1;
             updateTeamNamesLive();
 
-            let pool = [...lughatiBank, ...islamicBank];
+            let pool = masterQuestionBank;
+            if (state.selectedSubjectFilter !== 'all') {
+                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
+            }
             for (let i = pool.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -445,7 +612,6 @@
             }
             state.currentQueueIndex++;
             if (state.currentQueueIndex >= state.roundQueue.length) {
-                // انتهاء الجولة تماماً وتوقفها مع الاحتفال الكبرى
                 state.isTournamentFinished = true;
                 state.isShootingOpen = false;
                 state.activeShooter = '';
@@ -489,7 +655,7 @@
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v13').set({
+            db.ref('akkour_penalty_v15').set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
@@ -502,24 +668,26 @@
                 roundQueue: state.roundQueue,
                 currentQueueIndex: state.currentQueueIndex,
                 shotTimeMinutes: state.shotTimeMinutes,
-                isTournamentFinished: state.isTournamentFinished
+                isTournamentFinished: state.isTournamentFinished,
+                selectedSubjectFilter: state.selectedSubjectFilter
             });
         }
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v13').on('value', (snap) => {
+            db.ref('akkour_penalty_v15').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
                 if (d.studentResults) state.studentResults = d.studentResults;
+                renderWingsForTeacher();
                 const statusEl = document.getElementById('mon-shot-status');
                 if (statusEl && d.lastShotResult) statusEl.innerText = d.lastShotResult;
             });
         }
 
         // ==========================================
-        // دخول الطالب المباشر (بدون كتابة اسم وبطقم لون الفريق فقط)
+        // دخول الطالب المباشر (مع الأجنحة الجانبية للنتائج والدوائر)
         // ==========================================
         function enterStudentArenaDirectly() {
             const studentNameInput = prompt("أدخل اسمك الثلاثي تماماً كما في كشف الفصل:");
@@ -530,12 +698,14 @@
             state.currentStudentDeviceName = studentNameInput.trim();
 
             state.view = 'student';
+            renderWingsForStudent();
+
             const box = document.getElementById('app-center');
             box.innerHTML = `
                 <div class="space-y-4 text-white relative">
                     <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
-                    <div id="student-top-banner" class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
+                    <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
                         <span>أهلاً بك يا بطلنا: <span class="text-amber-300 text-sm">${state.currentStudentDeviceName}</span></span>
                         <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
                     </div>
@@ -568,13 +738,53 @@
                         <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
                             في انتظار إشارة المعلم أ. عبد الله عكور...
                         </div>
-                        <div id="live-teams-grid" class="grid grid-cols-2 gap-3 pt-2"></div>
                     </div>
 
                     <button onclick="renderHome()" class="text-xs text-purple-300 underline pt-1">العودة للشاشة الرئيسية</button>
                 </div>
             `;
             listenCloudForStudent();
+        }
+
+        function renderWingsForStudent() {
+            const leftWing = document.getElementById('left-wing-team');
+            const rightWing = document.getElementById('right-wing-team');
+            if (!leftWing || !rightWing) return;
+
+            const t1 = state.teams[0] || { name: 'الفريق الأول', color: '#2563eb', score: 0, id: 1 };
+            const t2 = state.teams[1] || { name: 'الفريق الثاني', color: '#eab308', score: 0, id: 2 };
+
+            leftWing.innerHTML = renderSingleWingHTMLForStudent(t1);
+            rightWing.innerHTML = renderSingleWingHTMLForStudent(t2);
+        }
+
+        function renderSingleWingHTMLForStudent(teamObj) {
+            const teamStudents = studentsList.filter(s => state.studentAssignments[s] === teamObj.id);
+            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة</p>' : teamStudents.map(s => {
+                const results = state.studentResults[s] || [];
+                const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
+                return `
+                    <div class="p-1.5 rounded border text-xs font-bold flex items-center justify-between bg-slate-950 border-white/20 text-slate-300">
+                        <span class="truncate">${s}</span>
+                        <span class="text-[10px]">${resIcons}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="space-y-3">
+                    <div class="p-3 rounded-2xl border-2 text-center shadow-lg" style="background:${teamObj.color}33; border-color:${teamObj.color}">
+                        <h4 class="font-black text-sm text-white">${teamObj.name}</h4>
+                        <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">النتائج والدوائر:</span>
+                        <div class="space-y-1 max-h-[520px] overflow-y-auto pr-1">
+                            ${studentsListHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function switchStudentTab(tab) {
@@ -588,34 +798,21 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v13').on('value', (snap) => {
+            db.ref('akkour_penalty_v15').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
                 if (d.teams) state.teams = d.teams;
                 if (d.teamsCount) state.teamsCount = d.teamsCount;
                 if (d.studentResults) state.studentResults = d.studentResults;
+                if (d.studentAssignments) state.studentAssignments = d.studentAssignments;
+                renderWingsForStudent();
 
                 if (d.isTournamentFinished) {
-                    // إظهار احتفال انتهاء الجولة تماماً بالألعاب النارية الكبرى
                     const title = document.getElementById('tournament-status-title');
                     if (title) title.innerHTML = "🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز 🎉";
                     triggerFireworks();
                     return;
-                }
-
-                const grid = document.getElementById('live-teams-grid');
-                if (grid) {
-                    grid.innerHTML = '';
-                    for (let i = 0; i < state.teamsCount; i++) {
-                        const t = state.teams[i];
-                        grid.innerHTML += `
-                            <div class="p-4 rounded-2xl border-2 text-center shadow-lg" style="background:${t.color}33; border-color:${t.color}">
-                                <h4 class="font-black text-sm text-white">${t.name}</h4>
-                                <p class="text-3xl font-black text-white mt-1">${t.score || 0}</p>
-                            </div>
-                        `;
-                    }
                 }
 
                 const shootBtn = document.getElementById('btn-student-shoot');
@@ -633,9 +830,7 @@
 
                     const activeTeamObj = state.teams.find(t => t.id === d.activeTeamId) || state.teams[0];
                     const bannerBox = document.getElementById('shooter-banner-box');
-                    if (bannerBox) {
-                        bannerBox.style.backgroundColor = activeTeamObj.color; // طقم بنفس لون الفريق فقط بدون كلمة ملابس
-                    }
+                    if (bannerBox) bannerBox.style.backgroundColor = activeTeamObj.color;
 
                     document.getElementById('target-shooter-banner').innerText = `${d.activeShooter} (${activeTeamObj.name})`;
                     document.getElementById('student-q-text').innerText = d.activeQuestion ? d.activeQuestion.text : '';
@@ -688,7 +883,7 @@
             }
 
             if (db) {
-                db.ref('akkour_penalty_v13').update({
+                db.ref('akkour_penalty_v15').update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
