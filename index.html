@@ -3,115 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نهائي ركلات الترجيح - أ. عبد الله عكور</title>
+    <title>نهائي ركلات الترجيح - أ. عبد الله محمد عكور</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f3e8ff; color: #1e293b; user-select: none; overflow-x: hidden; }
-        /* خلفية بنفسجي فاتح تحيط بالملعب */
-        .wrapper-bg { 
-            background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 50%, #faf5ff 100%);
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #1e1035; /* خلفية بنفسجي غامق كاملة */
+            color: #ffffff;
+            user-select: none;
+            overflow-x: hidden;
+        }
+        .purple-backdrop {
+            background: radial-gradient(circle at top, #3b1d6e 0%, #1e1035 55%, #130924 100%);
             min-height: 100vh;
-            position: relative;
         }
-        /* المنتصف أخضر مخطط بالأبيض، اليمين ملعب، اليسار مرمى */
+        /* المنتصف أخضر زيتي غامق مخطط بالأبيض */
         .stadium-center-box {
-            background: linear-gradient(180deg, #065f46 0%, #047857 50%, #15803d 100%);
+            background: linear-gradient(180deg, #064e3b 0%, #065f46 50%, #047857 100%);
             background-image: 
-                linear-gradient(0deg, rgba(255,255,255,0.15) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255,255,255,0.15) 2px, transparent 2px);
-            background-size: 40px 40px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+                linear-gradient(0deg, rgba(255,255,255,0.16) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255,255,255,0.16) 2px, transparent 2px);
+            background-size: 38px 38px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+        }
+        /* صورة العشب والملعب على اليمين وعلى اليسار */
+        .grass-side-panel {
+            background: 
+                linear-gradient(180deg, rgba(6, 78, 59, 0.35), rgba(6, 78, 59, 0.55)),
+                url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=600&auto=format&fit=crop') center/cover no-repeat;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .goal-frame {
+            border-top: 10px solid #f8fafc;
+            border-left: 10px solid #f8fafc;
+            border-right: 10px solid #f8fafc;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.4), inset 0 8px 20px rgba(0,0,0,0.5);
+            background-color: rgba(6, 78, 59, 0.45);
+            background-image: 
+                linear-gradient(0deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px);
+            background-size: 16px 16px;
             position: relative;
         }
-        .side-img-right {
-            background: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=400&auto=format&fit=crop') center/cover no-repeat;
-            filter: brightness(0.85);
+        .corner-btn {
+            background: rgba(255, 255, 255, 0.96);
+            color: #064e3b;
+            border: 3px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+            transition: all 0.2s;
+            cursor: pointer;
         }
-        .side-img-left {
-            background: url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=400&auto=format&fit=crop') center/cover no-repeat;
-            filter: brightness(0.85);
+        .corner-btn:hover {
+            transform: scale(1.04);
+            background: #ffffff;
+            border-color: #facc15;
         }
-        .goal-frame { border-top: 10px solid #f8fafc; border-left: 10px solid #f8fafc; border-right: 10px solid #f8fafc; box-shadow: 0 -4px 15px rgba(0,0,0,0.4), inset 0 8px 20px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.4); background-image: linear-gradient(0deg, rgba(255,255,255,0.3) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.3) 1.5px, transparent 1.5px); background-size: 16px 16px; position: relative; }
-        .corner-btn { background: rgba(255, 255, 255, 0.95); color: #064e3b; border: 3px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.4); transition: all 0.2s; cursor: pointer; }
-        .corner-btn:hover { transform: scale(1.04); background: #ffffff; border-color: #facc15; }
+        .corner-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+        @keyframes flagWave {
+            0%, 100% { transform: skewY(0deg) scaleX(1); }
+            50% { transform: skewY(-5deg) scaleX(0.94); }
+        }
+        .team-flag {
+            animation: flagWave 2s infinite ease-in-out;
+            transform-origin: right center;
+        }
     </style>
 </head>
-<body class="wrapper-bg flex flex-col justify-between items-center p-4">
+<body class="purple-backdrop flex flex-col justify-between items-center p-3 md:p-5">
 
-    <!-- شريط علوي نظيف -->
-    <header class="w-full max-w-6xl bg-white/80 backdrop-blur-md px-6 py-3 rounded-2xl shadow-md flex justify-between items-center border border-purple-200 z-40">
-        <span class="text-xs font-bold text-purple-900">أ. عبد الله عكور</span>
-        <span class="bg-emerald-600 text-white text-xs font-black px-3 py-1 rounded-full">الصف الثالث الابتدائي</span>
+    <!-- شريط علوي بنفسجي متناسق مع نص أبيض واضح -->
+    <header class="w-full max-w-7xl bg-[#2a174a]/90 backdrop-blur-md px-5 py-3 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40">
+        <span class="text-xs md:text-sm font-black text-white">أ. عبد الله محمد عكور</span>
+        <span class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
     </header>
 
-    <!-- المحتوى الرئيسي (الجانب الأيمن ملعب، المنتصف أخضر مخطط، الجانب الأيسر مرمى) -->
+    <!-- المحتوى الرئيسي: عشب على اليمين + صندوق أخضر مخطط في المنتصف + عشب على اليسار -->
     <main class="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-5 gap-4 items-center my-4 z-20">
-        <!-- صورة الملعب على اليمين -->
-        <div class="hidden lg:block lg:col-span-1 h-[480px] rounded-3xl side-img-right shadow-xl border-4 border-white"></div>
-
-        <!-- الصندوق المركزي في المنتصف (أخضر مخطط بالأبيض) -->
-        <div id="app-center" class="lg:col-span-3 stadium-center-box rounded-3xl p-6 md:p-8 text-center space-y-6 border-4 border-white text-white">
-            <div>
-                <h2 class="text-3xl md:text-4xl font-black flex items-center justify-center gap-3 drop-shadow-md">
-                    نهائي ركلات الترجيح ⚽
-                </h2>
-                <p class="text-amber-300 text-xs md:text-sm font-bold mt-2 drop-shadow">
-                    مسابقة شاملة في مادة لغتي والدراسات الإسلامية (الفقه والتوحيد) - الصف الثالث الابتدائي
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-emerald-600/50">
-                <button onclick="openStudentModal()" class="bg-[#059669] hover:bg-[#047857] text-white font-black p-5 rounded-2xl shadow-xl flex flex-col items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-400">
-                    <span class="text-2xl">🏃‍♂️</span>
-                    <span class="text-sm">دخول اللاعبين<br><span class="text-xs font-normal text-emerald-100">تسديد ومتابعة البطولة</span></span>
-                </button>
-                <button onclick="openPinModal()" class="bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black p-5 rounded-2xl shadow-xl flex flex-col items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-300">
-                    <span class="text-2xl">🔐</span>
-                    <span class="text-sm">لوحة تحكم المعلم<br><span class="text-xs font-bold text-slate-900">أ. عبد الله عكور</span></span>
-                </button>
-            </div>
+        
+        <!-- صورة العشب والملعب على اليمين -->
+        <div class="hidden lg:flex lg:col-span-1 h-[510px] rounded-3xl grass-side-panel flex-col justify-end p-4 text-center">
+            <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">أرضية الملعب</span>
         </div>
 
-        <!-- صورة المرمى على اليسار -->
-        <div class="hidden lg:block lg:col-span-1 h-[480px] rounded-3xl side-img-left shadow-xl border-4 border-white"></div>
+        <!-- الصندوق المركزي الأخضر المخطط بالأبيض -->
+        <div id="app-center" class="lg:col-span-3 stadium-center-box rounded-3xl p-6 md:p-8 text-center space-y-6 border-4 border-white/90 text-white">
+            <!-- يتم حقن الواجهة أو لوحة المعلم أو لوحة الطالب هنا -->
+        </div>
+
+        <!-- صورة العشب والملعب على اليسار -->
+        <div class="hidden lg:flex lg:col-span-1 h-[510px] rounded-3xl grass-side-panel flex-col justify-end p-4 text-center">
+            <span class="bg-black/60 text-white text-xs font-bold py-1.5 px-3 rounded-xl backdrop-blur-sm">منطقة الجزاء</span>
+        </div>
+
     </main>
 
-    <!-- نافذة رقم المعلم السري لوحة التحكم الكاملة -->
-    <div id="pin-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl text-white">
-            <h3 class="text-lg font-black text-amber-400">لوحة تحكم المعلم</h3>
-            <p class="text-xs text-slate-300">أدخل الرقم السري للتحكم بالبطولة:</p>
-            <input type="password" id="pin-box" placeholder="الرقم السري..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-center text-white font-bold text-lg">
+    <!-- نافذة الرقم السري للمعلم -->
+    <div id="pin-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#241342] border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl text-white">
+            <h3 class="text-lg font-black text-amber-400">🔐 لوحة تحكم المعلم</h3>
+            <p class="text-xs text-purple-200">أدخل الرقم السري الخاص بالمعلم (4112):</p>
+            <input type="password" id="pin-box" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-2.5 text-center text-white font-black text-xl tracking-widest">
             <div class="flex gap-2">
-                <button onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl text-xs">دخول</button>
-                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-slate-800 text-slate-300 font-bold py-2 px-3 rounded-xl text-xs">إلغاء</button>
+                <button onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs shadow">دخول</button>
+                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 hover:bg-purple-800 text-white font-bold py-2.5 px-4 rounded-xl text-xs">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة اختيار الطالب للدخول -->
-    <div id="student-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-900 border-2 border-emerald-500 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
-            <h3 class="text-lg font-black text-emerald-400">دخول اللاعبين</h3>
-            <p class="text-xs text-slate-300">اختر اسمك من كشف الفصل:</p>
-            <select id="student-dropdown" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-bold text-xs"></select>
-            <div class="flex gap-2 justify-center">
-                <button onclick="loginStudent(1)" class="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">فريق أزرق</button>
-                <button onclick="loginStudent(2)" class="flex-1 bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs">فريق أحمر</button>
+    <!-- نافذة دخول اللاعبين (يختار الطالب اسمه من الكشف المعتمد) -->
+    <div id="student-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#241342] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
+            <h3 class="text-lg font-black text-emerald-400">🏃‍♂️ دخول اللاعبين</h3>
+            <p class="text-xs text-purple-200">اختر اسمك من كشف طلاب الفصل:</p>
+            <select id="student-dropdown" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-3 py-2.5 text-white font-bold text-sm"></select>
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button id="join-t1-btn" onclick="loginStudent(1)" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl text-xs shadow">انضمام للفريق الأول</button>
+                <button id="join-t2-btn" onclick="loginStudent(2)" class="bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-xl text-xs shadow">انضمام للفريق الثاني</button>
             </div>
-            <button onclick="document.getElementById('student-modal').classList.add('hidden')" class="text-xs text-slate-400 underline">إلغاء</button>
+            <button onclick="document.getElementById('student-modal').classList.add('hidden')" class="text-xs text-purple-300 underline pt-1">رجوع للرئيسية</button>
+        </div>
+    </div>
+
+    <!-- نافذة شرح طريقة سحب الأسئلة من منصة مدرستي -->
+    <div id="madrasty-help-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#241342] border-2 border-sky-400 rounded-3xl max-w-lg w-full p-6 text-right space-y-4 shadow-2xl text-white">
+            <h3 class="text-lg font-black text-sky-300">📘 خطوات سحب الأسئلة من منصة مدرستي:</h3>
+            <ol class="list-decimal list-inside space-y-2 text-xs text-purple-100 leading-relaxed">
+                <li>افتح حسابك في <strong>منصة مدرستي</strong> ثم ادخل على <strong>بنك الأسئلة</strong> واختر (لغتي أو الدراسات الإسلامية).</li>
+                <li>ظلل الأسئلة مع خياراتها بالماوس واضغط <strong>نسخ (Ctrl + C)</strong>، أو اكتبها بصيغة: <br><code class="bg-black/40 text-amber-300 px-2 py-0.5 rounded">السؤال | صح | خطأ | 0</code></li>
+                <li>الصق النص في مربع <strong>"المستورد الذكي لمنصة مدرستي"</strong> في لوحة التحكم واضغط <strong>استيراد ومزامنة</strong>.</li>
+                <li>ستُضاف الأسئلة فوراً وتظهر في قائمة البث المباشر لطلابك!</li>
+            </ol>
+            <button onclick="document.getElementById('madrasty-help-modal').classList.add('hidden')" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs">فهمت، إغلاق</button>
         </div>
     </div>
 
     <script>
+        // إعدادات Firebase للمزامنة الفورية بين المعلم والطلاب
         const firebaseConfig = { databaseURL: "https://penalty-2026-default-rtdb.firebaseio.com/" };
         let db;
         try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
 
-        // كشف طلابك الـ 29 الحقيقيين
+        // كشف طلابك الـ 29 الحقيقيين (بدون كلمة بن)
         const studentsList = [
             "أديب عبدالله العمري", "بتال الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
             "حسين عناد السراني", "سلمان فيصل الحربي", "طلال حريس القحطاني", "عبد السلام مسعد العتيبي",
@@ -122,110 +163,349 @@
             "مصبح محمد المنهالي", "مناف محمد الغامدي", "ناصر فواز الحربي", "يوسف حاتم الرويلي", "يوسف محمد العنزي"
         ];
 
-        let state = { student: '', team: 1, color: '#2563eb' };
+        // لوحة الألوان المتكررة لكل فريق
+        const teamColorPalette = [
+            { name: "أزرق", hex: "#2563eb" },
+            { name: "أحمر", hex: "#dc2626" },
+            { name: "أصفر", hex: "#eab308" },
+            { name: "أخضر", hex: "#16a34a" },
+            { name: "برتقالي", hex: "#ea580c" },
+            { name: "بنفسجي", hex: "#9333ea" },
+            { name: "سماوي", hex: "#0891b2" },
+            { name: "وردي", hex: "#db2777" }
+        ];
 
-        function openPinModal() { document.getElementById('pin-modal').classList.remove('hidden'); }
-        function verifyTeacherPin() {
-            if (document.getElementById('pin-box').value === '4112' || document.getElementById('pin-box').value === '') {
-                document.getElementById('pin-modal').classList.add('hidden');
-                renderTeacherDashboard();
-            } else { alert("❌ الرقم السري خاطئ!"); }
-        }
+        // بنك أسئلة افتراضي شامل (لغتي + الدراسات الإسلامية ثالث ابتدائي ف1)
+        const defaultQuestionsBank = [
+            { subject: "لغتي", type: "tf", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تكتب ولا تنطق.", options: ["صح", "خطأ"], correct: 0 },
+            { subject: "لغتي", type: "mc4", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correct: 1 },
+            { subject: "لغتي", type: "tf", text: "التاء المربوطة (ة) تنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correct: 0 },
+            { subject: "لغتي", type: "mc4", text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correct: 1 },
+            { subject: "الدراسات الإسلامية", type: "tf", text: "يجب في الصلاة الإخلاص لله تعالى وحده لا شريك له.", options: ["صح", "خطأ"], correct: 0 },
+            { subject: "الدراسات الإسلامية", type: "mc4", text: "الركن الثاني من أركان الإسلام هو:", options: ["إيتاء الزكاة", "إقام الصلاة", "صوم رمضان", "حج البيت"], correct: 1 },
+            { subject: "الدراسات الإسلامية", type: "mc4", text: "كم عدد ركعات صلاة الفجر؟", options: ["ركعتان", "ثلاث ركعات", "أربع ركعات", "ركعة واحدة"], correct: 0 },
+            { subject: "الدراسات الإسلامية", type: "tf", text: "الوضوء شرط من شروط صحة الصلاة.", options: ["صح", "خطأ"], correct: 0 }
+        ];
 
-        function openStudentModal() {
-            const sel = document.getElementById('student-dropdown');
-            sel.innerHTML = '';
-            studentsList.forEach(n => { const o = document.createElement('option'); o.value = n; o.innerText = n; sel.appendChild(o); });
-            document.getElementById('student-modal').classList.add('hidden');
-            document.getElementById('student-modal').classList.remove('hidden');
-        }
+        let state = {
+            view: 'home', // home | teacher | student
+            studentName: '',
+            studentTeam: 1,
+            team1: { name: 'الفريق الأزرق', color: '#2563eb', score: 0 },
+            team2: { name: 'الفريق الأحمر', color: '#dc2626', score: 0 },
+            totalRounds: 5,
+            timePerKick: 60,
+            activeShooter: '',
+            activeQuestion: defaultQuestionsBank[0],
+            isShootingOpen: false,
+            questionsBank: JSON.parse(localStorage.getItem('akkour_qbank_v3')) || [...defaultQuestionsBank]
+        };
 
-        function loginStudent(t) {
-            state.student = document.getElementById('student-dropdown').value;
-            state.team = t;
-            state.color = t === 1 ? '#2563eb' : '#dc2626';
-            document.getElementById('student-modal').classList.add('hidden');
-            renderStudentPortal();
-            listenDatabase();
-        }
-
-        // لوحة تحكم المعلم الشاملة (تضمين جميع البيانات: الوقت، تصفير الجولات، مزامنة مدرستي، بنك الأسئلة)
-        function renderTeacherDashboard() {
+        // ==========================================
+        // 1. الواجهة الرئيسية المعتمدة
+        // ==========================================
+        function renderHome() {
+            state.view = 'home';
             const box = document.getElementById('app-center');
             box.innerHTML = `
-                <div class="space-y-4 text-right">
-                    <div class="flex justify-between items-center border-b border-emerald-600 pb-2">
-                        <h2 class="text-xl font-black text-amber-300">🎛️ لوحة تحكم المعلم (أ. عبد الله عكور)</h2>
-                        <button onclick="location.reload()" class="bg-rose-600 text-white px-3 py-1 rounded-xl text-xs font-bold">خروج</button>
+                <div class="py-4 space-y-6">
+                    <div>
+                        <h2 class="text-3xl md:text-5xl font-black text-white flex items-center justify-center gap-3 drop-shadow-lg">
+                            نهائي ركلات الترجيح ⚽
+                        </h2>
+                        <p class="text-amber-300 text-xs md:text-base font-bold mt-3 drop-shadow">
+                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية (الفقه والتوحيد) - الصف الثالث الابتدائي
+                        </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-5 border-t border-white/25">
+                        <!-- زر دخول اللاعبين -->
+                        <button onclick="openStudentModal()" class="bg-[#059669] hover:bg-[#047857] text-white font-black p-6 rounded-2xl shadow-xl flex flex-col items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300">
+                            <span class="text-3xl">🏃‍♂️</span>
+                            <span class="text-base">دخول اللاعبين<br><span class="text-xs font-normal text-emerald-100">تسديد ومتابعة البطولة</span></span>
+                        </button>
+
+                        <!-- زر لوحة تحكم المعلم -->
+                        <button onclick="openPinModal()" class="bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black p-6 rounded-2xl shadow-xl flex flex-col items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200">
+                            <span class="text-3xl">🔐</span>
+                            <span class="text-base">لوحة تحكم المعلم<br><span class="text-xs font-bold text-slate-900">أ. عبد الله عكور</span></span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        // 2. لوحة تحكم المعلم الشاملة (الألوان، الوقت، التصفير، مزامنة مدرستي)
+        // ==========================================
+        function openPinModal() {
+            document.getElementById('pin-box').value = '';
+            document.getElementById('pin-modal').classList.remove('hidden');
+        }
+
+        function verifyTeacherPin() {
+            const pin = document.getElementById('pin-box').value;
+            if (pin === '4112' || pin === '') {
+                document.getElementById('pin-modal').classList.add('hidden');
+                renderTeacherDashboard();
+            } else {
+                alert("❌ الرقم السري غير صحيح!");
+            }
+        }
+
+        function renderTeacherDashboard() {
+            state.view = 'teacher';
+            const box = document.getElementById('app-center');
+
+            const buildColorButtons = (teamNum) => {
+                return teamColorPalette.map(c => `
+                    <button onclick="setTeamColor(${teamNum}, '${c.hex}', 'الفريق ال${c.name}')" 
+                        title="${c.name}"
+                        class="w-6 h-6 rounded-full border-2 border-white shadow hover:scale-110 transition" 
+                        style="background-color: ${c.hex}"></button>
+                `).join('');
+            };
+
+            box.innerHTML = `
+                <div class="space-y-4 text-right text-white">
+                    <div class="flex justify-between items-center border-b border-white/25 pb-2.5">
+                        <h2 class="text-lg md:text-xl font-black text-amber-300">🎛️ لوحة تحكم المعلم - أ. عبد الله عكور</h2>
+                        <button onclick="renderHome()" class="bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-black shadow">خروج للرئيسية</button>
+                    </div>
+
+                    <!-- اختيار ألوان الفرق (متكررة كاملة لكل فريق) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-black/35 p-3.5 rounded-2xl border border-white/20">
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-amber-200">لون واسم الفريق الأول:</span>
+                                <span id="t1-flag-preview" class="w-8 h-5 rounded border border-white team-flag" style="background:${state.team1.color}"></span>
+                            </div>
+                            <input type="text" id="t1-name-input" value="${state.team1.name}" onchange="updateTeamNames()" class="w-full bg-slate-900 border border-white/30 rounded-xl px-3 py-1.5 text-xs font-bold text-white">
+                            <div class="flex flex-wrap gap-1.5 items-center pt-1">
+                                ${buildColorButtons(1)}
+                                <input type="color" value="${state.team1.color}" onchange="setTeamColor(1, this.value, document.getElementById('t1-name-input').value)" class="w-6 h-6 rounded cursor-pointer bg-transparent">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-black text-amber-200">لون واسم الفريق الثاني:</span>
+                                <span id="t2-flag-preview" class="w-8 h-5 rounded border border-white team-flag" style="background:${state.team2.color}"></span>
+                            </div>
+                            <input type="text" id="t2-name-input" value="${state.team2.name}" onchange="updateTeamNames()" class="w-full bg-slate-900 border border-white/30 rounded-xl px-3 py-1.5 text-xs font-bold text-white">
+                            <div class="flex flex-wrap gap-1.5 items-center pt-1">
+                                ${buildColorButtons(2)}
+                                <input type="color" value="${state.team2.color}" onchange="setTeamColor(2, this.value, document.getElementById('t2-name-input').value)" class="w-6 h-6 rounded cursor-pointer bg-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- التحكم بالوقت، الطالب المسدد، وتصفير البطولة -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-black/35 p-3.5 rounded-2xl border border-white/20">
                         <div>
-                            <label class="text-xs font-bold text-amber-200">زمن التسديد لكل جولة:</label>
-                            <select id="cfg-time" class="w-full bg-slate-900 border border-emerald-500 rounded-xl p-2 text-xs text-white">
+                            <label class="text-xs font-bold text-emerald-200 block mb-1">⏱️ وقت التسديد لكل طالب:</label>
+                            <select id="cfg-time" class="w-full bg-slate-900 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                <option value="20">20 ثانية</option>
                                 <option value="30">30 ثانية</option>
                                 <option value="60" selected>دقيقة واحدة (60 ثانية)</option>
                                 <option value="120">دقيقتان (120 ثانية)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs font-bold text-amber-200">تحديد الطالب المجيب:</label>
-                            <select id="cfg-active-student" class="w-full bg-slate-900 border border-emerald-500 rounded-xl p-2 text-xs text-white">
+                            <label class="text-xs font-bold text-emerald-200 block mb-1">🏃‍♂️ الطالب الذي يسدد الآن:</label>
+                            <select id="cfg-shooter" class="w-full bg-slate-900 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
                                 ${studentsList.map(s => `<option value="${s}">${s}</option>`).join('')}
                             </select>
                         </div>
-                        <div class="flex items-end">
-                            <button onclick="resetTournament()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 rounded-xl text-xs shadow">🔄 تصفير الجولات والنتائج</button>
+                        <div class="flex flex-col justify-end gap-1.5">
+                            <button onclick="resetFullTournament()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2 rounded-xl text-xs shadow">🔄 تصفير الجولات وبدء نهائي جديد</button>
                         </div>
                     </div>
 
-                    <!-- مزامنة وبنك أسئلة منصة مدرستي -->
-                    <div class="bg-slate-900/90 p-4 rounded-2xl border border-emerald-500/50 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📥 مزامنة أسئلة منصة مدرستي (لغتي وإسلامية ف1):</h3>
-                        <textarea id="madrasty-import" rows="2" placeholder="الصق الأسئلة هنا للمزامنة الفورية..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-xs text-white"></textarea>
+                    <!-- مزامنة واستيراد الأسئلة من منصة مدرستي -->
+                    <div class="bg-black/40 p-3.5 rounded-2xl border border-white/20 space-y-2.5">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xs font-black text-sky-300">📘 بنك الأسئلة والمزامنة مع منصة مدرستي (لغتي وإسلامية):</h3>
+                            <button onclick="document.getElementById('madrasty-help-modal').classList.remove('hidden')" class="text-[11px] bg-sky-600/80 hover:bg-sky-500 text-white px-2.5 py-0.5 rounded-lg font-bold">❓ كيف أسحب من مدرستي؟</button>
+                        </div>
+
                         <div class="flex gap-2">
-                            <input type="text" id="active-question-text" placeholder="اكتب السؤال الحالي المراد تعميمه..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
-                            <button onclick="broadcastQuestion()" class="bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow">吹 إطلاق الصافرة وتعميم السؤال</button>
+                            <textarea id="madrasty-paste-box" rows="2" placeholder="الصق الأسئلة المنسوخة من منصة مدرستي هنا (أو اكتب: السؤال | صح | خطأ | 0)..." class="flex-1 bg-slate-950 border border-white/30 rounded-xl p-2 text-xs text-white"></textarea>
+                            <button onclick="importFromMadrasty()" class="bg-sky-600 hover:bg-sky-500 text-white font-black px-3 rounded-xl text-xs shadow">📥 استيراد ومزامنة</button>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                            <select id="bank-question-select" class="flex-1 bg-slate-950 border border-amber-400/50 rounded-xl p-2 text-xs font-bold text-white">
+                                ${state.questionsBank.map((q, idx) => `<option value="${idx}">[${q.subject}] ${q.text}</option>`).join('')}
+                            </select>
+                            <button onclick="launchTurnToStudent()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow shrink-0">
+                                吹 صافرة الانطلاق وتفعيل التسديد للطالب ⚽
+                            </button>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // لوحة الطالب المكونة من قائمتين (تسديداتي + متابعة البطولة)
+        function setTeamColor(teamNum, hex, defaultName) {
+            state[`team${teamNum}`].color = hex;
+            state[`team${teamNum}`].name = defaultName;
+            document.getElementById(`t${teamNum}-name-input`).value = defaultName;
+            document.getElementById(`t${teamNum}-flag-preview`).style.background = hex;
+            syncStateToCloud();
+        }
+
+        function updateTeamNames() {
+            state.team1.name = document.getElementById('t1-name-input').value.trim() || 'الفريق الأول';
+            state.team2.name = document.getElementById('t2-name-input').value.trim() || 'الفريق الثاني';
+            syncStateToCloud();
+        }
+
+        function importFromMadrasty() {
+            const raw = document.getElementById('madrasty-paste-box').value.trim();
+            if (!raw) return alert("يرجى لصق الأسئلة المنسوخة من منصة مدرستي أولاً!");
+
+            const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+            let addedCount = 0;
+
+            lines.forEach(line => {
+                if (line.includes('|')) {
+                    const parts = line.split('|').map(p => p.trim());
+                    if (parts.length >= 4) {
+                        const isFour = parts.length >= 6;
+                        state.questionsBank.unshift({
+                            subject: "منصة مدرستي",
+                            type: isFour ? "mc4" : "tf",
+                            text: parts[0],
+                            options: isFour ? [parts[1], parts[2], parts[3], parts[4]] : [parts[1], parts[2]],
+                            correct: parseInt(parts[isFour ? 5 : 3]) || 0
+                        });
+                        addedCount++;
+                    }
+                } else if (line.endsWith('؟') || line.endsWith('.')) {
+                    // تحويل تلقائي لأسئلة صح/خطأ المنسوخة مباشرة من منصة مدرستي
+                    state.questionsBank.unshift({
+                        subject: "منصة مدرستي",
+                        type: "tf",
+                        text: line,
+                        options: ["صح", "خطأ"],
+                        correct: 0
+                    });
+                    addedCount++;
+                }
+            });
+
+            localStorage.setItem('akkour_qbank_v3', JSON.stringify(state.questionsBank));
+            document.getElementById('madrasty-paste-box').value = '';
+            renderTeacherDashboard();
+            alert(`✅ تمت مزامنة واستيراد (${addedCount}) سؤالاً من منصة مدرستي إلى بنك الأسئلة!`);
+        }
+
+        function launchTurnToStudent() {
+            const qIdx = parseInt(document.getElementById('bank-question-select').value) || 0;
+            const shooter = document.getElementById('cfg-shooter').value;
+            const timeSec = parseInt(document.getElementById('cfg-time').value) || 60;
+
+            state.activeQuestion = state.questionsBank[qIdx];
+            state.activeShooter = shooter;
+            state.timePerKick = timeSec;
+            state.isShootingOpen = true;
+
+            playWhistleSound();
+            syncStateToCloud();
+            alert(`吹 انطلقت صافرة البداية!\nالطالب المحدد للتسديد الآن: (${shooter})\nالسؤال معروض على شاشته فوراً.`);
+        }
+
+        function resetFullTournament() {
+            state.team1.score = 0;
+            state.team2.score = 0;
+            state.activeShooter = '';
+            state.isShootingOpen = false;
+            syncStateToCloud();
+            alert("🔄 تم تصفير النتيجة والجولات بنجاح لبدء نهائي جديد!");
+        }
+
+        function syncStateToCloud() {
+            if (!db) return;
+            db.ref('akkour_penalty_live').set({
+                team1: state.team1,
+                team2: state.team2,
+                activeShooter: state.activeShooter,
+                activeQuestion: state.activeQuestion,
+                isShootingOpen: state.isShootingOpen,
+                timePerKick: state.timePerKick
+            });
+        }
+
+        // ==========================================
+        // 3. بوابة الطالب (قائمتان: تسديداتي + متابعة البطولة)
+        // ==========================================
+        function openStudentModal() {
+            const sel = document.getElementById('student-dropdown');
+            sel.innerHTML = '';
+            studentsList.forEach(n => {
+                const o = document.createElement('option');
+                o.value = n; o.innerText = n;
+                sel.appendChild(o);
+            });
+            document.getElementById('join-t1-btn').innerText = state.team1.name;
+            document.getElementById('join-t1-btn').style.backgroundColor = state.team1.color;
+            document.getElementById('join-t2-btn').innerText = state.team2.name;
+            document.getElementById('join-t2-btn').style.backgroundColor = state.team2.color;
+            document.getElementById('student-modal').classList.remove('hidden');
+        }
+
+        function loginStudent(teamNum) {
+            state.studentName = document.getElementById('student-dropdown').value;
+            state.studentTeam = teamNum;
+            document.getElementById('student-modal').classList.add('hidden');
+            renderStudentPortal();
+            listenToCloudForStudent();
+        }
+
         function renderStudentPortal() {
+            state.view = 'student';
             const box = document.getElementById('app-center');
+            const myTeamObj = state.studentTeam === 1 ? state.team1 : state.team2;
+
             box.innerHTML = `
-                <div class="space-y-4" style="border-color: ${state.color}">
-                    <div class="flex justify-between items-center bg-slate-900/80 px-4 py-2 rounded-xl border border-white/20">
-                        <span class="text-xs font-bold text-white">الطالب: ${state.student} (${state.team === 1 ? 'الفريق الأزرق' : 'الفريق الأحمر'})</span>
-                        <div class="flex gap-2">
-                            <button onclick="switchTab('shoot')" class="bg-amber-500 text-slate-950 px-3 py-1 rounded-lg text-xs font-black">⚽ القائمة 1: تسديداتي</button>
-                            <button onclick="switchTab('stats')" class="bg-slate-800 text-slate-300 px-3 py-1 rounded-lg text-xs font-bold">📊 القائمة 2: متابعة البطولة</button>
+                <div class="space-y-4 text-white">
+                    <div class="flex flex-wrap justify-between items-center gap-2 bg-black/45 px-4 py-2.5 rounded-2xl border border-white/25">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-4 rounded-full border border-white" style="background:${myTeamObj.color}"></span>
+                            <span class="text-xs font-black">البطل: ${state.studentName} (${myTeamObj.name})</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button id="btn-tab-shoot" onclick="switchStudentTab('shoot')" class="bg-amber-500 text-slate-950 px-3 py-1 rounded-xl text-xs font-black shadow">⚽ القائمة ١: تسديداتي</button>
+                            <button id="btn-tab-watch" onclick="switchStudentTab('watch')" class="bg-slate-800 text-white px-3 py-1 rounded-xl text-xs font-bold">📊 القائمة ٢: متابعة البطولة</button>
                         </div>
                     </div>
 
-                    <!-- القائمة 1: تسديداتي -->
-                    <div id="tab-shoot" class="space-y-4">
-                        <div class="bg-white text-slate-900 p-4 rounded-2xl shadow">
-                            <p id="portal-q-text" class="text-sm md:text-base font-black">انتظر إطلاق المعلم للصافرة وتحديد دورك...</p>
+                    <!-- القائمة الأولى: تسديداتي (تفتح فقط عندما يختاره المعلم) -->
+                    <div id="student-tab-shoot" class="space-y-4">
+                        <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-lg">
+                            <span id="st-turn-badge" class="inline-block text-[11px] font-black px-3 py-0.5 rounded-full bg-amber-100 text-amber-800 mb-1">في انتظار تحديد المعلم...</span>
+                            <p id="st-question-text" class="text-base md:text-lg font-black">انتظر حتى يحدد المعلم اسمك ويطلق الصافرة...</p>
                         </div>
-                        <div class="relative w-full max-w-md mx-auto h-44 goal-frame rounded-t-lg p-2 flex justify-between items-center">
-                            <div id="portal-corners" class="grid grid-cols-2 gap-2 w-full"></div>
+
+                        <div class="relative w-full max-w-md mx-auto h-48 goal-frame rounded-t-lg p-3 flex flex-col justify-between">
+                            <div id="st-top-corners" class="grid grid-cols-2 gap-3 w-full"></div>
+                            <div id="st-bot-corners" class="grid grid-cols-2 gap-3 w-full mt-auto"></div>
                         </div>
                     </div>
 
-                    <!-- القائمة 2: متابعة البطولة (فريقك والخصم لحظياً) -->
-                    <div id="tab-stats" class="hidden space-y-4 bg-slate-900/90 p-6 rounded-2xl border border-white/20 text-right">
-                        <h3 class="text-sm font-black text-amber-400 text-center">📊 متابعة تسديدات فريقي وفريق الخصم لحظياً</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-950 p-3 rounded-xl border border-blue-600 text-center">
-                                <h4 class="text-blue-300 font-bold text-xs">الفريق الأزرق</h4>
-                                <p class="text-lg font-black text-white mt-1"><span id="p-t1-score">0</span> أهداف</p>
+                    <!-- القائمة الثانية: متابعة البطولة (يرى فريقه وفريق الخصم بدون أي تحكم) -->
+                    <div id="student-tab-watch" class="hidden space-y-4 bg-black/45 p-6 rounded-2xl border border-white/20">
+                        <h3 class="text-base font-black text-amber-300">📊 لوحة متابعة البطولة المباشرة</h3>
+                        <p class="text-xs text-emerald-200">المسدد الحالي في الملعب: <strong id="watch-current-shooter" class="text-white">في الانتظار</strong></p>
+                        <div class="grid grid-cols-2 gap-4 pt-2">
+                            <div class="p-4 rounded-2xl border-2 border-white/40 shadow-lg" style="background:${state.team1.color}44">
+                                <h4 id="watch-t1-name" class="font-black text-sm text-white">${state.team1.name}</h4>
+                                <p class="text-3xl font-black text-white mt-2"><span id="watch-t1-score">0</span> <span class="text-xs">أهداف</span></p>
                             </div>
-                            <div class="bg-red-950 p-3 rounded-xl border border-red-600 text-center">
-                                <h4 class="text-red-300 font-bold text-xs">الفريق الأحمر</h4>
-                                <p class="text-lg font-black text-white mt-1"><span id="p-t2-score">0</span> أهداف</p>
+                            <div class="p-4 rounded-2xl border-2 border-white/40 shadow-lg" style="background:${state.team2.color}44">
+                                <h4 id="watch-t2-name" class="font-black text-sm text-white">${state.team2.name}</h4>
+                                <p class="text-3xl font-black text-white mt-2"><span id="watch-t2-score">0</span> <span class="text-xs">أهداف</span></p>
                             </div>
                         </div>
                     </div>
@@ -233,31 +513,82 @@
             `;
         }
 
-        function switchTab(t) {
-            document.getElementById('tab-shoot').classList.toggle('hidden', t !== 'shoot');
-            document.getElementById('tab-stats').classList.toggle('hidden', t !== 'stats');
+        function switchStudentTab(tab) {
+            document.getElementById('student-tab-shoot').classList.toggle('hidden', tab !== 'shoot');
+            document.getElementById('student-tab-watch').classList.toggle('hidden', tab !== 'watch');
+            document.getElementById('btn-tab-shoot').className = tab === 'shoot' ? "bg-amber-500 text-slate-950 px-3 py-1 rounded-xl text-xs font-black shadow" : "bg-slate-800 text-white px-3 py-1 rounded-xl text-xs font-bold";
+            document.getElementById('btn-tab-watch').className = tab === 'watch' ? "bg-amber-500 text-slate-950 px-3 py-1 rounded-xl text-xs font-black shadow" : "bg-slate-800 text-white px-3 py-1 rounded-xl text-xs font-bold";
         }
 
-        function broadcastQuestion() {
-            const text = document.getElementById('active-question-text').value.trim();
-            if (!text) return alert("اكتب السؤال أولاً!");
-            playWhistle();
-            if (db) {
-                db.ref('tournament_final_v2').set({
-                    active_q: { text, options: ["صح", "خطأ"], correct: 0 },
-                    t1_score: 0,
-                    t2_score: 0
-                });
+        function listenToCloudForStudent() {
+            if (!db) return;
+            db.ref('akkour_penalty_live').on('value', (snap) => {
+                const data = snap.val();
+                if (!data) return;
+
+                if (data.team1) state.team1 = data.team1;
+                if (data.team2) state.team2 = data.team2;
+
+                // تحديث شاشة المتابعة
+                const wShooter = document.getElementById('watch-current-shooter');
+                if (wShooter) wShooter.innerText = data.activeShooter || 'في انتظار اختيار المعلم';
+                const w1Name = document.getElementById('watch-t1-name');
+                if (w1Name) w1Name.innerText = state.team1.name;
+                const w2Name = document.getElementById('watch-t2-name');
+                if (w2Name) w2Name.innerText = state.team2.name;
+                const w1Score = document.getElementById('watch-t1-score');
+                if (w1Score) w1Score.innerText = state.team1.score || 0;
+                const w2Score = document.getElementById('watch-t2-score');
+                if (w2Score) w2Score.innerText = state.team2.score || 0;
+
+                // التحقق هل هذا الطالب هو المحدد للتسديد الآن؟
+                const isMyTurn = (data.isShootingOpen && data.activeShooter === state.studentName);
+                const badge = document.getElementById('st-turn-badge');
+                const qText = document.getElementById('st-question-text');
+                const topBox = document.getElementById('st-top-corners');
+                const botBox = document.getElementById('st-bot-corners');
+
+                if (!badge || !qText || !topBox) return;
+
+                if (isMyTurn && data.activeQuestion) {
+                    badge.innerText = "⚽ دورك الآن! سدد الكرة بالإجابة الصحيحة";
+                    badge.className = "inline-block text-xs font-black px-3 py-0.5 rounded-full bg-emerald-600 text-white mb-1 animate-bounce";
+                    qText.innerText = data.activeQuestion.text;
+
+                    topBox.innerHTML = '';
+                    botBox.innerHTML = '';
+                    data.activeQuestion.options.forEach((opt, idx) => {
+                        const btn = document.createElement('button');
+                        btn.className = "corner-btn rounded-xl py-3 text-sm font-black";
+                        btn.innerText = opt;
+                        btn.onclick = () => submitStudentShot(idx === data.activeQuestion.correct);
+                        if (idx < 2) topBox.appendChild(btn);
+                        else botBox.appendChild(btn);
+                    });
+                } else {
+                    badge.innerText = data.activeShooter ? `الدور الآن على زميلك: ${data.activeShooter}` : "في انتظار صافرة المعلم...";
+                    badge.className = "inline-block text-[11px] font-bold px-3 py-0.5 rounded-full bg-slate-200 text-slate-700 mb-1";
+                    qText.innerText = "يمكنك متابعة تسديدات فريقك والخصم من القائمة الثانية بالأعلى";
+                    topBox.innerHTML = '';
+                    botBox.innerHTML = '';
+                }
+            });
+        }
+
+        function submitStudentShot(isCorrect) {
+            playWhistleSound();
+            if (isCorrect) {
+                if (state.studentTeam === 1) state.team1.score = (state.team1.score || 0) + 1;
+                else state.team2.score = (state.team2.score || 0) + 1;
+                alert("🎉 جووووووول! إجابة صحيحة وتسديدة رائعة في المرمى!");
+            } else {
+                alert("❌ ارتطمت الكرة بالقائم! حظاً أوفر في الركلة القادمة.");
             }
-            alert("✅ تمت الصافرة وتعميم السؤال على شاشات جميع الطلاب فوراً.");
+            state.isShootingOpen = false;
+            syncStateToCloud();
         }
 
-        function resetTournament() {
-            if (db) db.ref('tournament_final_v2').set({ active_q: { text: "تم تصفير البطولة. في انتظار السؤال...", options: ["صح", "خطأ"], correct: 0 }, t1_score: 0, t2_score: 0 });
-            alert("🔄 تم تصفير الجولات والنتائج بنجاح!");
-        }
-
-        function playWhistle() {
+        function playWhistleSound() {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
             osc.frequency.setValueAtTime(2800, audioCtx.currentTime);
@@ -268,31 +599,8 @@
             osc.start(); osc.stop(audioCtx.currentTime + 0.35);
         }
 
-        function listenDatabase() {
-            if (!db) return;
-            db.ref('tournament_final_v2').on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.active_q) {
-                    const qTxt = document.getElementById('portal-q-text');
-                    if (qTxt) qTxt.innerText = data.active_q.text;
-                    const box = document.getElementById('portal-corners');
-                    if (box) {
-                        box.innerHTML = '';
-                        data.active_q.options.forEach(opt => {
-                            const b = document.createElement('button');
-                            b.className = "corner-btn rounded-xl py-2 text-xs font-black";
-                            b.innerText = opt;
-                            b.onclick = () => { playWhistle(); alert("⚽ تم تسجيل تسديدتك بنجاح!"); };
-                            box.appendChild(b);
-                        });
-                    }
-                    const s1 = document.getElementById('p-t1-score');
-                    const s2 = document.getElementById('p-t2-score');
-                    if (s1) s1.innerText = data.t1_score || 0;
-                    if (s2) s2.innerText = data.t2_score || 0;
-                }
-            });
-        }
+        // تشغيل الواجهة الرئيسية عند الفتح
+        renderHome();
     </script>
 </body>
 </html>
