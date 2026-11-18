@@ -13,7 +13,6 @@
         .purple-backdrop { background: radial-gradient(circle at top, #3b1d6e 0%, #1e1035 55%, #130924 100%); min-height: 100vh; }
         .quiz-main-card { background-color: #11221c; border: 3px solid #23473a; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75); }
         .goal-frame { border-top: 10px solid #f8fafc; border-left: 10px solid #f8fafc; border-right: 10px solid #f8fafc; box-shadow: 0 -4px 15px rgba(0,0,0,0.4), inset 0 8px 20px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.55); background-image: linear-gradient(0deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px); background-size: 16px 16px; position: relative; }
-        .goal-frame-mini { border-top: 6px solid #f8fafc; border-left: 6px solid #f8fafc; border-right: 6px solid #f8fafc; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.55); background-image: linear-gradient(0deg, rgba(255,255,255,0.28) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.28) 1px, transparent 1px); background-size: 12px 12px; position: relative; }
         .corner-btn { background: rgba(255, 255, 255, 0.96); color: #064e3b; border: 3px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.45); transition: all 0.2s; cursor: pointer; }
         .corner-btn:hover { transform: scale(1.04); background: #ffffff; border-color: #facc15; }
         @keyframes fireworks { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
@@ -33,11 +32,11 @@
         <div id="right-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
     </main>
 
-    <!-- نافذة تأكيد وإرسال دور الطالب (موافقة وإرسال للطالب) -->
+    <!-- نافذة تأكيد وإرسال دور الطالب -->
     <div id="approval-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
             <h3 class="text-lg font-black text-emerald-300">⚽ اعتماد دور التسديد للبطل</h3>
-            <p id="modal-approval-text" class="text-sm font-bold text-amber-200">هل تريد حفظ موافقة وإرسال دور التسديد للبطل المحدد لفتحه لديه فوراً؟</p>
+            <p id="modal-approval-text" class="text-sm font-bold text-amber-200">هل تريد موافقة وإرسال دور التسديد للبطل المحدد لفتحه لديه فوراً؟</p>
             <div class="flex gap-2 pt-2">
                 <button type="button" onclick="confirmAndBroadcastShooter()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">✅ موافقة وإرسال للطالب</button>
                 <button type="button" onclick="document.getElementById('approval-modal').classList.add('hidden')" class="bg-rose-900 text-white font-bold py-3 px-4 rounded-xl text-xs">إلغاء</button>
@@ -56,20 +55,21 @@
         </div>
     </div>
 
-    <!-- نافذة بنك الأسئلة الشامل (>75 سؤالاً) -->
+    <!-- نافذة بنك الأسئلة الشامل (أكثر من 75 سؤالاً) مع تحديد الكل وإلغاء الكل -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (>75 سؤالاً)</h3>
+            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (أكثر من 75 سؤالاً)</h3>
             <div class="flex justify-between items-center bg-black/40 px-4 py-2 rounded-xl border border-white/10 text-xs">
-                <span class="text-purple-200">اختر الأسئلة التي تريدها للجولة:</span>
+                <span class="text-purple-200">اختر الأسئلة للجولة أو حدد الكل:</span>
                 <div class="flex items-center gap-2">
                     <span id="selected-q-count" class="bg-emerald-600 text-white font-black px-2.5 py-0.5 rounded-full">المحدد: 0</span>
-                    <button type="button" onclick="state.selectedQuestionIndices = []; openQuestionsModal();" class="bg-rose-700 text-white font-bold px-2 py-0.5 rounded text-[11px]">إلغاء التحديد</button>
+                    <button type="button" onclick="selectAllQuestions()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-2 py-0.5 rounded text-[11px]">تحديد الكل</button>
+                    <button type="button" onclick="clearSelectedQuestions()" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-2.5 py-0.5 rounded text-[11px]">إلغاء الكل</button>
                 </div>
             </div>
             <div id="questions-list-container" class="space-y-2 text-right max-h-96 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
             <div class="flex justify-center gap-3 pt-1">
-                <button type="button" onclick="document.getElementById('questions-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-emerald-600 text-white font-black py-2.5 px-6 rounded-xl text-xs">✅ حفظ وإغلاق</button>
+                <button type="button" onclick="document.getElementById('questions-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl text-xs">✅ حفظ وإغلاق</button>
             </div>
         </div>
     </div>
@@ -121,6 +121,7 @@
             { name: "وردي", hex: "#db2777" }
         ];
 
+        // بنك الأسئلة الشامل (أكثر من 75 سؤالاً حقيقياً في لغتي والدراسات الإسلامية)
         const masterQuestionBank = [
             { subject: "لغتي", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -142,13 +143,74 @@
             { subject: "لغتي", text: "مرادف كلمة (سَرِيع) هو:", options: ["بَطِيء", "مُسْرِع", "كَسْلَان", "نَائِم"], correctIndex: 1 },
             { subject: "لغتي", text: "حرف العطف المناسب (دخل محمد ثُمَّ عليٌّ): يفيد:", options: ["الترتيب والتراخي", "السرعة", "التشكيك", "التخيير"], correctIndex: 0 },
             { subject: "لغتي", text: "حرف العطف المناسب (جاء أحمد فَـخالدٌ): يفيد:", options: ["السرعة والتعقيب", "التراخي", "الشك", "النفي"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (كتاب) تنون بالفتح هكذا:", options: ["كتاباً", "كتابٌ", "كتابٍ", "الكتاب"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (مدرسة) تنون بالضم هكذا:", options: ["مدرسةً", "مدرسةٌ", "مدرسةٍ", "المدرسة"], correctIndex: 1 },
+            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سَأَلَ) كتبت على:", options: ["الألف", "الواو", "الياء", "السطر"], correctIndex: 0 },
+            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سُؤال) كتبت على:", options: ["الواو", "الألف", "الياء", "السطر"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (أَقْلَام) هو:", options: ["قَلَم", "قَلَمان", "أَقْلَامَة", "مِقْلَمَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (بَيْت) هو:", options: ["بُيُوت", "أبوات", "بيات", "بياوت"], correctIndex: 0 },
+            { subject: "لغتي", text: "المذكر من كلمة (طبيبة) هو:", options: ["طبيب", "معلم", "مهندس", "مدير"], correctIndex: 0 },
+            { subject: "لغتي", text: "المؤنث من كلمة (معلم) هو:", options: ["معلمة", "طالبة", "مديرة", "طبيبة"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العاقل (.... زارنا اليوم؟):", options: ["مَنْ", "مَا", "هَل", "أين"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن المكان (.... الكتاب؟):", options: ["أَيْنَ", "مَنْ", "مَتَى", "لِمَاذَا"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن الزمن (.... تبدأ الحصة؟):", options: ["مَتَى", "مَنْ", "كَيْف", "كم"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العدد (.... تلميذاً بالفصل؟):", options: ["كَمْ", "مَنْ", "أين", "كيف"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب النهي يبدأ بـ:", options: ["لا الناهية", "ما النافية", "نعم", "ليت"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب التمني يبدأ بـ:", options: ["لَيْتَ", "لعل", "أن", "قد"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدأة بتاء مفتوحة هي:", options: ["بَنَات", "مدرسة", "فاطمة", "سفينة"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المختومة بهاء هجائية (ه) هي:", options: ["مُنَبَّه", "وجهة", "زهرة", "قاعة"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (ذَكَاء) هو:", options: ["غَبَاء", "سُرْعَة", "فَهْم", "نجاح"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (قَوِيّ) هو:", options: ["ضَعِيف", "بَطِيء", "صَغِير", "فقير"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (شَجَاعَة) هو:", options: ["جُرْأَة", "خَوْف", "حُزْن", "كسل"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (مسلم) هو:", options: ["مُسْلِمُون", "مسلمات", "مسلمان", "إسلام"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (مساجد) هو:", options: ["مَسْجِد", "ساجد", "سجادة", "مسجدان"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة التي تحوي مداً بالواو:", options: ["عُصُور", "كتاب", "توت", "شمس"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (سافرتُ .... المطار):", options: ["إِلَى", "في", "على", "عن"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (الكتاب .... الطاولة):", options: ["عَلَى", "إلى", "في", "من"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف جر مناسب (الماء .... الإناء):", options: ["فِي", "على", "إلى", "الباء"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع الشدة في كلمة (رُمَّان):", options: ["حرف مضعف مشدد", "مد بالالف", "تنوين", "همزة"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة قطع هي:", options: ["أحمد", "المدرسة", "الكتاب", "البيت"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة وصل هي:", options: ["انطلق", "أحمد", "إبراهيم", "أقبل"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المنونة بالكسر:", options: ["قلمٍ", "قلمٌ", "قلمأ", "القلم"], correctIndex: 0 },
+            { subject: "لغتي", text: "الفعل الماضي من (يشرب):", options: ["شَرِبَ", "يشرب", "اشرب", "شارب"], correctIndex: 0 },
+
             { subject: "إسلامية", text: "مراتب الدين الإسلامي ثلاث: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 }
+            { subject: "إسلامية", text: "أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الأول من أركان الإيمان هو الإيمان بالله.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نبينا؟ نبينا محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "ما ديننا؟ ديننا الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من ربك؟ ربي الله الذي رباني وربى العالمين.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "القبلة التي نتوجه إليها في صلاتنا هي الكعبة بمكة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الصلاة تجب على كل مسلم عاقل بالغ.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "مفتاح الجنة هو الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من آداب قضاء الحاجة الاستنجاء بالماء أو الاستجمار.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "دخول الخلاء يكون بتقديم الرجل اليسرى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الخروج من الخلاء يكون بتقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الدعاء عند دخول الخلاء: (اللهم إني أعوذ بك من الخبث والخبائث).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الذكر عند الخروج من الخلاء: (غفرانك).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الوضوء يكون قبل الصلاة وهو طهارة بالماء.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نواقض الوضوء: الخارج من السبيلين.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من نواقض الوضوء: النوم العميق الزال للعقل.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة الفجر ركعتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة الظهر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة العصر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة المغرب ثلاث ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد ركعات صلاة العشاء أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الزكاة هي الركن الثالث من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "صيام رمضان هو الركن الرابع من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "حج بيت الله الحرام لمن استطاع إليه سبيلاً هو الركن الخامس.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نبينا محمد صلى الله عليه وسلم ولد في مكة المكرمة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عام الفيل هو العام الذي ولد فيه النبي صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم أم النبي صلى الله عليه وسلم هو آمنة بنت وهب.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم أب النبي صلى الله عليه وسلم هو عبد الله.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "كفل النبي صلى الله عليه وسلم بعد أمه جده عبد المطلب ثم عمه أبو طالب.", options: ["صح", "خطأ"], correctIndex: 0 }
         ];
 
         let state = {
@@ -159,8 +221,10 @@
                 { id: 2, name: 'الفريق الأصفر', color: '#eab308', score: 0 }
             ],
             shotTimeMinutes: 1,
+            totalKicksPerTeam: 5, // عدد ركلات الترجيح المضافة من 2 إلى 15
             selectedSubjectFilter: 'all',
             selectedQuestionIndices: [],
+            usedQuestionIndices: [],
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -182,12 +246,14 @@
             if (d.studentResults) state.studentResults = d.studentResults;
             if (d.selectedSubjectFilter) state.selectedSubjectFilter = d.selectedSubjectFilter;
             if (Array.isArray(d.selectedQuestionIndices)) state.selectedQuestionIndices = d.selectedQuestionIndices;
+            if (Array.isArray(d.usedQuestionIndices)) state.usedQuestionIndices = d.usedQuestionIndices;
             if (d.activeShooter !== undefined) state.activeShooter = d.activeShooter;
             if (d.activeTeamId) state.activeTeamId = d.activeTeamId;
             if (d.activeQuestion) state.activeQuestion = d.activeQuestion;
             if (d.isShootingOpen !== undefined) state.isShootingOpen = d.isShootingOpen;
             if (d.lastShotResult) state.lastShotResult = d.lastShotResult;
             if (d.shotTimeMinutes) state.shotTimeMinutes = d.shotTimeMinutes;
+            if (d.totalKicksPerTeam) state.totalKicksPerTeam = d.totalKicksPerTeam;
             if (d.isTournamentFinished !== undefined) state.isTournamentFinished = d.isTournamentFinished;
             try { localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(d)); } catch(e) {}
         }
@@ -215,13 +281,13 @@
                             نهائي ركلات الترجيح ⚽
                         </h2>
                         <p class="text-amber-300 text-xs md:text-base font-bold mt-3">
-                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية - الصف الثالث الابتدائي
+                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية (أكثر من 75 سؤالاً) - الصف الثالث الابتدائي
                         </p>
                     </div>
 
                     <div class="space-y-3 pt-4 max-w-md mx-auto">
                         <button type="button" onclick="enterStudentArenaDirectly()" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
-                            <span>⚽ دخول اللاعبين ومتابعة الركلات</span>
+                            <span>⚽ دخول ساحة الطلاب (مباشر تلقائي)</span>
                         </button>
 
                         <button type="button" onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
@@ -273,6 +339,11 @@
             state.view = 'teacher';
             renderWingsForTeacher();
 
+            let kicksOptionsHtml = '';
+            for (let k = 2; k <= 15; k++) {
+                kicksOptionsHtml += `<option value="${k}" ${state.totalKicksPerTeam == k ? 'selected' : ''}>${k} ركلات لكل فريق</option>`;
+            }
+
             const box = document.getElementById('app-center');
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
@@ -298,9 +369,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="teams-inputs-grid"></div>
                     </div>
 
-                    <!-- بنك الأسئلة الشامل (>75 سؤالاً) وتحديد المادة ووقت التسديد -->
+                    <!-- بنك الأسئلة الشامل (>75 سؤالاً) وتحديد المادة ووقت التسديد وعدد ركلات الترجيح -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة والوقت:</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 إعدادات المسابقة والأسئلة وعدد الركلات:</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">حدد المادة المطلوبة:</label>
@@ -317,9 +388,15 @@
                                     <option value="2" ${state.shotTimeMinutes==2?'selected':''}>دقيقتان</option>
                                 </select>
                             </div>
-                            <div class="flex items-end">
-                                <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow">📥 استيراد وعرض بنك الأسئلة</button>
+                            <div>
+                                <label class="text-[11px] text-purple-200 block mb-1">عدد ركلات الترجيح:</label>
+                                <select id="cfg-kicks" onchange="state.totalKicksPerTeam = parseInt(this.value) || 5; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                    ${kicksOptionsHtml}
+                                </select>
                             </div>
+                        </div>
+                        <div class="pt-1">
+                            <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow">📥 استيراد وعرض بنك الأسئلة (>75 سؤالاً)</button>
                         </div>
                     </div>
 
@@ -453,6 +530,18 @@
             updateSelectedQuestionsCounter();
         }
 
+        function selectAllQuestions() {
+            state.selectedQuestionIndices = masterQuestionBank.map((_, idx) => idx);
+            openQuestionsModal();
+            updateSelectedQuestionsCounter();
+        }
+
+        function clearSelectedQuestions() {
+            state.selectedQuestionIndices = [];
+            openQuestionsModal();
+            updateSelectedQuestionsCounter();
+        }
+
         function updateSelectedQuestionsCounter() {
             const el = document.getElementById('selected-q-count');
             if (el) el.innerText = `المحدد: ${state.selectedQuestionIndices.length}`;
@@ -475,6 +564,8 @@
             if (timeEl) state.shotTimeMinutes = parseInt(timeEl.value) || 1;
             const subjEl = document.getElementById('cfg-subject');
             if (subjEl) state.selectedSubjectFilter = subjEl.value;
+            const kicksEl = document.getElementById('cfg-kicks');
+            if (kicksEl) state.totalKicksPerTeam = parseInt(kicksEl.value) || 5;
             syncCloud();
             renderTeacherDashboard();
             alert("🚀 تم حفظ وتعميم إعدادات المنصة بالكامل لجميع الطلاب سحابياً بنجاح!");
@@ -538,13 +629,25 @@
             state.isTournamentFinished = false;
             state.lastShotResult = `⏳ بانتظار تسديدة البطل (${pendingShooter})...`;
 
-            let pool = masterQuestionBank;
+            // سحب سؤال غير مكرر في الجولة
+            let availablePool = masterQuestionBank;
             if (state.selectedQuestionIndices.length > 0) {
-                pool = state.selectedQuestionIndices.map(i => masterQuestionBank[i]).filter(Boolean);
+                availablePool = state.selectedQuestionIndices.map(i => masterQuestionBank[i]).filter(Boolean);
             } else if (state.selectedSubjectFilter !== 'all') {
-                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
+                availablePool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
             }
-            state.activeQuestion = pool[Math.floor(Math.random() * pool.length)];
+
+            let un_used = availablePool.filter((_, idx) => !state.usedQuestionIndices.includes(idx));
+            if (un_used.length === 0) {
+                state.usedQuestionIndices = []; // إعادة التدوير إذا انتهت الأسئلة
+                un_used = availablePool;
+            }
+
+            const randIdx = Math.floor(Math.random() * un_used.length);
+            const originalMasterIdx = masterQuestionBank.indexOf(un_used[randIdx]);
+            if (originalMasterIdx !== -1) state.usedQuestionIndices.push(originalMasterIdx);
+
+            state.activeQuestion = un_used[randIdx];
 
             playWhistle();
             syncCloud();
@@ -566,6 +669,7 @@
             state.isShootingOpen = false;
             state.activeShooter = '';
             state.studentResults = {};
+            state.usedQuestionIndices = [];
             state.isTournamentFinished = false;
             state.lastShotResult = '🔄 تم تصفير النتائج وبدء دورة جديدة';
             syncCloud();
@@ -585,7 +689,9 @@
                 studentResults: state.studentResults,
                 selectedSubjectFilter: state.selectedSubjectFilter,
                 selectedQuestionIndices: state.selectedQuestionIndices,
+                usedQuestionIndices: state.usedQuestionIndices,
                 shotTimeMinutes: state.shotTimeMinutes,
+                totalKicksPerTeam: state.totalKicksPerTeam,
                 isTournamentFinished: state.isTournamentFinished,
                 updatedAt: Date.now()
             };
@@ -624,13 +730,15 @@
                     <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
                     <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
-                        <span>⚽ ساحة الطلاب المباشرة (متصل بالسحابة)</span>
-                        <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
+                        <span>⚽ ساحة الطلاب المباشرة (استعداد للتسديد التلقائي)</span>
+                        <div class="flex items-center gap-2">
+                            <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
                         <button type="button" id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow transition">
-                            ⚽ أيقونة التسديد (في انتظار إشعار المعلم)
+                            ⚽ أيقونة التسديد (في انتظار نداء المعلم)
                         </button>
                         <button type="button" id="btn-student-watch" onclick="switchStudentTab('watch')" class="bg-amber-500 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow transition">
                             📊 متابعة ركلات الترجيح المباشرة
@@ -652,7 +760,7 @@
                     <div id="pane-student-watch" class="space-y-4 bg-black/45 p-5 rounded-2xl border border-white/20">
                         <h3 id="tournament-status-title" class="text-base md:text-lg font-black text-amber-300">📊 البث المباشر لركلات الترجيح</h3>
                         <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
-                            ${state.lastShotResult || 'في انتظار إشارة المعلم أ. عبد الله عكور...'}
+                            ${state.lastShotResult || 'في انتظار نداء المعلم أ. عبد الله عكور...'}
                         </div>
                     </div>
 
@@ -682,10 +790,11 @@
             const banner = document.getElementById('watch-status-banner');
             if (!shootBtn || !banner) return;
 
+            // التحقق هل المعلم فتح دور التسديد لطالب معين
             if (state.isShootingOpen && state.activeShooter) {
                 shootBtn.disabled = false;
                 shootBtn.className = "bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow-lg animate-bounce cursor-pointer";
-                shootBtn.innerText = `⚽ جاء دورك! سدد الآن يا ${state.activeShooter}`;
+                shootBtn.innerText = `⚽ الدور الآن للبطل: ${state.activeShooter} (سدد الآن!)`;
 
                 banner.innerText = `🎯 الدور الحالي للبطل: ${state.activeShooter} — هيا سدد الآن!`;
 
@@ -708,11 +817,13 @@
                         corners.appendChild(btn);
                     });
                 }
+                // فتح شاشة التسديد تلقائياً على أجهزة الطلاب ليروا اسم البطل والسؤال مباشرة
+                switchStudentTab('shoot');
             } else {
                 shootBtn.disabled = true;
                 shootBtn.className = "bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow";
-                shootBtn.innerText = "⚽ أيقونة التسديد (في انتظار إشعار المعلم)";
-                banner.innerText = state.lastShotResult || "🔒 البطولة مغلقة حالياً في انتظار المعلم...";
+                shootBtn.innerText = "⚽ أيقونة التسديد (في انتظار نداء المعلم)";
+                banner.innerText = state.lastShotResult || "🔒 البطولة مغلقة حالياً في انتظار نداء المعلم...";
             }
         }
 
@@ -733,9 +844,10 @@
             const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة</p>' : teamStudents.map(s => {
                 const results = state.studentResults[s] || [];
                 const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
+                const isCurrentActive = (state.activeShooter === s);
                 return `
-                    <div class="p-1.5 rounded border text-xs font-bold flex items-center justify-between bg-slate-950 border-white/20 text-slate-300">
-                        <span class="truncate">${s}</span>
+                    <div class="p-1.5 rounded border text-xs font-bold flex items-center justify-between ${isCurrentActive ? 'bg-amber-600/60 border-amber-300 text-white font-black animate-pulse' : 'bg-slate-950 border-white/20 text-slate-300'}">
+                        <span class="truncate">${s} ${isCurrentActive ? ' (يسدد الآن ⚽)' : ''}</span>
                         <span class="text-[10px]">${resIcons}</span>
                     </div>
                 `;
@@ -745,7 +857,7 @@
                 <div class="space-y-3">
                     <div class="p-3 rounded-2xl border-2 text-center shadow-lg" style="background:${teamObj.color}33; border-color:${teamObj.color}">
                         <h4 class="font-black text-sm text-white">${teamObj.name}</h4>
-                        <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0}</p>
+                        <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0} <span class="text-xs text-purple-200">/ ${state.totalKicksPerTeam}</span></p>
                     </div>
                     <div class="space-y-1">
                         <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">النتائج والدوائر:</span>
@@ -764,7 +876,7 @@
                 document.getElementById('pane-student-shoot').classList.add('hidden');
                 document.getElementById('pane-student-watch').classList.remove('hidden');
                 if (tab === 'shoot') {
-                    alert("⏳ أيقونة التسديد مغلقة حالياً. انتظر حتى يختارك المعلم من لوحة التحكم!");
+                    alert("⏳ أيقونة التسديد مغلقة حالياً. انتظر ريثما يناديك المعلم أ. عبد الله عكور من لوحة التحكم!");
                 }
             }
         }
@@ -792,6 +904,14 @@
             state.isShootingOpen = false;
             state.activeShooter = '';
             state.lastShotResult = resultMsg;
+
+            // التحقق من انتهاء عدد ركلات الترجيح المحددة
+            let totalShotsCount = 0;
+            Object.values(state.studentResults).forEach(arr => { totalShotsCount += arr.length; });
+            if (totalShotsCount >= (state.totalKicksPerTeam * 2)) {
+                state.isTournamentFinished = true;
+            }
+
             syncCloud();
             refreshStudentArenaUI();
             switchStudentTab('watch');
