@@ -159,11 +159,11 @@
         </div>
     </div>
 
-    <!-- نافذة الرقم السري للمعلم (مخفي •••• ورقم سري 1234) -->
+    <!-- نافذة الرقم السري للمعلم (بدون إظهار الرقم نهائياً) -->
     <div id="pin-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#241342] border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl text-white">
             <h3 class="text-lg font-black text-amber-400">🔐 لوحة تحكم المعلم</h3>
-            <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم (1234):</p>
+            <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم:</p>
             <input type="password" id="pin-box" autocomplete="current-password" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-3 text-center text-white font-black text-xl tracking-widest">
             <div class="flex gap-2">
                 <button type="button" onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-sm cursor-pointer">دخول</button>
@@ -178,7 +178,7 @@
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const penaltyRef = db.ref('penalty_championship_live_v2026_complete_fixed');
+        const penaltyRef = db.ref('penalty_championship_live_v2026_complete_fixed_v2');
 
         const studentsList = [
             "أديب عبدالله العمري", "بتال عبد الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
@@ -503,6 +503,16 @@
             return matched || typedName.trim();
         }
 
+        function getStudentAssignedTeam(studentName) {
+            for (let s in state.studentAssignments) {
+                if (isSameStudent(s, studentName)) {
+                    const tId = state.studentAssignments[s];
+                    return state.teams.find(t => t.id === tId) || null;
+                }
+            }
+            return null;
+        }
+
         function renderHome() {
             state.view = 'home';
             document.getElementById('left-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">ملعب الترجيح ⚽</div>`;
@@ -536,7 +546,6 @@
             `;
         }
 
-        // نافذة دخول الطالب: حقل فارغ تماماً للكتابة الحرة المرنة بدون أي اسم جاهز مسبقاً
         function openStudentLoginModal() {
             const old = document.getElementById('student-login-modal');
             if (old) old.remove();
@@ -583,7 +592,6 @@
             }, 100);
         }
 
-        // الرقم السري للمعلم أصبح 1234 ومخفي تماماً (type="password")
         function verifyTeacherPin() {
             const val = document.getElementById('pin-box').value;
             if (val === '1234' || val === '4112' || val === '') {
@@ -594,10 +602,15 @@
             }
         }
 
-        // الشاشة المصغرة المشتركة: تعرض الملعب والمرمى الشبكي والسؤال وخيارات الإجابة لحظة بلحظة للمعلم ولجميع الطلاب
         function buildMiniStudentPreviewHTML() {
             if (state.isTournamentFinished) {
-                return `<div class="bg-amber-500/20 border border-amber-400 rounded-xl p-3 text-center"><p class="text-sm font-black text-amber-300">🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز 🎉</p></div>`;
+                let winnerText = "تعادل الفريقان!";
+                if (state.teams[0].score > state.teams[1].score) {
+                    winnerText = `🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز: <span class="text-amber-300 font-black underline">${state.teams[0].name}</span> 🎉`;
+                } else if (state.teams[1].score > state.teams[0].score) {
+                    winnerText = `🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز: <span class="text-amber-300 font-black underline">${state.teams[1].name}</span> 🎉`;
+                }
+                return `<div class="bg-amber-500/20 border-2 border-amber-400 rounded-xl p-3 text-center"><p class="text-sm md:text-base font-black text-amber-200 leading-relaxed">${winnerText}</p></div>`;
             }
             if (state.isShootingOpen && state.activeShooter) {
                 const activeTeamObj = state.teams.find(t => t.id === state.activeTeamId) || state.teams[0];
@@ -974,7 +987,7 @@
             renderTeacherDashboard();
         }
 
-        // شاشة الطالب
+        // شاشة الطالب (يتغير لون خلفية شاشته ليطابق لون فريقه تماماً)
         function enterStudentArenaDirectly() {
             if (!myStudentName) {
                 openStudentLoginModal();
@@ -983,18 +996,26 @@
             state.view = 'student';
             renderWingsForStudent();
 
+            const myTeam = getStudentAssignedTeam(myStudentName);
+            const teamColorBg = myTeam ? myTeam.color : '#1e1035';
+            const teamNameBadge = myTeam ? myTeam.name : 'غير مسند لفريق بعد';
+
             const box = document.getElementById('app-center');
+            // ضبط لون الشاشة ليعكس لون الفريق بوضوح
+            box.style.backgroundColor = myTeam ? myTeam.color + '26' : '#11221c';
+            box.style.borderColor = myTeam ? myTeam.color : '#23473a';
+
             box.innerHTML = `
                 <div class="space-y-3 text-white relative">
                     <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
-                    <!-- شريط اسم الطالب المسجل -->
-                    <div class="bg-emerald-950/90 border-2 border-emerald-400 py-2 px-3 rounded-xl text-xs md:text-sm font-black flex justify-between items-center shadow">
-                        <span>⚽ البطل: <span class="text-amber-300 underline">${myStudentName}</span></span>
-                        <button type="button" onclick="openStudentLoginModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/20">تعديل الاسم</button>
+                    <!-- شريط اسم الطالب وفريقه ولونه -->
+                    <div class="border-2 py-2 px-3 rounded-xl text-xs md:text-sm font-black flex justify-between items-center shadow" style="background-color: ${myTeam ? myTeam.color : '#064e3b'}; border-color: #fff;">
+                        <span>⚽ البطل: <span class="text-amber-200 underline">${myStudentName}</span> | الفريق: <span class="text-amber-300 font-black">${teamNameBadge}</span></span>
+                        <button type="button" onclick="openStudentLoginModal()" class="bg-slate-900/80 hover:bg-slate-900 text-xs px-2.5 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/30">تعديل</button>
                     </div>
 
-                    <!-- الأيقونتان: الأولى للتسديد والثانية بالأصفر للمتابعة المباشرة -->
+                    <!-- الأيقونتان: الأولى للتسديد والثانية للمتابعة -->
                     <div class="grid grid-cols-1 gap-3">
                         <button type="button" id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="w-full bg-slate-800 text-slate-400 py-4 px-4 rounded-2xl text-sm md:text-base font-black cursor-not-allowed shadow-lg border-2 border-white/15">
                             ⏳ أيقونة التسديد (مقفلة حتى يختارك المعلم)
@@ -1004,7 +1025,7 @@
                         </button>
                     </div>
 
-                    <!-- شاشة التسديد الموحدة -->
+                    <!-- شاشة التسديد -->
                     <div id="pane-student-shoot" class="hidden space-y-3 pt-1">
                         <div class="bg-white text-slate-950 p-4 rounded-2xl shadow-xl border-4 border-blue-500">
                             <p id="student-q-text" class="text-base md:text-xl font-black leading-relaxed">---</p>
@@ -1014,7 +1035,7 @@
                         </div>
                     </div>
 
-                    <!-- شاشة المتابعة الصفراء: تعرض الملعب والمرمى والسؤال وخيارات الإجابة للمتابعين -->
+                    <!-- شاشة المتابعة الصفراء -->
                     <div id="pane-student-watch" class="space-y-3 bg-black/55 p-4 rounded-2xl border-2 border-amber-400/50">
                         <h3 id="tournament-status-title" class="text-sm md:text-base font-black text-amber-300">📺 البث المباشر (الشاشة المصغرة)</h3>
                         <div id="student-shared-mini-screen">
@@ -1150,7 +1171,6 @@
             refreshStudentArenaUI();
         }
 
-        // تشغيل المزامنة الفورية
         initFirebaseRealtimeSync();
         renderHome();
     </script>
