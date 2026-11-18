@@ -40,7 +40,7 @@
             <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على مربعات أسماء الطلاب لتتلوّن بلون الفريق:</p>
             <div class="flex justify-center gap-2 flex-wrap" id="modal-teams-tabs"></div>
             <div id="modal-students-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-right max-h-80 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
-            <button onclick="document.getElementById('manual-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع ✓</button>
+            <button type="button" onclick="document.getElementById('manual-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع ✓</button>
         </div>
     </div>
 
@@ -51,27 +51,27 @@
             <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم (4112):</p>
             <input type="password" id="pin-box" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-2.5 text-center text-white font-black text-xl tracking-widest">
             <div class="flex gap-2">
-                <button onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 text-white font-black py-2.5 rounded-xl text-xs">دخول</button>
-                <button onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs">إلغاء</button>
+                <button type="button" onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 text-white font-black py-2.5 rounded-xl text-xs">دخول</button>
+                <button type="button" onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 text-white font-bold py-2.5 px-4 rounded-xl text-xs">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة بنك الأسئلة الشامل مع مربعات الاختيار -->
+    <!-- نافذة بنك الأسئلة مع مربعات الاختيار -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (أكثر من 75 سؤالاً - لغتي وإسلامية)</h3>
             <div class="flex justify-between items-center bg-black/40 px-4 py-2 rounded-xl border border-white/10 text-xs">
-                <span class="text-purple-200">ضع علامة (✓) في المربع يسار الأسئلة التي تريدها للجولة:</span>
+                <span class="text-purple-200">ضع علامة (✓) في المربع يسار الأسئلة التي تريدها للجولة[cite: 9]:</span>
                 <div class="flex items-center gap-2">
                     <span id="selected-q-count" class="bg-emerald-600 text-white font-black px-2.5 py-0.5 rounded-full">المحدد: 0</span>
-                    <button onclick="clearSelectedQuestions()" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-2.5 py-0.5 rounded-lg text-[11px]">إلغاء التحديد</button>
+                    <button type="button" onclick="clearSelectedQuestions()" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-2.5 py-0.5 rounded-lg text-[11px]">إلغاء التحديد</button>
                 </div>
             </div>
             <div id="questions-list-container" class="space-y-2 text-right max-h-96 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
             <div class="flex justify-center gap-3 pt-1">
-                <button onclick="saveSelectedQuestionsAndClose()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ واختيار للجولة</button>
-                <button onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs">إغلاق</button>
+                <button type="button" onclick="saveSelectedQuestionsAndClose()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ واختيار للجولة</button>
+                <button type="button" onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs">إغلاق</button>
             </div>
         </div>
     </div>
@@ -389,7 +389,7 @@
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
                         <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة:</h3>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">حدد المادة المطلوبة:</label>
                                 <select id="cfg-subject" onchange="state.selectedSubjectFilter = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
@@ -411,28 +411,17 @@
                                     📥 استيراد وعرض بنك الأسئلة
                                 </button>
                             </div>
-                            <div class="flex items-end">
-                                <button onclick="prepareAndLaunchFullRound()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2 rounded-xl text-xs shadow-lg">
-                                    🚀 تجهيز الجولة وبدء التسديد
-                                </button>
-                            </div>
+                        </div>
+
+                        <div class="pt-1">
+                            <button onclick="prepareAndLaunchFullRound()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl text-sm shadow-lg">
+                                🚀 بدء اللعبة وتعميم الجولة فوراً لجميع الطلاب (اضغط هنا للبدء)
+                            </button>
                         </div>
                     </div>
 
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                            <button onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">
-                                💾 1. حفظ إعدادات وترتيب الفرق
-                            </button>
-                            <button onclick="saveQuestionSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">
-                                💾 2. حفظ واستيراد بنك الأسئلة
-                            </button>
-                            <button onclick="saveAndBroadcastAllSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border-2 border-emerald-300 animate-pulse">
-                                🚀 3. حفظ وتعميم جميع إعدادات اللعبة للجميع
-                            </button>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
+                        <div class="flex flex-wrap gap-2">
                             <button onclick="nextAutoShooterTurn()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-black py-3 rounded-xl text-xs shadow">
                                 ⚽ الانتقال التلقائي للبطل التالي في الدور
                             </button>
@@ -554,7 +543,7 @@
                         <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0}</p>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">قائمة اللاعبين والنتائج (دوائر/إكسات):</span>
+                        <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">قائمة اللاعبين والنتائج:</span>
                         <div class="space-y-1 max-h-[520px] overflow-y-auto pr-1">
                             ${studentsListHtml}
                         </div>
@@ -642,14 +631,10 @@
         function saveSelectedQuestionsAndClose() {
             document.getElementById('questions-modal').classList.add('hidden');
             syncCloud();
-            renderTeacherDashboard();
-            const count = state.selectedQuestionIndices.length;
-            alert(count > 0
-                ? `✅ تم حفظ واختيار (${count}) سؤالاً للجولة وتعميمها!`
-                : `✅ لم يتم تحديد أسئلة مخصصة، سيتم السحب من كامل بنك الأسئلة.`);
         }
 
         function selectShooterDirectly(studentName, teamId) {
+            updateTeamNamesLive();
             state.activeShooter = studentName;
             state.activeTeamId = teamId;
             state.isShootingOpen = true;
@@ -662,29 +647,7 @@
             playWhistle();
             syncCloud();
             renderTeacherDashboard();
-            alert(`✅ تم اختيار البطل: ${studentName} لفتح التسديد حصرياً له الآن!`);
-        }
-
-        function saveTeamSettings() {
-            updateTeamNamesLive();
-            syncCloud();
-            alert("💾 تم حفظ إعدادات وترتيب الفرق وتعميمها للطلاب بنجاح!");
-        }
-
-        function saveQuestionSettings() {
-            syncCloud();
-            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل وتعميمه بنجاح!");
-        }
-
-        function saveAndBroadcastAllSettings() {
-            updateTeamNamesLive();
-            const timeEl = document.getElementById('cfg-time');
-            if (timeEl) state.shotTimeMinutes = parseInt(timeEl.value) || 1;
-            const subjEl = document.getElementById('cfg-subject');
-            if (subjEl) state.selectedSubjectFilter = subjEl.value;
-            syncCloud();
-            renderTeacherDashboard();
-            alert("🚀 تمت عملية حفظ وتعميم جميع إعدادات اللعبة للجميع بنجاح فوراً!");
+            alert(`✅ تم اختيار البطل: ${studentName} وفتح التسديد له فوراً عند الطلاب!`);
         }
 
         function prepareAndLaunchFullRound() {
@@ -730,12 +693,12 @@
             playWhistle();
             syncCloud();
             renderTeacherDashboard();
-            alert(`🚀 تم تجهيز الجولة وبدء التسديد تلقائياً (${state.roundQueue.length} ركلة)!`);
+            alert(`🚀 تم بدء اللعبة وتعميم الجولة بنجاح لجميع الطلاب!`);
         }
 
         function nextAutoShooterTurn() {
             if (!state.roundQueue || state.roundQueue.length === 0) {
-                return alert("⚠️ يرجى تجهيز الجولة أولاً!");
+                return prepareAndLaunchFullRound();
             }
             state.currentQueueIndex++;
             if (state.currentQueueIndex >= state.roundQueue.length) {
@@ -744,7 +707,7 @@
                 state.activeShooter = '';
                 syncCloud();
                 renderTeacherDashboard();
-                alert("🏆 انتهت الجولة بالكامل! تم تفعيل شاشة الاحتفال والألعاب النارية الكبرى.");
+                alert("🏆 انتهت الجولة بالكامل!");
                 return;
             }
             const nextTurn = state.roundQueue[state.currentQueueIndex];
@@ -757,7 +720,7 @@
             playWhistle();
             syncCloud();
             renderTeacherDashboard();
-            alert(`✅ تم الانتقال للبطل التالي: ${nextTurn.shooter}`);
+            alert(`✅ تم الانتقال تلقائياً للبطل: ${nextTurn.shooter}`);
         }
 
         function closeTournamentLock() {
@@ -766,7 +729,7 @@
             state.lastShotResult = '🔒 اللعبة مغلقة من المعلم';
             syncCloud();
             renderTeacherDashboard();
-            alert("🔒 تم إغلاق اللعبة عند جميع الطلاب.");
+            alert("🔒 تم إغلاق اللعبة عند الجميع.");
         }
 
         function resetAllScores() {
@@ -775,10 +738,10 @@
             state.activeShooter = '';
             state.studentResults = {};
             state.isTournamentFinished = false;
-            state.lastShotResult = '🔄 تم تصفير النتائج';
+            state.lastShotResult = '🔄 تم تصفير النتائج وبدء دورة جديدة';
             syncCloud();
             renderTeacherDashboard();
-            alert("🔄 تم تصفير النتائج بنجاح!");
+            alert("🔄 تم تصفير النتائج بنجاح وتعميمها للجميع!");
         }
 
         function syncCloud() {
@@ -968,11 +931,16 @@
 
         function switchStudentTab(tab) {
             const shootBtn = document.getElementById('btn-student-shoot');
-            if (shootBtn && shootBtn.disabled && tab === 'shoot') {
-                return alert("⏳ أيقونة التسديد مغلقة حالياً. انتظر حتى ينادي المعلم باسمك ويختارك من لوحة التحكم!");
+            if (shootBtn && !shootBtn.disabled && tab === 'shoot') {
+                document.getElementById('pane-student-shoot').classList.remove('hidden');
+                document.getElementById('pane-student-watch').classList.add('hidden');
+            } else {
+                document.getElementById('pane-student-shoot').classList.add('hidden');
+                document.getElementById('pane-student-watch').classList.remove('hidden');
+                if (tab === 'shoot') {
+                    alert("⏳ أيقونة التسديد مغلقة حالياً. انتظر حتى ينادي المعلم باسمك ويختارك من لوحة التحكم!");
+                }
             }
-            document.getElementById('pane-student-shoot').classList.toggle('hidden', tab !== 'shoot');
-            document.getElementById('pane-student-watch').classList.toggle('hidden', tab !== 'watch');
         }
 
         function listenCloudForStudent() {
