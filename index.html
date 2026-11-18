@@ -519,6 +519,8 @@
             document.getElementById('right-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">منطقة التتويج 🏆</div>`;
 
             const box = document.getElementById('app-center');
+            box.style.backgroundColor = '#11221c';
+            box.style.borderColor = '#23473a';
             box.innerHTML = `
                 <div class="space-y-4 py-3">
                     <div class="inline-block bg-[#1f3d32] border border-emerald-500/40 text-emerald-300 px-4 py-1 rounded-full text-xs font-bold">
@@ -650,6 +652,8 @@
             }
 
             const box = document.getElementById('app-center');
+            box.style.backgroundColor = '#11221c';
+            box.style.borderColor = '#23473a';
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
                     <div class="flex justify-between items-center border-b border-white/20 pb-2">
@@ -997,11 +1001,9 @@
             renderWingsForStudent();
 
             const myTeam = getStudentAssignedTeam(myStudentName);
-            const teamColorBg = myTeam ? myTeam.color : '#1e1035';
             const teamNameBadge = myTeam ? myTeam.name : 'غير مسند لفريق بعد';
 
             const box = document.getElementById('app-center');
-            // ضبط لون الشاشة ليعكس لون الفريق بوضوح
             box.style.backgroundColor = myTeam ? myTeam.color + '26' : '#11221c';
             box.style.borderColor = myTeam ? myTeam.color : '#23473a';
 
