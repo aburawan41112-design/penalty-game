@@ -39,8 +39,37 @@
             <h3 class="text-lg font-black text-emerald-300">⚽ اعتماد دور التسديد للبطل</h3>
             <p id="modal-approval-text" class="text-sm font-bold text-amber-200">هل تريد حفظ وإرسال الدور للبطل المحدد لفتح شاشة التسديد لديه فوراً؟</p>
             <div class="flex gap-2 pt-2">
-                <button type="button" onclick="confirmAndBroadcastShooter()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ وموافقة وتعميم للطلاب</button>
+                <button type="button" onclick="confirmAndBroadcastShooter()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ موافقة وإرسال للطالب</button>
                 <button type="button" onclick="document.getElementById('approval-modal').classList.add('hidden')" class="bg-rose-900 text-white font-bold py-3 px-4 rounded-xl text-xs">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التوزيع اليدوي بالمربعات (الخانة الزرقاء) -->
+    <div id="manual-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-black text-sky-300">🟦 التوزيع اليدوي للطلاب بالمربعات (29 طالباً)</h3>
+            <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على أسماء الطلاب لإسنادهم إليه:</p>
+            <div class="flex justify-center gap-2 flex-wrap" id="modal-teams-tabs"></div>
+            <div id="modal-students-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-right max-h-80 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
+            <button type="button" onclick="document.getElementById('manual-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع ✓</button>
+        </div>
+    </div>
+
+    <!-- نافذة بنك الأسئلة الشامل (أكثر من 75 سؤالاً) -->
+    <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (>75 سؤالاً)</h3>
+            <div class="flex justify-between items-center bg-black/40 px-4 py-2 rounded-xl border border-white/10 text-xs">
+                <span class="text-purple-200">اختر الأسئلة التي تريدها للجولة:</span>
+                <div class="flex items-center gap-2">
+                    <span id="selected-q-count" class="bg-emerald-600 text-white font-black px-2.5 py-0.5 rounded-full">المحدد: 0</span>
+                    <button type="button" onclick="state.selectedQuestionIndices = []; openQuestionsModal();" class="bg-rose-700 text-white font-bold px-2 py-0.5 rounded text-[11px]">إلغاء التحديد</button>
+                </div>
+            </div>
+            <div id="questions-list-container" class="space-y-2 text-right max-h-96 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
+            <div class="flex justify-center gap-3 pt-1">
+                <button type="button" onclick="document.getElementById('questions-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-emerald-600 text-white font-black py-2.5 px-6 rounded-xl text-xs">✅ حفظ وإغلاق</button>
             </div>
         </div>
     </div>
@@ -131,6 +160,7 @@
             ],
             shotTimeMinutes: 1,
             selectedSubjectFilter: 'all',
+            selectedQuestionIndices: [],
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -143,12 +173,15 @@
 
         let pendingShooter = '';
         let pendingTeamId = 1;
+        let activeTabForManualModal = 1;
 
         function applyCloudSnapshot(d) {
             if (!d) return;
             if (d.teams) state.teams = d.teams;
             if (d.studentAssignments) state.studentAssignments = d.studentAssignments;
             if (d.studentResults) state.studentResults = d.studentResults;
+            if (d.selectedSubjectFilter) state.selectedSubjectFilter = d.selectedSubjectFilter;
+            if (Array.isArray(d.selectedQuestionIndices)) state.selectedQuestionIndices = d.selectedQuestionIndices;
             if (d.activeShooter !== undefined) state.activeShooter = d.activeShooter;
             if (d.activeTeamId) state.activeTeamId = d.activeTeamId;
             if (d.activeQuestion) state.activeQuestion = d.activeQuestion;
@@ -233,7 +266,7 @@
                     </div>
                 `;
             }
-            return `<div class="bg-slate-900/90 border border-white/15 rounded-xl p-3 text-center"><p class="text-xs font-bold text-emerald-300">${state.lastShotResult || 'البث المباشر جاهز...'}</p></div>`;
+            return `<div class="bg-slate-900/90 border border-white/15 rounded-xl p-3 text-center"><p class="text-xs font-bold text-emerald-300">${state.lastShotResult || 'البطولة مغلقة مؤقتاً من المعلم'}</p></div>`;
         }
 
         function renderTeacherDashboard() {
@@ -256,19 +289,40 @@
                         <div id="mini-student-preview-box">${buildMiniStudentPreviewHTML()}</div>
                     </div>
 
+                    <!-- إعدادات الفرق والتوزيع اليدوي بالمربعات -->
                     <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-3">
                         <div class="flex justify-between items-center flex-wrap gap-2">
-                            <h3 class="text-xs font-black text-emerald-300">⚙️ التوزيع اليدوي للطلاب على الفريقين (29 طالباً):</h3>
-                            <button type="button" onclick="autoDistributeEvenly()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">🎲 توزيع تلقائي متساوٍ</button>
+                            <h3 class="text-xs font-black text-emerald-300">⚙️ إعدادات الفرق وتعديل أسمائها وألوانها:</h3>
+                            <div class="flex gap-2">
+                                <button type="button" onclick="openManualModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">🟦 التوزيع اليدوي بالمربعات (29 طالباً)</button>
+                                <button type="button" onclick="autoDistributeEvenly()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">🎲 توزيع تلقائي</button>
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="teams-inputs-grid"></div>
                     </div>
 
+                    <!-- بنك الأسئلة الشامل (>75 سؤالاً) وتحديد المادة -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">🚀 بدء وإدارة ركلات الترجيح:</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <button type="button" onclick="resetAllScores()" class="bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl text-xs shadow">🔄 تصفير النتائج وبدء دورة جديدة</button>
-                            <button type="button" onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black py-3 rounded-xl text-xs shadow">🔒 إغلاق اللعبة مؤقتاً عند الطلاب</button>
+                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[11px] text-purple-200 block mb-1">حدد المادة المطلوبة:</label>
+                                <select id="cfg-subject" onchange="state.selectedSubjectFilter = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                    <option value="all" ${state.selectedSubjectFilter=='all'?'selected':''}>جميع المواد (لغتي + إسلامية)</option>
+                                    <option value="لغتي" ${state.selectedSubjectFilter=='لغتي'?'selected':''}>مادة لغتي فقط</option>
+                                    <option value="إسلامية" ${state.selectedSubjectFilter=='إسلامية'?'selected':''}>الدراسات الإسلامية فقط</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow">📥 استيراد وعرض بنك الأسئلة</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="resetAllScores()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl text-xs shadow">🔄 تصفير النتائج وبدء دورة جديدة</button>
+                            <button type="button" onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-4 py-3 rounded-xl text-xs shadow">🔒 إغلاق اللعبة مؤقتاً عند الطلاب</button>
                         </div>
                     </div>
                 </div>
@@ -282,16 +336,27 @@
             grid.innerHTML = '';
             for (let i = 0; i < state.teamsCount; i++) {
                 const t = state.teams[i];
+                const swatches = teamColorPalette.map(c => `
+                    <button type="button" onclick="changeTeamColor(${i}, '${c.hex}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition" style="background:${c.hex}" title="${c.name}"></button>
+                `).join('');
+
                 grid.innerHTML += `
                     <div class="bg-slate-900 p-3 rounded-xl border border-white/20 space-y-2 text-right">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-black" style="color:${t.color}">${t.name}</span>
+                            <span class="text-xs font-black" style="color:${t.color}">الفريق ${i+1}:</span>
                             <span class="w-5 h-3.5 rounded border border-white" style="background:${t.color}"></span>
                         </div>
                         <input type="text" id="team-name-${i}" value="${t.name}" oninput="updateTeamNamesLive()" class="w-full bg-slate-950 border border-white/30 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                        <div class="flex flex-wrap gap-1">${swatches}</div>
                     </div>
                 `;
             }
+        }
+
+        function changeTeamColor(idx, hex) {
+            state.teams[idx].color = hex;
+            renderTeacherDashboard();
+            syncCloud();
         }
 
         function updateTeamNamesLive() {
@@ -303,6 +368,51 @@
             syncCloud();
         }
 
+        function openManualModal() {
+            activeTabForManualModal = 1;
+            renderManualModalContent();
+            document.getElementById('manual-modal').classList.remove('hidden');
+        }
+
+        function renderManualModalContent() {
+            const tabsContainer = document.getElementById('modal-teams-tabs');
+            tabsContainer.innerHTML = '';
+            for (let i = 0; i < state.teamsCount; i++) {
+                const t = state.teams[i];
+                const isSel = (activeTabForManualModal === t.id);
+                tabsContainer.innerHTML += `
+                    <button type="button" onclick="activeTabForManualModal = ${t.id}; renderManualModalContent();" class="px-3 py-1.5 rounded-xl text-xs font-black border ${isSel ? 'bg-amber-500 text-slate-950 border-amber-300' : 'bg-slate-900 text-white border-white/20'}">
+                        ${t.name}
+                    </button>
+                `;
+            }
+
+            const grid = document.getElementById('modal-students-grid');
+            grid.innerHTML = '';
+            studentsList.forEach(s => {
+                const assignedTeam = state.studentAssignments[s];
+                const isSelectedByThisTeam = (assignedTeam === activeTabForManualModal);
+                const currentTeamObj = state.teams.find(t => t.id === activeTabForManualModal) || state.teams[0];
+                
+                grid.innerHTML += `
+                    <button type="button" onclick="toggleStudentAssignment('${s}', ${activeTabForManualModal})" class="p-2.5 rounded-xl border text-xs font-bold text-right truncate transition ${isSelectedByThisTeam ? 'border-amber-400 text-white shadow-lg' : (assignedTeam ? 'bg-slate-900 border-white/10 text-slate-500' : 'bg-slate-950 border-white/20 text-slate-300 hover:bg-slate-900')}" style="background-color: ${isSelectedByThisTeam ? currentTeamObj.color : ''}">
+                        ${s} ${isSelectedByThisTeam ? ' ✓' : ''}
+                    </button>
+                `;
+            });
+        }
+
+        function toggleStudentAssignment(studentName, teamId) {
+            if (state.studentAssignments[studentName] === teamId) {
+                delete state.studentAssignments[studentName];
+            } else {
+                state.studentAssignments[studentName] = teamId;
+            }
+            renderManualModalContent();
+            renderWingsForTeacher();
+            syncCloud();
+        }
+
         function autoDistributeEvenly() {
             studentsList.forEach((s, idx) => {
                 state.studentAssignments[s] = (idx % 2) + 1;
@@ -310,6 +420,41 @@
             renderTeacherDashboard();
             syncCloud();
             alert("🎲 تم توزيع الطلاب بالتساوي على الفريقين وتعميمهم سحابياً!");
+        }
+
+        function openQuestionsModal() {
+            const container = document.getElementById('questions-list-container');
+            container.innerHTML = '';
+            masterQuestionBank.forEach((q, idx) => {
+                const isChecked = state.selectedQuestionIndices.includes(idx);
+                container.innerHTML += `
+                    <label for="q-chk-${idx}" class="p-2.5 rounded-xl bg-slate-900 border ${isChecked ? 'border-emerald-400 bg-emerald-950/30' : 'border-white/10'} text-xs flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-800/80 transition">
+                        <div class="flex-1 text-right">
+                            <span class="text-amber-300 font-bold">سؤال ${idx+1} [${q.subject}]:</span> <span class="text-white font-semibold">${q.text}</span>
+                            <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')}</div>
+                        </div>
+                        <input type="checkbox" id="q-chk-${idx}" ${isChecked ? 'checked' : ''} onchange="toggleQuestionSelection(${idx})" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer shrink-0">
+                    </label>
+                `;
+            });
+            updateSelectedQuestionsCounter();
+            document.getElementById('questions-modal').classList.remove('hidden');
+        }
+
+        function toggleQuestionSelection(idx) {
+            const pos = state.selectedQuestionIndices.indexOf(idx);
+            if (pos === -1) {
+                state.selectedQuestionIndices.push(idx);
+            } else {
+                state.selectedQuestionIndices.splice(pos, 1);
+            }
+            updateSelectedQuestionsCounter();
+            syncCloud();
+        }
+
+        function updateSelectedQuestionsCounter() {
+            const el = document.getElementById('selected-q-count');
+            if (el) el.innerText = `المحدد: ${state.selectedQuestionIndices.length}`;
         }
 
         function renderWingsForTeacher() {
@@ -326,7 +471,7 @@
 
         function renderSingleWingHTML(teamObj) {
             const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
-            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">اضغط توزيع تلقائي للأسماء</p>' : teamStudents.map(s => {
+            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة هنا</p>' : teamStudents.map(s => {
                 const isCurrentActive = (state.activeShooter === s);
                 const results = state.studentResults[s] || [];
                 const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
@@ -358,7 +503,7 @@
         function promptShooterApproval(studentName, teamId) {
             pendingShooter = studentName;
             pendingTeamId = teamId;
-            document.getElementById('modal-approval-text').innerText = `هل تريد حفظ واعتماد دور التسديد للبطل (${studentName}) وإرسال الشاشة للطلاب فوراً؟`;
+            document.getElementById('modal-approval-text').innerText = `هل تريد حفظ موافقة وإرسال دور التسديد للبطل (${studentName}) وإرسال الشاشة للطلاب فوراً؟`;
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
@@ -370,13 +515,18 @@
             state.isTournamentFinished = false;
             state.lastShotResult = `⏳ بانتظار تسديدة البطل (${pendingShooter})...`;
 
-            const pool = masterQuestionBank;
+            let pool = masterQuestionBank;
+            if (state.selectedQuestionIndices.length > 0) {
+                pool = state.selectedQuestionIndices.map(i => masterQuestionBank[i]).filter(Boolean);
+            } else if (state.selectedSubjectFilter !== 'all') {
+                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
+            }
             state.activeQuestion = pool[Math.floor(Math.random() * pool.length)];
 
             playWhistle();
             syncCloud();
             renderTeacherDashboard();
-            alert(`✅ تم حفظ واعتماد دور البطل (${pendingShooter}) وتعميمه سحابياً للطلاب بنجاح!`);
+            alert(`✅ تم حفظ موافقة وإرسال دور البطل (${pendingShooter}) وتعميمه سحابياً للطلاب بنجاح!`);
         }
 
         function closeTournamentLock() {
@@ -410,6 +560,8 @@
                 lastShotResult: state.lastShotResult,
                 studentAssignments: state.studentAssignments,
                 studentResults: state.studentResults,
+                selectedSubjectFilter: state.selectedSubjectFilter,
+                selectedQuestionIndices: state.selectedQuestionIndices,
                 shotTimeMinutes: state.shotTimeMinutes,
                 isTournamentFinished: state.isTournamentFinished,
                 updatedAt: Date.now()
