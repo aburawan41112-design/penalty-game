@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <!-- نافذة التوزيع اليدوي بالمربعات (الخانة الزرقاء) -->
+    <!-- نافذة التوزيع اليدوي بالمربعات -->
     <div id="manual-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-black text-sky-300">🟦 التوزيع اليدوي للطلاب بالمربعات (29 طالباً)</h3>
@@ -97,9 +97,8 @@
             }
         } catch(e) { db = null; }
         
-        // مسار جديد محدث لضمان مسح أي بيانات قديمة مخزنة (27 سؤالاً) وتحميل الـ 80 سؤالاً فوراً
-        const CLOUD_PATH = 'akkour_penalty_live_db_v80_2026';
-        const LOCAL_CACHE_KEY = 'akkour_penalty_cache_v80_2026';
+        const CLOUD_PATH = 'akkour_penalty_live_db_v80_circles_2026';
+        const LOCAL_CACHE_KEY = 'akkour_penalty_cache_v80_circles_2026';
 
         const studentsList = [
             "أديب عبدالله العمري", "بتال عبد الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
@@ -122,9 +121,8 @@
             { name: "وردي", hex: "#db2777" }
         ];
 
-        // بنك الأسئلة الشامل (80 سؤالاً كاملاً: 45 لغتي + 35 إسلامية)
+        // بنك الأسئلة الشامل (80 سؤالاً كاملاً)
         const masterQuestionBank = [
-            // --- 45 سؤالاً في مادة لغتي ---
             { subject: "لغتي", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
@@ -171,7 +169,6 @@
             { subject: "لغتي", text: "حرف الجر المناسب (الكتاب .... الطاولة):", options: ["عَلَى", "إلى", "في", "من"], correctIndex: 0 },
             { subject: "لغتي", text: "الكلمة المبدوءة بهمزة قطع هي:", options: ["أحمد", "المدرسة", "الكتاب", "البيت"], correctIndex: 0 },
 
-            // --- 35 سؤالاً في الدراسات الإسلامية ---
             { subject: "إسلامية", text: "مراتب الدين الإسلامي ثلاث: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -234,6 +231,16 @@
         let pendingShooter = '';
         let pendingTeamId = 1;
         let activeTabForManualModal = 1;
+        let myStudentName = localStorage.getItem('akkour_my_student_name') || '';
+
+        function normalizeStr(str) {
+            if (!str) return '';
+            return str.trim()
+                .replace(/أ|إ|آ/g, 'ا')
+                .replace(/ة/g, 'ه')
+                .replace(/ى/g, 'ي')
+                .replace(/\s+/g, ' ');
+        }
 
         function applyCloudSnapshot(d) {
             if (!d) return;
@@ -282,8 +289,8 @@
                     </div>
 
                     <div class="space-y-3 pt-4 max-w-md mx-auto">
-                        <button type="button" onclick="enterStudentArenaDirectly()" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
-                            <span>⚽ دخول اللاعبين ومتابعة الركلات</span>
+                        <button type="button" onclick="openStudentLoginModal()" class="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
+                            <span>⚽ دخول الطالب (أدخل اسمك الثلاثي)</span>
                         </button>
 
                         <button type="button" onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-6 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
@@ -292,6 +299,38 @@
                     </div>
                 </div>
             `;
+        }
+
+        function openStudentLoginModal() {
+            hydrateFromLocalCache();
+            const modalBox = document.createElement('div');
+            modalBox.id = 'student-login-modal';
+            modalBox.className = 'fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+            modalBox.innerHTML = `
+                <div class="bg-[#1b1035] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
+                    <h3 class="text-lg font-black text-emerald-300">👋 أهلاً بك يا بطل!</h3>
+                    <p class="text-xs text-purple-200">الرجاء إدخال اسمك الثلاثي (كما هو مسجل في كشف الفصل):</p>
+                    <input type="text" id="input-student-name" value="${myStudentName}" placeholder="مثال: أديب عبدالله العمري" class="w-full bg-slate-950 border border-white/30 rounded-xl p-3 text-sm font-bold text-white text-center">
+                    <div class="flex gap-2 pt-2">
+                        <button type="button" onclick="confirmStudentLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">دخول الساحة ⚽</button>
+                        <button type="button" onclick="document.getElementById('student-login-modal').remove()" class="bg-rose-900 text-white font-bold py-3 px-4 rounded-xl text-xs">إلغاء</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modalBox);
+        }
+
+        function confirmStudentLogin() {
+            const inputVal = document.getElementById('input-student-name').value;
+            if (!inputVal || inputVal.trim().length < 3) {
+                alert("⚠️ الرجاء كتابة اسمك الثلاثي بشكل صحيح!");
+                return;
+            }
+            myStudentName = inputVal.trim();
+            localStorage.setItem('akkour_my_student_name', myStudentName);
+            const m = document.getElementById('student-login-modal');
+            if (m) m.remove();
+            enterStudentArenaDirectly();
         }
 
         function openPinModal() {
@@ -592,32 +631,54 @@
             rightWing.innerHTML = renderSingleWingHTML(t2);
         }
 
+        // دالة رسم دوائر ركلات الترجيح الملونة (لون الفريق عند التسجيل أو X أحمر عند الخطأ أو دوائر فارغة)
+        function renderKicksCirclesHTML(teamObj) {
+            const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
+            let resultsArr = [];
+            teamStudents.forEach(s => {
+                if (state.studentResults[s]) {
+                    resultsArr = resultsArr.concat(state.studentResults[s]);
+                }
+            });
+
+            let circlesHtml = '';
+            for (let i = 0; i < state.totalKicksPerTeam; i++) {
+                const res = resultsArr[i];
+                if (res === 'goal') {
+                    circlesHtml += `<span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shadow-md" style="background-color: ${teamObj.color}; color: #fff;" title="هدف صحيح">✓</span>`;
+                } else if (res === 'miss') {
+                    circlesHtml += `<span class="w-6 h-6 rounded-full bg-slate-900 border-2 border-rose-600 flex items-center justify-center text-xs font-black text-rose-500 shadow-md" title="ركلة ضائعة">✕</span>`;
+                } else {
+                    circlesHtml += `<span class="w-6 h-6 rounded-full bg-slate-950 border border-white/25 flex items-center justify-center text-[10px] text-slate-500">${i+1}</span>`;
+                }
+            }
+            return `<div class="flex flex-wrap gap-1.5 justify-center pt-2">${circlesHtml}</div>`;
+        }
+
         function renderSingleWingHTML(teamObj) {
             const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
             const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة هنا</p>' : teamStudents.map(s => {
                 const isCurrentActive = (state.activeShooter === s);
-                const results = state.studentResults[s] || [];
-                const resIcons = results.map(r => r === 'goal' ? '🟢' : '❌').join(' ');
                 return `
                     <div onclick="promptShooterApproval('${s}', ${teamObj.id})" class="p-1.5 rounded border text-xs font-bold cursor-pointer transition flex items-center justify-between ${isCurrentActive ? 'bg-amber-600 border-amber-300 text-white animate-pulse shadow-lg' : 'bg-slate-950 border-white/20 text-slate-300 hover:bg-slate-900'}">
                         <span class="truncate">${s}</span>
-                        <div class="flex items-center gap-1">
-                            <span class="text-[10px]">${resIcons}</span>
-                            ${isCurrentActive ? '<span class="bg-black px-1 rounded text-[9px] text-amber-300">دور التسديد</span>' : ''}
-                        </div>
+                        ${isCurrentActive ? '<span class="bg-black px-1 rounded text-[9px] text-amber-300">يسدد</span>' : ''}
                     </div>
                 `;
             }).join('');
+
+            const circlesUI = renderKicksCirclesHTML(teamObj);
 
             return `
                 <div class="space-y-3">
                     <div class="p-3 rounded-2xl border-2 text-center shadow-lg" style="background:${teamObj.color}33; border-color:${teamObj.color}">
                         <h4 class="font-black text-sm text-white">${teamObj.name}</h4>
                         <p class="text-3xl font-black text-white mt-1">${teamObj.score || 0}</p>
+                        ${circlesUI}
                     </div>
                     <div class="space-y-1">
                         <span class="text-[11px] text-amber-300 font-bold block pb-1 border-b border-white/10">قائمة اللاعبين (اضغط لإعطاء الدور):</span>
-                        <div class="space-y-1 max-h-[520px] overflow-y-auto pr-1">${studentsListHtml}</div>
+                        <div class="space-y-1 max-h-[440px] overflow-y-auto pr-1">${studentsListHtml}</div>
                     </div>
                 </div>
             `;
@@ -638,7 +699,6 @@
             state.isTournamentFinished = false;
             state.lastShotResult = `⏳ بانتظار تسديدة البطل (${pendingShooter})...`;
 
-            // سحب سؤال غير مكرر في الجولة من الـ 80 سؤالاً
             let availablePool = masterQuestionBank;
             if (state.selectedQuestionIndices.length > 0) {
                 availablePool = state.selectedQuestionIndices.map(i => masterQuestionBank[i]).filter(Boolean);
@@ -648,7 +708,7 @@
 
             let un_used = availablePool.filter((_, idx) => !state.usedQuestionIndices.includes(idx));
             if (un_used.length === 0) {
-                state.usedQuestionIndices = []; // إعادة التدوير إذا انتهت الأسئلة
+                state.usedQuestionIndices = [];
                 un_used = availablePool;
             }
 
@@ -728,8 +788,11 @@
             } catch(e) {}
         }
 
-        // شاشة الطالب النظيفة والمبسطة جداً للأطفال (بدون قوائم أسماء مربكة)
         function enterStudentArenaDirectly() {
+            if (!myStudentName) {
+                openStudentLoginModal();
+                return;
+            }
             state.view = 'student';
             hydrateFromLocalCache();
             renderWingsForStudent();
@@ -740,11 +803,13 @@
                     <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
                     <div class="bg-emerald-900/50 border border-emerald-400 py-2 px-3 rounded-xl text-xs font-black flex justify-between items-center">
-                        <span>⚽ ساحة التحدي المباشرة</span>
-                        <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2.5 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
+                        <span>⚽ البطل المسجل: <span class="text-amber-300 underline">${myStudentName}</span></span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="openStudentLoginModal()" class="bg-slate-800 text-[10px] px-2 py-0.5 rounded text-amber-200 underline">تعديل الاسم</button>
+                            <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
+                        </div>
                     </div>
 
-                    <!-- أيقونتان رئيسيتان واضحتان للطلاب: التسديد والمتابعة المباشرة -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
                         <button type="button" id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="bg-slate-800 text-slate-400 py-4 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed shadow transition border border-white/10">
                             ⏳ انتظر حتى يأتي دورك في أيقونة التسديد
@@ -754,7 +819,7 @@
                         </button>
                     </div>
 
-                    <!-- شاشة التسديد (تفتح تلقائياً للبطل الذي اختاره المعلم فقط باسمه) -->
+                    <!-- شاشة التسديد الخاصة بالبطل المطابق اسمه فقط -->
                     <div id="pane-student-shoot" class="hidden space-y-4">
                         <div id="shooter-banner-box" class="text-white py-3 px-4 rounded-2xl font-black text-base md:text-xl shadow-lg animate-pulse border-2 border-white flex items-center justify-center gap-2">
                             <span>⚽ جاء دورك يا بطل: <span id="target-shooter-banner" class="text-amber-300 underline">---</span></span>
@@ -767,11 +832,14 @@
                         </div>
                     </div>
 
-                    <!-- شاشة متابعة الترجيحية المباشرة -->
+                    <!-- شاشة المتابعة المباشرة (مطابقة لشاشة المعلم مع دوائر الركلات) -->
                     <div id="pane-student-watch" class="space-y-4 bg-black/45 p-5 rounded-2xl border border-white/20">
                         <h3 id="tournament-status-title" class="text-base md:text-lg font-black text-amber-300">📊 متابعة ركلات الترجيح المباشرة</h3>
                         <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-3 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
                             ${state.lastShotResult || '⏳ انتظر حتى يأتي دورك في أيقونة التسديد...'}
+                        </div>
+                        <div id="student-live-preview-box" class="bg-slate-950 p-3 rounded-xl border border-white/15 text-center text-xs text-purple-200">
+                            ${state.isShootingOpen && state.activeShooter ? `🎯 الدور الحالي للبطل: <span class="text-amber-300 font-bold">${state.activeShooter}</span><br>سؤال: ${state.activeQuestion ? state.activeQuestion.text : ''}` : '✨ رقباء البث المباشر: المعلم يدير الجولة الآن...'}
                         </div>
                     </div>
 
@@ -799,20 +867,26 @@
 
             const shootBtn = document.getElementById('btn-student-shoot');
             const banner = document.getElementById('watch-status-banner');
+            const livePreview = document.getElementById('student-live-preview-box');
             if (!shootBtn || !banner) return;
 
-            if (state.isShootingOpen && state.activeShooter) {
+            const isMyTurn = (state.isShootingOpen && state.activeShooter && (normalizeStr(state.activeShooter) === normalizeStr(myStudentName)));
+
+            if (isMyTurn) {
                 shootBtn.disabled = false;
                 shootBtn.className = "bg-emerald-500 hover:bg-emerald-400 text-slate-950 py-4 px-4 rounded-xl text-xs md:text-sm font-black shadow-lg animate-bounce cursor-pointer border-2 border-white";
-                shootBtn.innerHTML = `⚽ سدد الآن يا بطل: <span class="underline">${state.activeShooter}</span>`;
+                shootBtn.innerHTML = `⚽ جاء دورك! سدد الآن يا <span class="underline">${myStudentName}</span>`;
 
-                banner.innerHTML = `🎯 الدور الآن للبطل: <span class="text-amber-300 font-black underline">${state.activeShooter}</span> (بقية الأبطال: انتظروا دوركم...)`;
+                banner.innerHTML = `🎯 دورك الآن للتسديد يا بطل — اختر الإجابة الصحيحة في أيقونة التسديد!`;
+                if (livePreview) {
+                    livePreview.innerHTML = `🟢 بانتظار تسديدتك في المرمى يا بطل!`;
+                }
 
                 const activeTeamObj = state.teams.find(t => t.id === state.activeTeamId) || state.teams[0];
                 const bannerBox = document.getElementById('shooter-banner-box');
                 if (bannerBox) bannerBox.style.backgroundColor = activeTeamObj.color;
 
-                document.getElementById('target-shooter-banner').innerText = `${state.activeShooter} (${activeTeamObj.name})`;
+                document.getElementById('target-shooter-banner').innerText = `${myStudentName} (${activeTeamObj.name})`;
                 document.getElementById('student-q-text').innerText = state.activeQuestion ? state.activeQuestion.text : '';
 
                 const corners = document.getElementById('student-goal-corners');
@@ -823,17 +897,29 @@
                         btn.className = "corner-btn rounded-xl py-3 text-sm md:text-base font-black";
                         btn.innerText = opt;
                         const isCorrectAnswer = (idx === state.activeQuestion.correctIndex);
-                        btn.onclick = () => executeStudentKick(isCorrectAnswer, state.activeShooter, state.activeTeamId);
+                        btn.onclick = () => executeStudentKick(isCorrectAnswer, myStudentName, state.activeTeamId);
                         corners.appendChild(btn);
                     });
                 }
-                // فتح شاشة التسديد تلقائياً بمجرد اعتماد المعلم
                 switchStudentTab('shoot');
+            } else if (state.isShootingOpen && state.activeShooter) {
+                shootBtn.disabled = true;
+                shootBtn.className = "bg-slate-800 text-slate-400 py-4 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed shadow border border-white/10";
+                shootBtn.innerText = "⏳ الدور الحالي للبطل: " + state.activeShooter;
+                
+                banner.innerHTML = `⏳ الدور الحالي للبطل: <span class="text-amber-300 font-bold underline">${state.activeShooter}</span> (انتظر حتى يأتي دورك)`;
+                if (livePreview) {
+                    livePreview.innerHTML = `⚽ سؤال البطل ${state.activeShooter}:<br><strong class="text-white">${state.activeQuestion ? state.activeQuestion.text : ''}</strong>`;
+                }
+                switchStudentTab('watch');
             } else {
                 shootBtn.disabled = true;
                 shootBtn.className = "bg-slate-800 text-slate-400 py-4 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed shadow border border-white/10";
                 shootBtn.innerText = "⏳ انتظر حتى يأتي دورك في أيقونة التسديد";
                 banner.innerText = state.lastShotResult || "⏳ انتظر حتى يأتي دورك في أيقونة التسديد...";
+                if (livePreview) {
+                    livePreview.innerHTML = `✨ رقباء البث المباشر: البطولة نشطة وجاهزة...`;
+                }
                 switchStudentTab('watch');
             }
         }
@@ -850,17 +936,18 @@
             rightWing.innerHTML = renderSingleWingHTMLForStudent(t2);
         }
 
-        // عرض النتيجة فقط في أجنحة الطلاب بدون إرباكهم بأسماء غير تفاعلية
         function renderSingleWingHTMLForStudent(teamObj) {
+            const circlesUI = renderKicksCirclesHTML(teamObj);
             const activeInfo = (state.isShootingOpen && state.activeTeamId === teamObj.id && state.activeShooter) 
-                ? `<div class="bg-amber-500/20 border border-amber-400 p-2 rounded-xl text-center animate-pulse mt-3"><p class="text-xs font-black text-amber-300">⚽ البطل المسدد الآن:<br>${state.activeShooter}</p></div>` 
-                : `<div class="bg-black/30 p-2 rounded-xl text-center mt-3"><p class="text-[11px] text-slate-400">في انتظار التسديدة القادمة...</p></div>`;
+                ? `<div class="bg-amber-500/20 border border-amber-400 p-2 rounded-xl text-center animate-pulse mt-3"><p class="text-xs font-black text-amber-300">⚽ يسدد الآن:<br>${state.activeShooter}</p></div>` 
+                : `<div class="bg-black/30 p-2 rounded-xl text-center mt-3"><p class="text-[11px] text-slate-400">في انتظار التسديدة...</p></div>`;
 
             return `
                 <div class="space-y-4">
                     <div class="p-4 rounded-2xl border-2 text-center shadow-lg" style="background:${teamObj.color}33; border-color:${teamObj.color}">
                         <h4 class="font-black text-base text-white">${teamObj.name}</h4>
-                        <p class="text-4xl font-black text-white mt-2">${teamObj.score || 0} <span class="text-sm text-purple-200">/ ${state.totalKicksPerTeam}</span></p>
+                        <p class="text-4xl font-black text-white mt-2">${teamObj.score || 0}</p>
+                        ${circlesUI}
                     </div>
                     ${activeInfo}
                 </div>
@@ -876,7 +963,7 @@
                 document.getElementById('pane-student-shoot').classList.add('hidden');
                 document.getElementById('pane-student-watch').classList.remove('hidden');
                 if (tab === 'shoot') {
-                    alert("⏳ انتظر حتى يأتي دورك! سيظهر اسمك هنا بمجرد أن يختارك المعلم أ. عبد الله عكور.");
+                    alert("⏳ انتظر حتى يأتي دورك! ستنفتح أيقونة التسديد تلقائياً عندما يختارك المعلم.");
                 }
             }
         }
