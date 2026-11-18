@@ -13,6 +13,7 @@
         .purple-backdrop { background: radial-gradient(circle at top, #3b1d6e 0%, #1e1035 55%, #130924 100%); min-height: 100vh; }
         .quiz-main-card { background-color: #11221c; border: 3px solid #23473a; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75); }
         .goal-frame { border-top: 10px solid #f8fafc; border-left: 10px solid #f8fafc; border-right: 10px solid #f8fafc; box-shadow: 0 -4px 15px rgba(0,0,0,0.4), inset 0 8px 20px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.55); background-image: linear-gradient(0deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px), linear-gradient(90deg, rgba(255,255,255,0.32) 1.5px, transparent 1.5px); background-size: 16px 16px; position: relative; }
+        .goal-frame-mini { border-top: 6px solid #f8fafc; border-left: 6px solid #f8fafc; border-right: 6px solid #f8fafc; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); background-color: rgba(6, 78, 59, 0.55); background-image: linear-gradient(0deg, rgba(255,255,255,0.28) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.28) 1px, transparent 1px); background-size: 12px 12px; position: relative; }
         .corner-btn { background: rgba(255, 255, 255, 0.96); color: #064e3b; border: 3px solid #ffffff; box-shadow: 0 8px 20px rgba(0,0,0,0.45); transition: all 0.2s; cursor: pointer; }
         .corner-btn:hover { transform: scale(1.04); background: #ffffff; border-color: #facc15; }
         @keyframes fireworks { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
@@ -39,7 +40,7 @@
             <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على مربعات أسماء الطلاب لتتلوّن بلون الفريق:</p>
             <div class="flex justify-center gap-2 flex-wrap" id="modal-teams-tabs"></div>
             <div id="modal-students-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-right max-h-80 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
-            <button onclick="document.getElementById('manual-modal').classList.add('hidden'); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع ✓</button>
+            <button onclick="document.getElementById('manual-modal').classList.add('hidden'); syncCloud(); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 px-8 rounded-xl text-xs">إغلاق وتعميم التوزيع ✓</button>
         </div>
     </div>
 
@@ -56,13 +57,22 @@
         </div>
     </div>
 
-    <!-- نافذة بنك الأسئلة الشامل (>75 سؤالاً) -->
+    <!-- نافذة بنك الأسئلة الشامل (>75 سؤالاً) مع مربعات التحديد -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (أكثر من 75 سؤالاً - لغتي وإسلامية)</h3>
-            <p class="text-xs text-purple-200">تم تجهيز بنك الأسئلة بالكامل لتغطية المنهج:</p>
+            <div class="flex justify-between items-center bg-black/40 px-4 py-2 rounded-xl border border-white/10 text-xs">
+                <span class="text-purple-200">ضع علامة (✓) في المربع يسار الأسئلة التي تريدها للجولة:</span>
+                <div class="flex items-center gap-2">
+                    <span id="selected-q-count" class="bg-emerald-600 text-white font-black px-2.5 py-0.5 rounded-full">المحدد: 0</span>
+                    <button onclick="clearSelectedQuestions()" class="bg-rose-700 hover:bg-rose-600 text-white font-bold px-2.5 py-0.5 rounded-lg text-[11px]">إلغاء التحديد</button>
+                </div>
+            </div>
             <div id="questions-list-container" class="space-y-2 text-right max-h-96 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
-            <button onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-sky-600 text-white font-black py-2 px-6 rounded-xl text-xs">إغلاق وحفظ البنك</button>
+            <div class="flex justify-center gap-3 pt-1">
+                <button onclick="saveSelectedQuestionsAndClose()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 px-6 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ واختيار للجولة</button>
+                <button onclick="document.getElementById('questions-modal').classList.add('hidden')" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-6 rounded-xl text-xs">إغلاق</button>
+            </div>
         </div>
     </div>
 
@@ -70,6 +80,7 @@
         const firebaseConfig = { databaseURL: "https://penalty-2026-default-rtdb.firebaseio.com/" };
         let db;
         try { firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) {}
+        const CLOUD_PATH = 'akkour_penalty_v17_live';
 
         const studentsList = [
             "أديب عبدالله العمري", "بتال عبد الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
@@ -193,6 +204,7 @@
             totalRounds: 5,
             shotTimeMinutes: 1,
             selectedSubjectFilter: 'all',
+            selectedQuestionIndices: [],
             activeShooter: '',
             activeTeamId: 1,
             activeQuestion: { text: "في انتظار إعداد المعلم للجولة...", options: ["صح", "خطأ"], correctIndex: 0 },
@@ -204,6 +216,31 @@
             studentResults: {},
             isTournamentFinished: false
         };
+
+        function loadInitialStateFromCloud(callback) {
+            if (!db) { if (callback) callback(); return; }
+            db.ref(CLOUD_PATH).once('value').then((snap) => {
+                const d = snap.val();
+                if (d) {
+                    if (d.teams) state.teams = d.teams;
+                    if (d.teamsCount) state.teamsCount = d.teamsCount;
+                    if (d.studentAssignments) state.studentAssignments = d.studentAssignments;
+                    if (d.studentResults) state.studentResults = d.studentResults;
+                    if (d.selectedSubjectFilter) state.selectedSubjectFilter = d.selectedSubjectFilter;
+                    if (d.selectedQuestionIndices) state.selectedQuestionIndices = d.selectedQuestionIndices;
+                    if (d.shotTimeMinutes) state.shotTimeMinutes = d.shotTimeMinutes;
+                    if (d.activeShooter !== undefined) state.activeShooter = d.activeShooter;
+                    if (d.activeTeamId) state.activeTeamId = d.activeTeamId;
+                    if (d.activeQuestion) state.activeQuestion = d.activeQuestion;
+                    if (d.isShootingOpen !== undefined) state.isShootingOpen = d.isShootingOpen;
+                    if (d.lastShotResult) state.lastShotResult = d.lastShotResult;
+                    if (d.roundQueue) state.roundQueue = d.roundQueue;
+                    if (d.currentQueueIndex !== undefined) state.currentQueueIndex = d.currentQueueIndex;
+                    if (d.isTournamentFinished !== undefined) state.isTournamentFinished = d.isTournamentFinished;
+                }
+                if (callback) callback();
+            }).catch(() => { if (callback) callback(); });
+        }
 
         function renderHome() {
             state.view = 'home';
@@ -246,16 +283,65 @@
         function verifyTeacherPin() {
             if (document.getElementById('pin-box').value === '4112' || document.getElementById('pin-box').value === '') {
                 document.getElementById('pin-modal').classList.add('hidden');
-                renderTeacherDashboard();
-                listenCloudForTeacherMonitor();
+                loadInitialStateFromCloud(() => {
+                    renderTeacherDashboard();
+                    listenCloudForTeacherMonitor();
+                });
             } else {
                 alert("❌ الرقم السري خاطئ!");
             }
         }
 
+        function buildMiniStudentPreviewHTML() {
+            if (state.isTournamentFinished) {
+                return `
+                    <div class="bg-amber-500/20 border border-amber-400 rounded-xl p-3 text-center">
+                        <p class="text-xs font-black text-amber-300">🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز 🎉</p>
+                    </div>
+                `;
+            }
+
+            if (state.isShootingOpen && state.activeShooter) {
+                const activeTeamObj = state.teams.find(t => t.id === state.activeTeamId) || state.teams[0];
+                const opts = (state.activeQuestion && state.activeQuestion.options) ? state.activeQuestion.options : [];
+                const optsHtml = opts.map((opt, idx) => `
+                    <div class="bg-white/95 text-emerald-950 rounded-lg py-1 px-2 text-[11px] font-black text-center border border-white shadow">
+                        ${opt} ${idx === state.activeQuestion.correctIndex ? '✓' : ''}
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="space-y-2 text-center">
+                        <div class="text-white py-1 px-3 rounded-lg font-black text-xs border border-white/80 flex items-center justify-center gap-1" style="background-color:${activeTeamObj.color}">
+                            <span>⚽ سَدِّدْ يَا بَطَل: <span class="text-amber-200 underline">${state.activeShooter} (${activeTeamObj.name})</span></span>
+                        </div>
+                        <div class="bg-white text-slate-900 px-3 py-1.5 rounded-lg shadow text-xs font-black">
+                            ${state.activeQuestion ? state.activeQuestion.text : '---'}
+                        </div>
+                        <div class="w-full max-w-xs mx-auto h-24 goal-frame-mini rounded-t-md p-2 flex items-center">
+                            <div class="grid grid-cols-2 gap-1.5 w-full">
+                                ${optsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="bg-slate-900/90 border border-white/15 rounded-xl p-3 text-center space-y-1">
+                    <span class="text-[11px] text-amber-300 font-black block">📊 البث المباشر لركلات الترجيح (شاشة الطالب)</span>
+                    <p class="text-xs font-bold text-emerald-300">${state.lastShotResult || '🔒 في انتظار اختيار لاعب أو بدء الجولة...'}</p>
+                </div>
+            `;
+        }
+
         function renderTeacherDashboard() {
             state.view = 'teacher';
             renderWingsForTeacher();
+
+            const selectedBadge = state.selectedQuestionIndices.length > 0
+                ? `(${state.selectedQuestionIndices.length} محدد)`
+                : `(الكل >75)`;
 
             const box = document.getElementById('app-center');
             box.innerHTML = `
@@ -267,15 +353,14 @@
                         </button>
                     </div>
 
-                    <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-3 shadow-lg space-y-1.5">
-                        <span class="text-xs font-black text-amber-300">📺 شاشة المراقبة المباشرة وحالة الجولة:</span>
-                        <div class="bg-black/40 p-2.5 rounded-xl border border-white/15 space-y-1">
-                            <p class="text-xs text-purple-200">الدور الحالي (المسدد): <strong id="mon-shooter-name" class="text-amber-300 text-base">${state.activeShooter || 'لم يُحدد بعد'}</strong></p>
-                            <p class="text-xs text-emerald-300 font-bold">الحالة: <span id="mon-shot-status" class="text-white">${state.lastShotResult}</span></p>
-                            <div class="mt-1 pt-1 border-t border-white/15">
-                                <p class="text-[11px] text-sky-300 font-bold">السؤال الحالي:</p>
-                                <p id="mon-question-text" class="text-xs font-black text-white mt-0.5">${state.activeQuestion ? state.activeQuestion.text : '---'}</p>
-                            </div>
+                    <!-- معاينة مصغرة مطابقة تماماً لشاشة الطالب -->
+                    <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-2.5 shadow-lg space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-black text-amber-300">📺 معاينة شاشة الطالب المباشرة:</span>
+                            <span class="text-[10px] text-emerald-300 font-bold">متزامن سحابياً ●</span>
+                        </div>
+                        <div id="mini-student-preview-box">
+                            ${buildMiniStudentPreviewHTML()}
                         </div>
                     </div>
 
@@ -308,13 +393,13 @@
                             </div>
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">وقت التسديد لكل طالب:</label>
-                                <select id="cfg-time" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                <select id="cfg-time" onchange="state.shotTimeMinutes = parseInt(this.value) || 1; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
                                     <option value="1" ${state.shotTimeMinutes==1?'selected':''}>دقيقة واحدة</option>
                                     <option value="2" ${state.shotTimeMinutes==2?'selected':''}>دقيقتان</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">استعراض بنك الأسئلة (>75):</label>
+                                <label class="text-[11px] text-purple-200 block mb-1">اختيار الأسئلة ${selectedBadge}:</label>
                                 <button onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2 rounded-xl text-xs shadow">
                                     📥 استيراد وعرض بنك الأسئلة
                                 </button>
@@ -495,30 +580,76 @@
             alert("🎲 تم توزيع جميع الطلاب عشوائياً وتلقائياً على الفرق بنجاح!");
         }
 
+        function getActiveQuestionPool() {
+            if (state.selectedQuestionIndices && state.selectedQuestionIndices.length > 0) {
+                const chosen = state.selectedQuestionIndices
+                    .map(i => masterQuestionBank[i])
+                    .filter(Boolean);
+                if (chosen.length > 0) return chosen;
+            }
+            if (state.selectedSubjectFilter !== 'all') {
+                return masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
+            }
+            return [...masterQuestionBank];
+        }
+
         function openQuestionsModal() {
             const container = document.getElementById('questions-list-container');
             container.innerHTML = '';
             masterQuestionBank.forEach((q, idx) => {
+                const isChecked = state.selectedQuestionIndices.includes(idx);
                 container.innerHTML += `
-                    <div class="p-2 rounded bg-slate-900 border border-white/10 text-xs">
-                        <span class="text-amber-300 font-bold">سؤال ${idx+1} [${q.subject}]:</span> ${q.text}
-                        <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')}</div>
-                    </div>
+                    <label for="q-chk-${idx}" class="p-2.5 rounded-xl bg-slate-900 border ${isChecked ? 'border-emerald-400 bg-emerald-950/30' : 'border-white/10'} text-xs flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-800/80 transition">
+                        <div class="flex-1 text-right">
+                            <span class="text-amber-300 font-bold">سؤال ${idx+1} [${q.subject}]:</span> <span class="text-white font-semibold">${q.text}</span>
+                            <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')}</div>
+                        </div>
+                        <input type="checkbox" id="q-chk-${idx}" ${isChecked ? 'checked' : ''} onchange="toggleQuestionSelection(${idx})" class="w-5 h-5 accent-emerald-500 rounded cursor-pointer shrink-0">
+                    </label>
                 `;
             });
+            updateSelectedQuestionsCounter();
             document.getElementById('questions-modal').classList.remove('hidden');
+        }
+
+        function toggleQuestionSelection(idx) {
+            const pos = state.selectedQuestionIndices.indexOf(idx);
+            if (pos === -1) {
+                state.selectedQuestionIndices.push(idx);
+            } else {
+                state.selectedQuestionIndices.splice(pos, 1);
+            }
+            updateSelectedQuestionsCounter();
+        }
+
+        function updateSelectedQuestionsCounter() {
+            const el = document.getElementById('selected-q-count');
+            if (el) el.innerText = `المحدد: ${state.selectedQuestionIndices.length}`;
+        }
+
+        function clearSelectedQuestions() {
+            state.selectedQuestionIndices = [];
+            openQuestionsModal();
+        }
+
+        function saveSelectedQuestionsAndClose() {
+            document.getElementById('questions-modal').classList.add('hidden');
+            syncCloud();
+            renderTeacherDashboard();
+            const count = state.selectedQuestionIndices.length;
+            alert(count > 0
+                ? `✅ تم حفظ واختيار (${count}) سؤالاً للجولة وتعميمها!`
+                : `✅ لم يتم تحديد أسئلة مخصصة، سيتم السحب من كامل بنك الأسئلة.`);
         }
 
         function selectShooterDirectly(studentName, teamId) {
             state.activeShooter = studentName;
             state.activeTeamId = teamId;
             state.isShootingOpen = true;
+            state.isTournamentFinished = false;
             state.lastShotResult = `⏳ بانتظار تسديدة البطل (${studentName})...`;
 
-            let pool = masterQuestionBank;
-            if (state.selectedSubjectFilter !== 'all') {
-                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
-            }
+            const pool = getActiveQuestionPool();
             state.activeQuestion = pool[Math.floor(Math.random() * pool.length)];
 
             playWhistle();
@@ -530,30 +661,33 @@
         function saveTeamSettings() {
             updateTeamNamesLive();
             syncCloud();
-            alert("💾 تم حفظ إعدادات وترتيب الفرق بنجاح!");
+            alert("💾 تم حفظ إعدادات وترتيب الفرق وتعميمها للطلاب بنجاح!");
         }
 
         function saveQuestionSettings() {
             syncCloud();
-            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل بنجاح!");
+            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل وتعميمه بنجاح!");
         }
 
         function saveAndBroadcastAllSettings() {
             updateTeamNamesLive();
-            state.shotTimeMinutes = parseInt(document.getElementById('cfg-time').value) || 1;
+            const timeEl = document.getElementById('cfg-time');
+            if (timeEl) state.shotTimeMinutes = parseInt(timeEl.value) || 1;
+            const subjEl = document.getElementById('cfg-subject');
+            if (subjEl) state.selectedSubjectFilter = subjEl.value;
             syncCloud();
+            renderTeacherDashboard();
             alert("🚀 تمت عملية حفظ وتعميم جميع إعدادات اللعبة للجميع بنجاح فوراً!");
         }
 
         function prepareAndLaunchFullRound() {
-            const rounds = parseInt(document.getElementById('cfg-rounds')?.value || 5);
-            state.totalRounds = rounds;
             updateTeamNamesLive();
+            let pool = [...getActiveQuestionPool()];
+            const rounds = state.selectedQuestionIndices.length > 0
+                ? Math.max(1, Math.ceil(pool.length / 2))
+                : parseInt(document.getElementById('cfg-rounds')?.value || 5);
+            state.totalRounds = rounds;
 
-            let pool = masterQuestionBank;
-            if (state.selectedSubjectFilter !== 'all') {
-                pool = masterQuestionBank.filter(q => q.subject === state.selectedSubjectFilter);
-            }
             for (let i = pool.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -586,6 +720,7 @@
                 state.lastShotResult = `⏳ بانتظار تسديدة البطل (${first.shooter})...`;
             }
 
+            playWhistle();
             syncCloud();
             renderTeacherDashboard();
             alert(`🚀 تم تجهيز الجولة وبدء التسديد تلقائياً (${state.roundQueue.length} ركلة)!`);
@@ -601,6 +736,7 @@
                 state.isShootingOpen = false;
                 state.activeShooter = '';
                 syncCloud();
+                renderTeacherDashboard();
                 alert("🏆 انتهت الجولة بالكامل! تم تفعيل شاشة الاحتفال والألعاب النارية الكبرى.");
                 return;
             }
@@ -640,7 +776,7 @@
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v17_live').set({
+            db.ref(CLOUD_PATH).set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
@@ -654,74 +790,80 @@
                 currentQueueIndex: state.currentQueueIndex,
                 shotTimeMinutes: state.shotTimeMinutes,
                 isTournamentFinished: state.isTournamentFinished,
-                selectedSubjectFilter: state.selectedSubjectFilter
+                selectedSubjectFilter: state.selectedSubjectFilter,
+                selectedQuestionIndices: state.selectedQuestionIndices,
+                updatedAt: Date.now()
             });
         }
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v17_live').on('value', (snap) => {
+            db.ref(CLOUD_PATH).on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
                 if (d.studentResults) state.studentResults = d.studentResults;
+                if (d.activeShooter !== undefined) state.activeShooter = d.activeShooter;
+                if (d.activeTeamId) state.activeTeamId = d.activeTeamId;
+                if (d.activeQuestion) state.activeQuestion = d.activeQuestion;
+                if (d.isShootingOpen !== undefined) state.isShootingOpen = d.isShootingOpen;
+                if (d.lastShotResult) state.lastShotResult = d.lastShotResult;
+                if (d.isTournamentFinished !== undefined) state.isTournamentFinished = d.isTournamentFinished;
+
                 renderWingsForTeacher();
-                const statusEl = document.getElementById('mon-shot-status');
-                if (statusEl && d.lastShotResult) statusEl.innerText = d.lastShotResult;
+                const previewBox = document.getElementById('mini-student-preview-box');
+                if (previewBox) previewBox.innerHTML = buildMiniStudentPreviewHTML();
             });
         }
 
-        // ==========================================
-        // دخول الطالب المباشر (يجد أيقونتين: متابعة مفتوحة دائماً، وتسديد مغلقة حتى يناديه المعلم)
-        // ==========================================
         function enterStudentArenaDirectly() {
             state.view = 'student';
-            renderWingsForStudent();
+            loadInitialStateFromCloud(() => {
+                renderWingsForStudent();
 
-            const box = document.getElementById('app-center');
-            box.innerHTML = `
-                <div class="space-y-4 text-white relative">
-                    <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
+                const box = document.getElementById('app-center');
+                box.innerHTML = `
+                    <div class="space-y-4 text-white relative">
+                        <div id="fireworks-container" class="absolute inset-0 pointer-events-none z-50 hidden"></div>
 
-                    <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
-                        <span>⚽ ساحة الطلاب المباشرة</span>
-                        <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
-                        <button id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow transition">
-                            ⚽ أيقونة التسديد (مغلقة في انتظار دورك)
-                        </button>
-                        <button id="btn-student-watch" onclick="switchStudentTab('watch')" class="bg-amber-500 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow transition">
-                            📊 متابعة ركلات الترجيح المباشرة (مفتوحة دائماً)
-                        </button>
-                    </div>
-
-                    <!-- شاشة التسديد -->
-                    <div id="pane-student-shoot" class="hidden space-y-4">
-                        <div id="shooter-banner-box" class="text-white py-2.5 px-4 rounded-2xl font-black text-base md:text-xl shadow-lg animate-pulse border-2 border-white flex items-center justify-center gap-2">
-                            <span>⚽ سَدِّدْ يَا بَطَل: <span id="target-shooter-banner" class="text-amber-300 underline">---</span></span>
+                        <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
+                            <span>⚽ ساحة الطلاب المباشرة</span>
+                            <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
                         </div>
-                        <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-lg">
-                            <p id="student-q-text" class="text-base md:text-xl font-black">---</p>
-                        </div>
-                        <div class="relative w-full max-w-md mx-auto h-52 goal-frame rounded-t-lg p-3 flex flex-col justify-between">
-                            <div id="student-goal-corners" class="grid grid-cols-2 gap-3 w-full h-full items-center"></div>
-                        </div>
-                    </div>
 
-                    <!-- شاشة متابعة البطولة -->
-                    <div id="pane-student-watch" class="space-y-4 bg-black/45 p-5 rounded-2xl border border-white/20">
-                        <h3 id="tournament-status-title" class="text-base md:text-lg font-black text-amber-300">📊 البث المباشر لركلات الترجيح</h3>
-                        <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
-                            في انتظار إشارة المعلم أ. عبد الله عكور...
+                        <div class="grid grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
+                            <button id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="bg-slate-800 text-slate-500 py-3 px-4 rounded-xl text-xs md:text-sm font-black cursor-not-allowed opacity-50 shadow transition">
+                                ⚽ أيقونة التسديد (مغلقة في انتظار دورك)
+                            </button>
+                            <button id="btn-student-watch" onclick="switchStudentTab('watch')" class="bg-amber-500 text-slate-950 py-3 px-4 rounded-xl text-xs md:text-sm font-black shadow transition">
+                                📊 متابعة ركلات الترجيح المباشرة (مفتوحة دائماً)
+                            </button>
                         </div>
-                    </div>
 
-                    <button onclick="renderHome()" class="text-xs text-purple-300 underline pt-1">العودة للشاشة الرئيسية</button>
-                </div>
-            `;
-            listenCloudForStudent();
+                        <div id="pane-student-shoot" class="hidden space-y-4">
+                            <div id="shooter-banner-box" class="text-white py-2.5 px-4 rounded-2xl font-black text-base md:text-xl shadow-lg animate-pulse border-2 border-white flex items-center justify-center gap-2">
+                                <span>⚽ سَدِّدْ يَا بَطَل: <span id="target-shooter-banner" class="text-amber-300 underline">---</span></span>
+                            </div>
+                            <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-lg">
+                                <p id="student-q-text" class="text-base md:text-xl font-black">---</p>
+                            </div>
+                            <div class="relative w-full max-w-md mx-auto h-52 goal-frame rounded-t-lg p-3 flex flex-col justify-between">
+                                <div id="student-goal-corners" class="grid grid-cols-2 gap-3 w-full h-full items-center"></div>
+                            </div>
+                        </div>
+
+                        <div id="pane-student-watch" class="space-y-4 bg-black/45 p-5 rounded-2xl border border-white/20">
+                            <h3 id="tournament-status-title" class="text-base md:text-lg font-black text-amber-300">📊 البث المباشر لركلات الترجيح</h3>
+                            <div id="watch-status-banner" class="bg-slate-900/90 border border-white/20 py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold text-emerald-300">
+                                في انتظار إشارة المعلم أ. عبد الله عكور...
+                            </div>
+                        </div>
+
+                        <button onclick="renderHome()" class="text-xs text-purple-300 underline pt-1">العودة للشاشة الرئيسية</button>
+                    </div>
+                `;
+                listenCloudForStudent();
+            });
         }
 
         function renderWingsForStudent() {
@@ -776,7 +918,7 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v17_live').on('value', (snap) => {
+            db.ref(CLOUD_PATH).on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
@@ -784,6 +926,11 @@
                 if (d.teamsCount) state.teamsCount = d.teamsCount;
                 if (d.studentResults) state.studentResults = d.studentResults;
                 if (d.studentAssignments) state.studentAssignments = d.studentAssignments;
+                if (d.shotTimeMinutes) {
+                    state.shotTimeMinutes = d.shotTimeMinutes;
+                    const badge = document.getElementById('student-timer-badge');
+                    if (badge) badge.innerText = `الوقت: ${state.shotTimeMinutes} دقيقة`;
+                }
                 renderWingsForStudent();
 
                 if (d.isTournamentFinished) {
@@ -857,7 +1004,7 @@
             }
 
             if (db) {
-                db.ref('akkour_penalty_v17_live').update({
+                db.ref(CLOUD_PATH).update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
