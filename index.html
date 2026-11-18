@@ -24,6 +24,16 @@
             background-size: 16px 16px;
             position: relative;
         }
+        .goal-frame-mini {
+            border-top: 7px solid #f8fafc;
+            border-left: 7px solid #f8fafc;
+            border-right: 7px solid #f8fafc;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.4), inset 0 6px 14px rgba(0,0,0,0.5);
+            background-color: rgba(6, 78, 59, 0.7);
+            background-image: linear-gradient(0deg, rgba(255,255,255,0.28) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.28) 1px, transparent 1px);
+            background-size: 12px 12px;
+            position: relative;
+        }
         .corner-btn {
             background: #ffffff;
             color: #064e3b;
@@ -42,6 +52,19 @@
             transform: scale(1.03);
             background: #fef08a;
             color: #0f172a;
+        }
+        .corner-btn-mini {
+            background: #ffffff;
+            color: #064e3b;
+            border: 2px solid #facc15;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6px 10px;
+            pointer-events: none;
         }
         #toast-notification {
             position: fixed;
@@ -303,7 +326,6 @@
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const now = audioCtx.currentTime;
-                // نغمات الفرح والهدف
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
                     osc.type = 'triangle';
@@ -315,7 +337,6 @@
                     osc.stop(now + idx * 0.12 + 0.4);
                 });
 
-                // تصفيق واحتفال
                 for (let i = 0; i < 20; i++) {
                     const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
                     const output = noiseBuffer.getChannelData(0);
@@ -334,7 +355,6 @@
                 }
             } catch(e) {}
 
-            // ألعاب نارية مكثفة وورورد تملأ الشاشة
             try {
                 confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 } });
                 triggerMegaFireworksVisuals();
@@ -345,7 +365,6 @@
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const now = audioCtx.currentTime;
-                // صوت احتفالي ضخم للتتويج
                 [440, 554.37, 659.25, 880, 1108.73, 1318.51].forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
                     osc.type = 'sawtooth';
@@ -359,7 +378,6 @@
             } catch(e) {}
 
             try {
-                // احتفال متواصل ومكثف للبطولة
                 let count = 0;
                 let interval = setInterval(() => {
                     confetti({ particleCount: 120, spread: 150, origin: { x: Math.random(), y: Math.random() * 0.5 } });
@@ -455,17 +473,18 @@
             }
         }
 
+        // مرونة فائقة في تنظيف ومطابقة أسماء الطلاب (تجاهل الهمزات، التاء/الهاء المربوطة، المسافات، الألف المقصورة/الياء، التشكيل)
         function superCleanName(str) {
             if (!str) return '';
             return str.trim()
-                .replace(/أ|إ|آ/g, 'ا')
+                .replace(/أ|إ|آ|ٱ/g, 'ا')
                 .replace(/ة/g, 'ه')
                 .replace(/ى/g, 'ي')
+                .replace(/ؤ/g, 'و')
+                .replace(/ئ/g, 'ي')
                 .replace(/ـ/g, '')
-                .replace(/[\u064b-\u0652]/g, '')
-                .replace(/عبد\s+/g, 'عبد')
-                .replace(/\s+/g, ' ')
-                .trim();
+                .replace(/[\u064b-\u065f]/g, '')
+                .replace(/\s+/g, '');
         }
 
         function isSameStudent(nameA, nameB) {
@@ -475,6 +494,16 @@
             if (a === b) return true;
             if (a.length >= 6 && b.length >= 6 && (a.includes(b) || b.includes(a))) return true;
             return false;
+        }
+
+        function resolveOfficialStudentName(typedName) {
+            const cleanedTyped = superCleanName(typedName);
+            if (!cleanedTyped) return typedName.trim();
+            const matched = studentsList.find(official => {
+                const cleanedOfficial = superCleanName(official);
+                return cleanedOfficial === cleanedTyped || (cleanedTyped.length >= 6 && (cleanedOfficial.includes(cleanedTyped) || cleanedTyped.includes(cleanedOfficial)));
+            });
+            return matched || typedName.trim();
         }
 
         function renderHome() {
@@ -510,6 +539,7 @@
             `;
         }
 
+        // نافذة دخول الطالب بالكتابة الحرة المرنة فقط (بدون قائمة منسدلة لكي لا يختار الطفل اسم غيره بالخطأ)
         function openStudentLoginModal() {
             const old = document.getElementById('student-login-modal');
             if (old) old.remove();
@@ -519,11 +549,8 @@
             modalBox.innerHTML = `
                 <div class="bg-[#1b1035] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
                     <h3 class="text-lg font-black text-emerald-300">👋 أهلاً بك يا بطل!</h3>
-                    <p class="text-xs text-purple-200">اكتب اسمك الثلاثي أو اختره من القائمة للدخول:</p>
-                    <input type="text" id="input-student-name" list="students-datalist" value="${myStudentName}" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl p-3.5 text-base font-bold text-white text-center">
-                    <datalist id="students-datalist">
-                        ${studentsList.map(s => `<option value="${s}">`).join('')}
-                    </datalist>
+                    <p class="text-xs text-purple-200">اكتب اسمك الثلاثي في الخانة بالأسفل للدخول:</p>
+                    <input type="text" id="input-student-name" autocomplete="off" value="${myStudentName}" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl p-3.5 text-base font-bold text-white text-center">
                     <div class="flex gap-3 pt-1">
                         <button type="button" onclick="confirmStudentLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-sm shadow-lg border border-emerald-300 cursor-pointer">دخول الساحة ⚽</button>
                         <button type="button" onclick="document.getElementById('student-login-modal').remove()" class="bg-rose-800 hover:bg-rose-700 text-white font-bold py-3.5 px-5 rounded-xl text-sm cursor-pointer">إلغاء</button>
@@ -531,6 +558,10 @@
                 </div>
             `;
             document.body.appendChild(modalBox);
+            setTimeout(() => {
+                const inp = document.getElementById('input-student-name');
+                if (inp) inp.focus();
+            }, 100);
         }
 
         function confirmStudentLogin() {
@@ -539,7 +570,7 @@
                 alert("⚠️ الرجاء كتابة اسمك الثلاثي بشكل صحيح!");
                 return;
             }
-            myStudentName = inputVal.trim();
+            myStudentName = resolveOfficialStudentName(inputVal);
             localStorage.setItem('akkour_penalty_my_name', myStudentName);
             const m = document.getElementById('student-login-modal');
             if (m) m.remove();
@@ -561,22 +592,32 @@
             }
         }
 
-        // الشاشة المصغرة المشتركة المحدثة لتظهر بدقة لدى المعلم وفي أيقونة المتابعة عند الطلاب
+        // الشاشة المصغرة المباشرة المشتركة: تعرض منظر الملعب والمرمى الشبكي والسؤال وخيارات الإجابة لحظة بلحظة للمعلم ولجميع الطلاب
         function buildMiniStudentPreviewHTML() {
             if (state.isTournamentFinished) {
                 return `<div class="bg-amber-500/20 border border-amber-400 rounded-xl p-3 text-center"><p class="text-sm font-black text-amber-300">🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز 🎉</p></div>`;
             }
             if (state.isShootingOpen && state.activeShooter) {
                 const activeTeamObj = state.teams.find(t => t.id === state.activeTeamId) || state.teams[0];
-                const qOpts = (state.activeQuestion && state.activeQuestion.options) ? state.activeQuestion.options.join('  |  ') : '';
+                const optionsArr = (state.activeQuestion && Array.isArray(state.activeQuestion.options)) ? state.activeQuestion.options : [];
+                const miniGoalBtns = optionsArr.map(opt => `
+                    <div class="corner-btn-mini rounded-lg text-xs md:text-sm font-black">
+                        ${opt}
+                    </div>
+                `).join('');
+
                 return `
-                    <div class="space-y-2 text-center">
+                    <div class="space-y-2.5 text-center">
                         <div class="text-white py-2 px-3 rounded-xl font-black text-xs md:text-sm border-2 border-white shadow" style="background-color:${activeTeamObj.color}">
                             <span>⚽ يسدد الآن البطل: <span class="text-amber-200 underline">${state.activeShooter} (${activeTeamObj.name})</span></span>
                         </div>
-                        <div class="bg-white text-slate-950 px-3 py-2.5 rounded-xl shadow text-xs md:text-sm font-black border border-emerald-400">
-                            ❓ السؤال: ${state.activeQuestion ? state.activeQuestion.text : ''}
-                            <div class="text-[11px] text-emerald-800 mt-1 font-bold">الخيارات: ${qOpts}</div>
+                        <div class="bg-white text-slate-950 px-3 py-2.5 rounded-xl shadow text-xs md:text-sm font-black border-2 border-blue-500">
+                            ${state.activeQuestion ? state.activeQuestion.text : 'جاري تحميل السؤال...'}
+                        </div>
+                        <div class="w-full max-w-sm mx-auto min-h-[135px] goal-frame-mini rounded-t-xl p-2.5 flex flex-col justify-center">
+                            <div class="grid grid-cols-2 gap-2 w-full items-stretch">
+                                ${miniGoalBtns}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -931,7 +972,7 @@
             renderTeacherDashboard();
         }
 
-        // شاشة الطالب (تم حذف التكرار البصري للأيقونة الزرقاء وإبقاؤها واحدة واضحة)
+        // شاشة الطالب
         function enterStudentArenaDirectly() {
             if (!myStudentName) {
                 openStudentLoginModal();
@@ -951,7 +992,7 @@
                         <button type="button" onclick="openStudentLoginModal()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/20">تعديل الاسم</button>
                     </div>
 
-                    <!-- الأيقونتان: الأولى للتسديد (تتحول للأزرق عند دوره بدون تكرار) والثانية بالأصفر للمتابعة -->
+                    <!-- الأيقونتان: الأولى للتسديد والثانية بالأصفر للمتابعة المباشرة -->
                     <div class="grid grid-cols-1 gap-3">
                         <button type="button" id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="w-full bg-slate-800 text-slate-400 py-4 px-4 rounded-2xl text-sm md:text-base font-black cursor-not-allowed shadow-lg border-2 border-white/15">
                             ⏳ أيقونة التسديد (مقفلة حتى يختارك المعلم)
@@ -961,7 +1002,7 @@
                         </button>
                     </div>
 
-                    <!-- شاشة التسديد الموحدة (بدون تكرار بصري) -->
+                    <!-- شاشة التسديد الموحدة -->
                     <div id="pane-student-shoot" class="hidden space-y-3 pt-1">
                         <div class="bg-white text-slate-950 p-4 rounded-2xl shadow-xl border-4 border-blue-500">
                             <p id="student-q-text" class="text-base md:text-xl font-black leading-relaxed">---</p>
@@ -971,7 +1012,7 @@
                         </div>
                     </div>
 
-                    <!-- شاشة المتابعة الصفراء -->
+                    <!-- شاشة المتابعة الصفراء: تعرض الملعب والمرمى والسؤال وخيارات الإجابة للمتابعين -->
                     <div id="pane-student-watch" class="space-y-3 bg-black/55 p-4 rounded-2xl border-2 border-amber-400/50">
                         <h3 id="tournament-status-title" class="text-sm md:text-base font-black text-amber-300">📺 البث المباشر (الشاشة المصغرة)</h3>
                         <div id="student-shared-mini-screen">
@@ -998,7 +1039,6 @@
             const isMyTurn = (state.isShootingOpen && state.activeShooter && isSameStudent(state.activeShooter, myStudentName));
 
             if (isMyTurn) {
-                // تفعيل زر التسديد باللون الأزرق الموحد بدون أي تكرار
                 shootBtn.disabled = false;
                 shootBtn.className = "w-full bg-[#2563eb] hover:bg-[#1d4ed8] text-white py-4 px-4 rounded-2xl text-base md:text-lg font-black shadow-xl animate-pulse cursor-pointer border-2 border-sky-200";
                 shootBtn.innerHTML = `⚽ دورك الآن يا <span class="text-amber-300 underline">${myStudentName}</span>! اضغط للتسديد`;
@@ -1087,7 +1127,6 @@
                 resultMsg = `🎉 جوووووول! سجل البطل (${shooterName}) هدفاً رائعاً!`;
                 state.studentResults[shooterName].push('goal');
                 alert(resultMsg);
-                // تفعيل الأصوات وتضخيم الألعاب النارية والورود عند التسجيل الناجح
                 playGoalCelebrationAudioAndVisuals();
             } else {
                 resultMsg = `❌ ضاعت الركلة! ارتطمت كرة البطل (${shooterName}) بالقائم!`;
