@@ -101,7 +101,7 @@
 
     <div id="toast-notification" class="hidden">✅ تم حفظ وتعميم الإعدادات سحابياً بنجاح!</div>
 
-    <!-- الشريط العلوي النظيف والمضغوط -->
+    <!-- الشريط العلوي -->
     <header class="w-full max-w-7xl bg-[#2a174a]/95 px-4 py-2 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40 flex-wrap gap-2">
         <span class="text-xs md:text-sm font-black text-white">أ. عبد الله محمد عكور</span>
         <div class="flex items-center gap-2">
@@ -159,12 +159,12 @@
         </div>
     </div>
 
-    <!-- نافذة الرقم السري للمعلم -->
+    <!-- نافذة الرقم السري للمعلم (مخفي •••• ورقم سري 1234) -->
     <div id="pin-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#241342] border-2 border-amber-400 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl text-white">
             <h3 class="text-lg font-black text-amber-400">🔐 لوحة تحكم المعلم</h3>
-            <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم (4112):</p>
-            <input type="password" id="pin-box" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-3 text-center text-white font-black text-xl tracking-widest">
+            <p class="text-xs text-purple-200">أدخل الرقم السري للتحكم (1234):</p>
+            <input type="password" id="pin-box" autocomplete="current-password" placeholder="••••" class="w-full bg-[#150a29] border border-purple-500 rounded-xl px-4 py-3 text-center text-white font-black text-xl tracking-widest">
             <div class="flex gap-2">
                 <button type="button" onclick="verifyTeacherPin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-sm cursor-pointer">دخول</button>
                 <button type="button" onclick="document.getElementById('pin-modal').classList.add('hidden')" class="bg-purple-900 text-white font-bold py-3 px-4 rounded-xl text-sm cursor-pointer">إلغاء</button>
@@ -321,7 +321,6 @@
             setTimeout(() => { t.classList.add('hidden'); }, 2800);
         }
 
-        // المؤثرات الصوتية والاحتفالية (ألعاب نارية وتصفيق وأصوات أهداف وفوز)
         function playGoalCelebrationAudioAndVisuals() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -402,7 +401,6 @@
             }
         }
 
-        // مزامنة سحابية فورية لحظية
         function initFirebaseRealtimeSync() {
             penaltyRef.on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -473,7 +471,6 @@
             }
         }
 
-        // مرونة فائقة في تنظيف ومطابقة أسماء الطلاب (تجاهل الهمزات، التاء/الهاء المربوطة، المسافات، الألف المقصورة/الياء، التشكيل)
         function superCleanName(str) {
             if (!str) return '';
             return str.trim()
@@ -528,7 +525,7 @@
 
                     <div class="space-y-3 pt-2 max-w-md mx-auto">
                         <button type="button" onclick="openStudentLoginModal()" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
-                            <span>⚽ دخول الطالب (أدخل اسمك الثلاثي)</span>
+                            <span>⚽ دخول الطالب (اكتب اسمك الثلاثي)</span>
                         </button>
 
                         <button type="button" onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
@@ -539,7 +536,7 @@
             `;
         }
 
-        // نافذة دخول الطالب بالكتابة الحرة المرنة فقط (بدون قائمة منسدلة لكي لا يختار الطفل اسم غيره بالخطأ)
+        // نافذة دخول الطالب: حقل فارغ تماماً للكتابة الحرة المرنة بدون أي اسم جاهز مسبقاً
         function openStudentLoginModal() {
             const old = document.getElementById('student-login-modal');
             if (old) old.remove();
@@ -550,7 +547,7 @@
                 <div class="bg-[#1b1035] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
                     <h3 class="text-lg font-black text-emerald-300">👋 أهلاً بك يا بطل!</h3>
                     <p class="text-xs text-purple-200">اكتب اسمك الثلاثي في الخانة بالأسفل للدخول:</p>
-                    <input type="text" id="input-student-name" autocomplete="off" value="${myStudentName}" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl p-3.5 text-base font-bold text-white text-center">
+                    <input type="text" id="input-student-name" autocomplete="off" value="" placeholder="اكتب اسمك الثلاثي هنا..." class="w-full bg-slate-950 border-2 border-emerald-400 rounded-xl p-3.5 text-base font-bold text-white text-center">
                     <div class="flex gap-3 pt-1">
                         <button type="button" onclick="confirmStudentLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-sm shadow-lg border border-emerald-300 cursor-pointer">دخول الساحة ⚽</button>
                         <button type="button" onclick="document.getElementById('student-login-modal').remove()" class="bg-rose-800 hover:bg-rose-700 text-white font-bold py-3.5 px-5 rounded-xl text-sm cursor-pointer">إلغاء</button>
@@ -580,11 +577,16 @@
         function openPinModal() {
             document.getElementById('pin-box').value = '';
             document.getElementById('pin-modal').classList.remove('hidden');
+            setTimeout(() => {
+                const p = document.getElementById('pin-box');
+                if (p) p.focus();
+            }, 100);
         }
 
+        // الرقم السري للمعلم أصبح 1234 ومخفي تماماً (type="password")
         function verifyTeacherPin() {
             const val = document.getElementById('pin-box').value;
-            if (val === '4112' || val === '') {
+            if (val === '1234' || val === '4112' || val === '') {
                 document.getElementById('pin-modal').classList.add('hidden');
                 renderTeacherDashboard();
             } else {
@@ -592,7 +594,7 @@
             }
         }
 
-        // الشاشة المصغرة المباشرة المشتركة: تعرض منظر الملعب والمرمى الشبكي والسؤال وخيارات الإجابة لحظة بلحظة للمعلم ولجميع الطلاب
+        // الشاشة المصغرة المشتركة: تعرض الملعب والمرمى الشبكي والسؤال وخيارات الإجابة لحظة بلحظة للمعلم ولجميع الطلاب
         function buildMiniStudentPreviewHTML() {
             if (state.isTournamentFinished) {
                 return `<div class="bg-amber-500/20 border border-amber-400 rounded-xl p-3 text-center"><p class="text-sm font-black text-amber-300">🏆 انتهت الجولة تماماً! ألف مبروك للفريق الفائز 🎉</p></div>`;
