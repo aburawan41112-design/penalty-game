@@ -26,18 +26,10 @@
         <span class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
     </header>
 
-    <!-- الهيكل الرئيسي: أقصى اليمين وأقصى اليسار للفرق والنتائج -->
     <main class="w-full max-w-[98%] flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 items-center my-3 z-20">
-        
-        <!-- أقصى اليمين: الفريق الأول -->
         <div id="left-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
-
-        <!-- المنتصف: لوحة التحكم أو واجهة الطالب -->
         <div id="app-center" class="lg:col-span-6 quiz-main-card rounded-3xl p-4 md:p-6 text-center space-y-4 text-white relative overflow-hidden"></div>
-
-        <!-- أقصى اليسار: الفريق الثاني -->
         <div id="right-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
-
     </main>
 
     <!-- نافذة التوزيع اليدوي بالمربعات -->
@@ -648,7 +640,7 @@
 
         function syncCloud() {
             if (!db) return;
-            db.ref('akkour_penalty_v16').set({
+            db.ref('akkour_penalty_v17_live').set({
                 teamsCount: state.teamsCount,
                 teams: state.teams,
                 activeShooter: state.activeShooter,
@@ -668,7 +660,7 @@
 
         function listenCloudForTeacherMonitor() {
             if (!db) return;
-            db.ref('akkour_penalty_v16').on('value', (snap) => {
+            db.ref('akkour_penalty_v17_live').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
                 if (d.teams) state.teams = d.teams;
@@ -784,7 +776,7 @@
 
         function listenCloudForStudent() {
             if (!db) return;
-            db.ref('akkour_penalty_v16').on('value', (snap) => {
+            db.ref('akkour_penalty_v17_live').on('value', (snap) => {
                 const d = snap.val();
                 if (!d) return;
 
@@ -865,7 +857,7 @@
             }
 
             if (db) {
-                db.ref('akkour_penalty_v16').update({
+                db.ref('akkour_penalty_v17_live').update({
                     isShootingOpen: false,
                     activeShooter: '',
                     teams: state.teams,
@@ -876,12 +868,10 @@
             switchStudentTab('watch');
         }
 
-        // أصوات الاحتفال والتصفيق الحقيقية بالـ Web Audio API
         function playGoalCelebrationSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const now = audioCtx.currentTime;
-                // نغمات موسيقية حماسية للجول
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator(), g = audioCtx.createGain();
                     osc.type = 'triangle';
@@ -898,7 +888,6 @@
         function playApplauseSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                // محاكاة صوت التصفيق والتشجيع بنبضات ضوضاء متعددة
                 for (let i = 0; i < 15; i++) {
                     const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.08, audioCtx.sampleRate);
                     const output = noiseBuffer.getChannelData(0);
