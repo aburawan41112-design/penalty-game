@@ -33,13 +33,13 @@
         <div id="right-wing-team" class="lg:col-span-3 bg-[#11221c]/90 border-2 border-emerald-500/50 rounded-3xl p-3 flex flex-col justify-between min-h-[680px] shadow-2xl text-right"></div>
     </main>
 
-    <!-- نافذة تأكيد وإرسال دور الطالب (حفظ وموافقة) -->
+    <!-- نافذة تأكيد وإرسال دور الطالب (موافقة وإرسال للطالب) -->
     <div id="approval-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-emerald-400 rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl text-white">
             <h3 class="text-lg font-black text-emerald-300">⚽ اعتماد دور التسديد للبطل</h3>
-            <p id="modal-approval-text" class="text-sm font-bold text-amber-200">هل تريد حفظ وإرسال الدور للبطل المحدد لفتح شاشة التسديد لديه فوراً؟</p>
+            <p id="modal-approval-text" class="text-sm font-bold text-amber-200">هل تريد حفظ موافقة وإرسال دور التسديد للبطل المحدد لفتحه لديه فوراً؟</p>
             <div class="flex gap-2 pt-2">
-                <button type="button" onclick="confirmAndBroadcastShooter()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">✅ حفظ موافقة وإرسال للطالب</button>
+                <button type="button" onclick="confirmAndBroadcastShooter()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300">✅ موافقة وإرسال للطالب</button>
                 <button type="button" onclick="document.getElementById('approval-modal').classList.add('hidden')" class="bg-rose-900 text-white font-bold py-3 px-4 rounded-xl text-xs">إلغاء</button>
             </div>
         </div>
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <!-- نافذة بنك الأسئلة الشامل (أكثر من 75 سؤالاً) -->
+    <!-- نافذة بنك الأسئلة الشامل (>75 سؤالاً) -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-6 text-center space-y-4 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الشامل (>75 سؤالاً)</h3>
@@ -289,22 +289,19 @@
                         <div id="mini-student-preview-box">${buildMiniStudentPreviewHTML()}</div>
                     </div>
 
-                    <!-- إعدادات الفرق والتوزيع اليدوي بالمربعات -->
+                    <!-- إعدادات الفرق وتعديل الألوان والأسماء -->
                     <div class="bg-black/40 p-3 rounded-2xl border border-white/20 space-y-3">
                         <div class="flex justify-between items-center flex-wrap gap-2">
                             <h3 class="text-xs font-black text-emerald-300">⚙️ إعدادات الفرق وتعديل أسمائها وألوانها:</h3>
-                            <div class="flex gap-2">
-                                <button type="button" onclick="openManualModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">🟦 التوزيع اليدوي بالمربعات (29 طالباً)</button>
-                                <button type="button" onclick="autoDistributeEvenly()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-xl text-xs shadow">🎲 توزيع تلقائي</button>
-                            </div>
+                            <button type="button" onclick="openManualModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-black px-3.5 py-1.5 rounded-xl text-xs shadow">🟦 التوزيع اليدوي بالمربعات (29 طالباً)</button>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="teams-inputs-grid"></div>
                     </div>
 
-                    <!-- بنك الأسئلة الشامل (>75 سؤالاً) وتحديد المادة -->
+                    <!-- بنك الأسئلة الشامل (>75 سؤالاً) وتحديد المادة ووقت التسديد -->
                     <div class="bg-black/45 p-3.5 rounded-2xl border border-sky-500/40 space-y-3">
-                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة:</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <h3 class="text-xs font-black text-sky-300">📚 بنك الأسئلة (>75 سؤالاً) وتحديد المادة والوقت:</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">حدد المادة المطلوبة:</label>
                                 <select id="cfg-subject" onchange="state.selectedSubjectFilter = this.value; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
@@ -313,15 +310,29 @@
                                     <option value="إسلامية" ${state.selectedSubjectFilter=='إسلامية'?'selected':''}>الدراسات الإسلامية فقط</option>
                                 </select>
                             </div>
+                            <div>
+                                <label class="text-[11px] text-purple-200 block mb-1">وقت التسديد لكل طالب:</label>
+                                <select id="cfg-time" onchange="state.shotTimeMinutes = parseInt(this.value) || 1; syncCloud();" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
+                                    <option value="1" ${state.shotTimeMinutes==1?'selected':''}>دقيقة واحدة</option>
+                                    <option value="2" ${state.shotTimeMinutes==2?'selected':''}>دقيقتان</option>
+                                </select>
+                            </div>
                             <div class="flex items-end">
                                 <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow">📥 استيراد وعرض بنك الأسئلة</button>
                             </div>
                         </div>
                     </div>
 
+                    <!-- أزرار الحفظ والتعميم والتحكم الشاملة -->
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
-                        <div class="flex flex-wrap gap-2">
-                            <button type="button" onclick="resetAllScores()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl text-xs shadow">🔄 تصفير النتائج وبدء دورة جديدة</button>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                            <button type="button" onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">💾 حفظ إعدادات وترتيب الفرق</button>
+                            <button type="button" onclick="saveQuestionSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">💾 حفظ واستيراد بنك الأسئلة</button>
+                            <button type="button" onclick="saveAndBroadcastAllSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border-2 border-emerald-300 animate-pulse">🚀 حفظ وتعميم إعدادات المنصة بالكامل</button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
+                            <button type="button" onclick="resetAllScores()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl text-xs shadow">🔄 تصفير النتائج وبدء دورة جديدة وتعميمها</button>
                             <button type="button" onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-4 py-3 rounded-xl text-xs shadow">🔒 إغلاق اللعبة مؤقتاً عند الطلاب</button>
                         </div>
                     </div>
@@ -413,15 +424,6 @@
             syncCloud();
         }
 
-        function autoDistributeEvenly() {
-            studentsList.forEach((s, idx) => {
-                state.studentAssignments[s] = (idx % 2) + 1;
-            });
-            renderTeacherDashboard();
-            syncCloud();
-            alert("🎲 تم توزيع الطلاب بالتساوي على الفريقين وتعميمهم سحابياً!");
-        }
-
         function openQuestionsModal() {
             const container = document.getElementById('questions-list-container');
             container.innerHTML = '';
@@ -449,12 +451,33 @@
                 state.selectedQuestionIndices.splice(pos, 1);
             }
             updateSelectedQuestionsCounter();
-            syncCloud();
         }
 
         function updateSelectedQuestionsCounter() {
             const el = document.getElementById('selected-q-count');
             if (el) el.innerText = `المحدد: ${state.selectedQuestionIndices.length}`;
+        }
+
+        function saveTeamSettings() {
+            updateTeamNamesLive();
+            syncCloud();
+            alert("💾 تم حفظ إعدادات وترتيب الفرق وتعميمها بنجاح!");
+        }
+
+        function saveQuestionSettings() {
+            syncCloud();
+            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل وتعميمه بنجاح!");
+        }
+
+        function saveAndBroadcastAllSettings() {
+            updateTeamNamesLive();
+            const timeEl = document.getElementById('cfg-time');
+            if (timeEl) state.shotTimeMinutes = parseInt(timeEl.value) || 1;
+            const subjEl = document.getElementById('cfg-subject');
+            if (subjEl) state.selectedSubjectFilter = subjEl.value;
+            syncCloud();
+            renderTeacherDashboard();
+            alert("🚀 تم حفظ وتعميم إعدادات المنصة بالكامل لجميع الطلاب سحابياً بنجاح!");
         }
 
         function renderWingsForTeacher() {
@@ -503,7 +526,7 @@
         function promptShooterApproval(studentName, teamId) {
             pendingShooter = studentName;
             pendingTeamId = teamId;
-            document.getElementById('modal-approval-text').innerText = `هل تريد حفظ موافقة وإرسال دور التسديد للبطل (${studentName}) وإرسال الشاشة للطلاب فوراً؟`;
+            document.getElementById('modal-approval-text').innerText = `هل تريد موافقة وإرسال دور التسديد للبطل (${studentName}) لفتحه لديه فوراً؟`;
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
@@ -526,7 +549,7 @@
             playWhistle();
             syncCloud();
             renderTeacherDashboard();
-            alert(`✅ تم حفظ موافقة وإرسال دور البطل (${pendingShooter}) وتعميمه سحابياً للطلاب بنجاح!`);
+            alert(`✅ تم موافقة وإرسال دور البطل (${pendingShooter}) وتعميمه سحابياً للطلاب بنجاح!`);
         }
 
         function closeTournamentLock() {
@@ -602,7 +625,7 @@
 
                     <div class="bg-emerald-900/50 border border-emerald-400 py-1.5 px-3 rounded-xl text-xs font-black flex justify-between items-center">
                         <span>⚽ ساحة الطلاب المباشرة (متصل بالسحابة)</span>
-                        <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: 1 دقيقة</span>
+                        <span id="student-timer-badge" class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded text-[11px] font-black">الوقت: ${state.shotTimeMinutes} دقيقة</span>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 bg-black/50 p-3 rounded-2xl border border-white/25">
@@ -643,6 +666,9 @@
         function refreshStudentArenaUI() {
             if (state.view !== 'student') return;
             renderWingsForStudent();
+
+            const badge = document.getElementById('student-timer-badge');
+            if (badge) badge.innerText = `الوقت: ${state.shotTimeMinutes} دقيقة`;
 
             if (state.isTournamentFinished) {
                 const title = document.getElementById('tournament-status-title');
