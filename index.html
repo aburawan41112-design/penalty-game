@@ -97,8 +97,8 @@
             }
         } catch(e) { db = null; }
         
-        const CLOUD_PATH = 'akkour_penalty_live_db_v80_circles_2026';
-        const LOCAL_CACHE_KEY = 'akkour_penalty_cache_v80_circles_2026';
+        const CLOUD_PATH = 'akkour_penalty_live_db_v80_fixed_match_2026';
+        const LOCAL_CACHE_KEY = 'akkour_penalty_cache_v80_fixed_match_2026';
 
         const studentsList = [
             "أديب عبدالله العمري", "بتال عبد الرحيم المطيري", "حسام يحيى المالكي", "حسن محمد الدوسري",
@@ -233,12 +233,15 @@
         let activeTabForManualModal = 1;
         let myStudentName = localStorage.getItem('akkour_my_student_name') || '';
 
-        function normalizeStr(str) {
+        // دالة موازنة وتوحيد أسماء الطلاب بدقة فائقة جداً (لإزالة الفراغات والهمزات والتشكيل)
+        function cleanName(str) {
             if (!str) return '';
             return str.trim()
                 .replace(/أ|إ|آ/g, 'ا')
                 .replace(/ة/g, 'ه')
                 .replace(/ى/g, 'ي')
+                .replace(/ـ/g, '')
+                .replace(/[\u064b-\u0652]/g, '') // إزالة التشكيل
                 .replace(/\s+/g, ' ');
         }
 
@@ -387,6 +390,18 @@
                         <button type="button" onclick="renderHome()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow cursor-pointer">العودة للرئيسية</button>
                     </div>
 
+                    <!-- أزرار بدء وإغلاق الجولة المباشرة -->
+                    <div class="bg-emerald-950/60 border-2 border-emerald-400 p-3 rounded-2xl flex justify-between items-center flex-wrap gap-2 shadow-lg">
+                        <div>
+                            <span class="text-xs font-black text-emerald-300 block">🟢 حالة الجولة الحالية عند الطلاب:</span>
+                            <span class="text-[11px] text-amber-200 font-bold">${state.isShootingOpen ? 'البطولة مفتوحة وجاهزة لاستقبال تسديدة البطل' : 'البطولة مغلقة أو في انتظار تحديد اللاعب'}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="startTournamentLiveRound()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs shadow-lg animate-pulse">🚀 بدء واستئناف الجولة</button>
+                            <button type="button" onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-3 py-2 rounded-xl text-xs shadow">🔒 إغلاق اللعبة مؤقتاً</button>
+                        </div>
+                    </div>
+
                     <div class="bg-[#1b1035] border-2 border-amber-400 rounded-2xl p-2.5 shadow-lg space-y-1.5">
                         <div class="flex justify-between items-center">
                             <span class="text-[11px] font-black text-amber-300">📺 معاينة شاشة الطالب المباشرة:</span>
@@ -440,20 +455,32 @@
 
                     <!-- أزرار الحفظ والتعميم والتحكم الشاملة -->
                     <div class="bg-black/50 p-3 rounded-2xl border border-emerald-400/50 space-y-2.5">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <button type="button" onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">💾 حفظ إعدادات وترتيب الفرق</button>
-                            <button type="button" onclick="saveQuestionSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow">💾 حفظ واستيراد بنك الأسئلة</button>
                             <button type="button" onclick="saveAndBroadcastAllSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border-2 border-emerald-300 animate-pulse">🚀 حفظ وتعميم إعدادات المنصة بالكامل</button>
                         </div>
 
                         <div class="flex flex-wrap gap-2 pt-2 border-t border-white/10">
                             <button type="button" onclick="resetAllScores()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-black py-3 rounded-xl text-xs shadow">🔄 تصفير النتائج وبدء دورة جديدة وتعميمها</button>
-                            <button type="button" onclick="closeTournamentLock()" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-4 py-3 rounded-xl text-xs shadow">🔒 إغلاق اللعبة مؤقتاً عند الطلاب</button>
                         </div>
                     </div>
                 </div>
             `;
             renderTeamsInputsInTeacher();
+        }
+
+        function startTournamentLiveRound() {
+            state.isShootingOpen = true;
+            state.isTournamentFinished = false;
+            if (!state.activeShooter) {
+                // اختيار أول طالب بالصدفة كافتتاحي إذا لم يتم اختيار طالب
+                const firstTeamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === 1);
+                state.activeShooter = firstTeamStudents[0] || studentsList[0];
+                state.activeTeamId = 1;
+            }
+            syncCloud();
+            renderTeacherDashboard();
+            alert("🚀 تم بدء وتعميم الجولة الحالية سحابياً عند جميع الطلاب!");
         }
 
         function distributeRandomly() {
@@ -601,11 +628,6 @@
             alert("💾 تم حفظ إعدادات وترتيب الفرق وتعميمها بنجاح!");
         }
 
-        function saveQuestionSettings() {
-            syncCloud();
-            alert("💾 تم حفظ واستيراد بنك الأسئلة الشامل (80 سؤالاً) وتعميمه بنجاح!");
-        }
-
         function saveAndBroadcastAllSettings() {
             updateTeamNamesLive();
             const timeEl = document.getElementById('cfg-time');
@@ -631,7 +653,6 @@
             rightWing.innerHTML = renderSingleWingHTML(t2);
         }
 
-        // دالة رسم دوائر ركلات الترجيح الملونة (لون الفريق عند التسجيل أو X أحمر عند الخطأ أو دوائر فارغة)
         function renderKicksCirclesHTML(teamObj) {
             const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
             let resultsArr = [];
@@ -819,7 +840,7 @@
                         </button>
                     </div>
 
-                    <!-- شاشة التسديد الخاصة بالبطل المطابق اسمه فقط -->
+                    <!-- شاشة التسديد الخاصة بالبطل المطابق اسمه تماماً -->
                     <div id="pane-student-shoot" class="hidden space-y-4">
                         <div id="shooter-banner-box" class="text-white py-3 px-4 rounded-2xl font-black text-base md:text-xl shadow-lg animate-pulse border-2 border-white flex items-center justify-center gap-2">
                             <span>⚽ جاء دورك يا بطل: <span id="target-shooter-banner" class="text-amber-300 underline">---</span></span>
@@ -839,7 +860,7 @@
                             ${state.lastShotResult || '⏳ انتظر حتى يأتي دورك في أيقونة التسديد...'}
                         </div>
                         <div id="student-live-preview-box" class="bg-slate-950 p-3 rounded-xl border border-white/15 text-center text-xs text-purple-200">
-                            ${state.isShootingOpen && state.activeShooter ? `🎯 الدور الحالي للبطل: <span class="text-amber-300 font-bold">${state.activeShooter}</span><br>سؤال: ${state.activeQuestion ? state.activeQuestion.text : ''}` : '✨ رقباء البث المباشر: المعلم يدير الجولة الآن...'}
+                            ${state.isShootingOpen && state.activeShooter ? `🎯 الدور الحالي للبطل: <span class="text-amber-300 font-bold">${state.activeShooter}</span><br>سؤال: ${state.activeQuestion ? state.activeQuestion.text : ''}` : '✨ رقباء البث المباشر: البطولة نشطة وجاهزة...'}
                         </div>
                     </div>
 
@@ -870,7 +891,8 @@
             const livePreview = document.getElementById('student-live-preview-box');
             if (!shootBtn || !banner) return;
 
-            const isMyTurn = (state.isShootingOpen && state.activeShooter && (normalizeStr(state.activeShooter) === normalizeStr(myStudentName)));
+            // مطابقة اسم الطالب المسجل مع اسم البطل المرسل من المعلم (باستخدام الدالة الذكية لتجاوز أي فروق بالهمزات أو الفراغات)
+            const isMyTurn = (state.isShootingOpen && state.activeShooter && (cleanName(state.activeShooter) === cleanName(myStudentName)));
 
             if (isMyTurn) {
                 shootBtn.disabled = false;
