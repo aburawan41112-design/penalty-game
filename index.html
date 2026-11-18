@@ -312,6 +312,8 @@
         let activeTabForManualModal = 1;
         let myStudentName = localStorage.getItem('akkour_penalty_my_name') || '';
         let studentActiveTab = 'watch';
+        let remainingSeconds = 60;
+        let shotTimerInterval = null;
 
         function showToast(msg) {
             const t = document.getElementById('toast-notification');
@@ -422,7 +424,16 @@
                             correctIndex: Number(data.activeQuestion.correctIndex || 0)
                         };
                     }
-                    if (typeof data.isShootingOpen === 'boolean') state.isShootingOpen = data.isShootingOpen;
+                    if (typeof data.isShootingOpen === 'boolean') {
+                        const wasOpen = state.isShootingOpen;
+                        state.isShootingOpen = data.isShootingOpen;
+                        if (!wasOpen && state.isShootingOpen) {
+                            remainingSeconds = (state.shotTimeMinutes || 1) * 60;
+                            startShotTimer();
+                        } else if (!state.isShootingOpen) {
+                            stopShotTimer();
+                        }
+                    }
                     if (data.lastShotResult) state.lastShotResult = data.lastShotResult;
                     if (typeof data.isTournamentFinished === 'boolean') {
                         if (!state.isTournamentFinished && data.isTournamentFinished) {
@@ -434,6 +445,47 @@
                     updateCurrentViewFromState();
                 }
             });
+        }
+
+        function startShotTimer() {
+            stopShotTimer();
+            shotTimerInterval = setInterval(() => {
+                if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                    updateTimerDisplayInUI();
+                } else {
+                    stopShotTimer();
+                    if (state.view === 'student' && state.isShootingOpen && state.activeShooter && isSameStudent(state.activeShooter, myStudentName)) {
+                        alert("⏰ انتهى وقت التسديد المخصص!");
+                        executeStudentKick(false, state.activeShooter, state.activeTeamId);
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopShotTimer() {
+            if (shotTimerInterval) {
+                clearInterval(shotTimerInterval);
+                shotTimerInterval = null;
+            }
+        }
+
+        function updateTimerDisplayInUI() {
+            const mins = Math.floor(remainingSeconds / 60);
+            const secs = remainingSeconds % 60;
+            const formattedTime = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+            // تحديث العداد في الشاشة الكبيرة للطالب
+            const timerElStudent = document.getElementById('shot-timer-badge');
+            if (timerElStudent) {
+                timerElStudent.innerText = `⏱️ الوقت المتبقي: ${formattedTime}`;
+            }
+
+            // تحديث العداد الكبير جداً والبارز في الشاشة المصغرة للجميع
+            const miniTimer = document.getElementById('mini-giant-timer');
+            if (miniTimer) {
+                miniTimer.innerText = formattedTime;
+            }
         }
 
         function pushStateToCloud(successMsg = "") {
@@ -623,15 +675,25 @@
                     </div>
                 `).join('');
 
+                const mins = Math.floor(remainingSeconds / 60);
+                const secs = remainingSeconds % 60;
+                const formattedTime = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
                 return `
-                    <div class="space-y-2.5 text-center">
-                        <div class="text-white py-2 px-3 rounded-xl font-black text-xs md:text-sm border-2 border-white shadow" style="background-color:${activeTeamObj.color}">
+                    <div class="space-y-2 text-center">
+                        <!-- العداد الكبير والبارز في الشاشة المصغرة -->
+                        <div class="bg-rose-600 border-2 border-yellow-300 rounded-xl py-1.5 px-3 flex justify-between items-center shadow-lg animate-pulse">
+                            <span class="text-xs font-black text-white">⏱️ الوقت المتبقي:</span>
+                            <span id="mini-giant-timer" class="text-xl md:text-2xl font-black text-yellow-300 tracking-wider">${formattedTime}</span>
+                        </div>
+
+                        <div class="text-white py-1.5 px-3 rounded-xl font-black text-xs md:text-sm border-2 border-white shadow" style="background-color:${activeTeamObj.color}">
                             <span>⚽ يسدد الآن البطل: <span class="text-amber-200 underline">${state.activeShooter} (${activeTeamObj.name})</span></span>
                         </div>
-                        <div class="bg-white text-slate-950 px-3 py-2.5 rounded-xl shadow text-xs md:text-sm font-black border-2 border-blue-500">
+                        <div class="bg-white text-slate-950 px-3 py-2 rounded-xl shadow text-xs md:text-sm font-black border-2 border-blue-500">
                             ${state.activeQuestion ? state.activeQuestion.text : 'جاري تحميل السؤال...'}
                         </div>
-                        <div class="w-full max-w-sm mx-auto min-h-[135px] goal-frame-mini rounded-t-xl p-2.5 flex flex-col justify-center">
+                        <div class="w-full max-w-sm mx-auto min-h-[120px] goal-frame-mini rounded-t-xl p-2 flex flex-col justify-center">
                             <div class="grid grid-cols-2 gap-2 w-full items-stretch">
                                 ${miniGoalBtns}
                             </div>
@@ -682,9 +744,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5" id="teams-inputs-grid"></div>
                     </div>
 
-                    <!-- بنك الأسئلة (80 سؤالاً) وإعدادات الوقت وعدد الركلات -->
+                    <!-- بنك الأسئلة (80 سؤالاً) وإعدادات الوقت (من 1 إلى 5 دقائق) وعدد الركلات -->
                     <div class="bg-black/45 p-3 rounded-2xl border border-sky-500/40 space-y-2.5">
-                        <h3 class="text-xs font-black text-sky-300">📚 إعدادات الأسئلة (80 سؤالاً) ووقت التسديد وعدد الركلات:</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 إعدادات الأسئلة (80 سؤالاً) ووقت التسديد (1 إلى 5 دقائق) وعدد الركلات:</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">المادة المطلوبة:</label>
@@ -695,10 +757,13 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="text-[11px] text-purple-200 block mb-1">وقت التسديد لكل طالب:</label>
+                                <label class="text-[11px] text-purple-200 block mb-1">وقت التسديد (1 إلى 5 دقائق):</label>
                                 <select id="cfg-time" onchange="state.shotTimeMinutes = parseInt(this.value) || 1; pushStateToCloud('✅ تم تحديث وقت التسديد وتعميمه!');" class="w-full bg-slate-950 border border-white/30 rounded-xl p-2 text-xs font-bold text-white">
                                     <option value="1" ${state.shotTimeMinutes==1?'selected':''}>دقيقة واحدة</option>
                                     <option value="2" ${state.shotTimeMinutes==2?'selected':''}>دقيقتان</option>
+                                    <option value="3" ${state.shotTimeMinutes==3?'selected':''}>3 دقائق</option>
+                                    <option value="4" ${state.shotTimeMinutes==4?'selected':''}>4 دقائق</option>
+                                    <option value="5" ${state.shotTimeMinutes==5?'selected':''}>5 دقائق</option>
                                 </select>
                             </div>
                             <div>
@@ -1017,6 +1082,11 @@
                         <button type="button" onclick="openStudentLoginModal()" class="bg-slate-900/80 hover:bg-slate-900 text-xs px-2.5 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/30">تعديل</button>
                     </div>
 
+                    <!-- عداد الوقت التنازلي الكبير والبارز للطالب المسدد -->
+                    <div id="shot-timer-badge" class="bg-rose-600 border-2 border-yellow-300 text-white font-black py-3 px-4 rounded-2xl text-lg md:text-xl text-center shadow-2xl animate-pulse tracking-wide">
+                        ⏱️ الوقت المتبقي: جاهز
+                    </div>
+
                     <!-- الأيقونتان: الأولى للتسديد والثانية للمتابعة -->
                     <div class="grid grid-cols-1 gap-3">
                         <button type="button" id="btn-student-shoot" onclick="switchStudentTab('shoot')" disabled class="w-full bg-slate-800 text-slate-400 py-4 px-4 rounded-2xl text-sm md:text-base font-black cursor-not-allowed shadow-lg border-2 border-white/15">
@@ -1143,6 +1213,7 @@
         }
 
         function executeStudentKick(isCorrect, shooterName, teamId) {
+            stopShotTimer();
             let resultMsg = '';
             if (!state.studentResults[shooterName]) state.studentResults[shooterName] = [];
 
