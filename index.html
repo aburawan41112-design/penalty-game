@@ -104,7 +104,8 @@
     <!-- الشريط العلوي -->
     <header class="w-full max-w-7xl bg-[#2a174a]/95 px-4 py-2 rounded-2xl shadow-lg flex justify-between items-center border border-purple-400/30 z-40 flex-wrap gap-2">
         <span class="text-xs md:text-sm font-black text-white">أ. عبد الله محمد عكور</span>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span id="global-live-status-badge" class="bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full border border-emerald-200 shadow animate-pulse">🟢 مباشر (اللعبة مفتوحة)</span>
             <span id="global-cloud-status" class="bg-emerald-950 text-emerald-300 text-[11px] font-black px-3 py-1 rounded-full border border-emerald-400/50">🟢 مزامنة فورية نشطة</span>
             <span class="bg-emerald-600 text-white text-xs font-black px-3 py-1 rounded-full shadow">الصف الثالث الابتدائي • ثالث ١</span>
         </div>
@@ -133,7 +134,7 @@
     <div id="manual-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-5 text-center space-y-3 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-black text-sky-300">🟦 التوزيع اليدوي للطلاب بالمربعات (29 طالباً)</h3>
-            <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على أسماء الطلاب لإسنادهم إليه:</p>
+            <p class="text-xs text-purple-200">اختر الفريق المطلوب أولاً، ثم اضغط على أسماء الطلاب لإسنادهم إليه (الطلاب غير المحددين ينتقلون تلقائياً لقائمة غير المشاركين):</p>
             <div class="flex justify-center gap-2 flex-wrap" id="modal-teams-tabs"></div>
             <div id="modal-students-grid" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-right max-h-80 overflow-y-auto bg-black/50 p-3 rounded-2xl border border-white/20"></div>
             <button type="button" onclick="document.getElementById('manual-modal').classList.add('hidden'); pushStateToCloud('✅ تم حفظ وتعميم التوزيع اليدوي سحابياً!'); renderTeacherDashboard();" class="bg-sky-600 hover:bg-sky-500 text-white font-black py-3 px-8 rounded-xl text-sm cursor-pointer">حفظ وتعميم التوزيع ✓</button>
@@ -287,6 +288,7 @@
 
         let state = {
             view: 'home',
+            isGameLive: true,
             teamsCount: 2,
             teams: [
                 { id: 1, name: 'الفريق الأزرق', color: '#2563eb', score: 0 },
@@ -321,6 +323,18 @@
             t.innerText = msg;
             t.classList.remove('hidden');
             setTimeout(() => { t.classList.add('hidden'); }, 2800);
+        }
+
+        function updateLiveStatusBadgeInHeader() {
+            const badge = document.getElementById('global-live-status-badge');
+            if (!badge) return;
+            if (state.isGameLive) {
+                badge.className = "bg-emerald-600 text-white text-xs font-black px-3.5 py-1 rounded-full border border-emerald-200 shadow animate-pulse";
+                badge.innerText = "🟢 مباشر (اللعبة مفتوحة)";
+            } else {
+                badge.className = "bg-rose-600 text-white text-xs font-black px-3.5 py-1 rounded-full border border-rose-200 shadow";
+                badge.innerText = "🔴 المعلم مغلق اللعبة";
+            }
         }
 
         function playGoalCelebrationAudioAndVisuals() {
@@ -407,12 +421,13 @@
             penaltyRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
+                    if (typeof data.isGameLive === 'boolean') state.isGameLive = data.isGameLive;
                     if (Array.isArray(data.teams)) state.teams = data.teams;
-                    if (data.studentAssignments) state.studentAssignments = data.studentAssignments;
-                    if (data.studentResults) state.studentResults = data.studentResults;
+                    state.studentAssignments = data.studentAssignments || {};
+                    state.studentResults = data.studentResults || {};
                     if (data.selectedSubjectFilter) state.selectedSubjectFilter = data.selectedSubjectFilter;
-                    if (Array.isArray(data.selectedQuestionIndices)) state.selectedQuestionIndices = data.selectedQuestionIndices;
-                    if (Array.isArray(data.usedQuestionIndices)) state.usedQuestionIndices = data.usedQuestionIndices;
+                    state.selectedQuestionIndices = Array.isArray(data.selectedQuestionIndices) ? data.selectedQuestionIndices : [];
+                    state.usedQuestionIndices = Array.isArray(data.usedQuestionIndices) ? data.usedQuestionIndices : [];
                     if (data.shotTimeMinutes) state.shotTimeMinutes = data.shotTimeMinutes;
                     if (data.totalKicksPerTeam) state.totalKicksPerTeam = data.totalKicksPerTeam;
                     if (data.activeShooter !== undefined) state.activeShooter = data.activeShooter;
@@ -442,6 +457,7 @@
                         state.isTournamentFinished = data.isTournamentFinished;
                     }
 
+                    updateLiveStatusBadgeInHeader();
                     updateCurrentViewFromState();
                 }
             });
@@ -475,13 +491,11 @@
             const secs = remainingSeconds % 60;
             const formattedTime = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
-            // تحديث العداد في الشاشة الكبيرة للطالب
             const timerElStudent = document.getElementById('shot-timer-badge');
             if (timerElStudent) {
                 timerElStudent.innerText = `⏱️ الوقت المتبقي: ${formattedTime}`;
             }
 
-            // تحديث العداد الكبير جداً والبارز في الشاشة المصغرة للجميع
             const miniTimer = document.getElementById('mini-giant-timer');
             if (miniTimer) {
                 miniTimer.innerText = formattedTime;
@@ -490,6 +504,7 @@
 
         function pushStateToCloud(successMsg = "") {
             const payload = {
+                isGameLive: state.isGameLive,
                 teams: state.teams,
                 studentAssignments: state.studentAssignments,
                 studentResults: state.studentResults,
@@ -514,10 +529,21 @@
         }
 
         function updateCurrentViewFromState() {
-            if (state.view === 'teacher') {
+            if (state.view === 'home') {
+                renderHome();
+            } else if (state.view === 'teacher') {
                 renderWingsForTeacher();
                 const previewBox = document.getElementById('mini-student-preview-box');
                 if (previewBox) previewBox.innerHTML = buildMiniStudentPreviewHTML();
+                const nonPartBox = document.getElementById('non-participants-box');
+                if (nonPartBox) nonPartBox.innerHTML = buildNonParticipantsHTML();
+                const toggleBtn = document.getElementById('btn-toggle-game-live');
+                if (toggleBtn) {
+                    toggleBtn.className = state.isGameLive
+                        ? "bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow border border-emerald-200 cursor-pointer"
+                        : "bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow border border-rose-200 cursor-pointer";
+                    toggleBtn.innerHTML = state.isGameLive ? "🟢 مباشر (اضغط لإغلاق اللعبة)" : "🔴 اللعبة مغلقة (اضغط لفتحها)";
+                }
             } else if (state.view === 'student') {
                 refreshStudentArenaUI();
             }
@@ -567,16 +593,36 @@
 
         function renderHome() {
             state.view = 'home';
+            updateLiveStatusBadgeInHeader();
             document.getElementById('left-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">ملعب الترجيح ⚽</div>`;
             document.getElementById('right-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">منطقة التتويج 🏆</div>`;
+
+            const liveBannerHtml = state.isGameLive
+                ? `<div class="inline-flex items-center gap-2 bg-emerald-600/30 border-2 border-emerald-400 text-emerald-200 px-4 py-1.5 rounded-full text-xs md:text-sm font-black shadow animate-pulse">
+                    <span>🟢 مباشر الآن — المسابقة مفتوحة للطلاب</span>
+                   </div>`
+                : `<div class="inline-flex items-center gap-2 bg-rose-600/35 border-2 border-rose-400 text-rose-200 px-4 py-1.5 rounded-full text-xs md:text-sm font-black shadow">
+                    <span>🔴 المعلم مغلق اللعبة حالياً — انتظر إشارة البدء</span>
+                   </div>`;
+
+            const studentBtnHtml = state.isGameLive
+                ? `<button type="button" onclick="openStudentLoginModal()" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
+                    <span>⚽ دخول الطالب (اكتب اسمك الثلاثي)</span>
+                   </button>`
+                : `<button type="button" onclick="alert('🔴 المعلم مغلق اللعبة حالياً! انتظر حتى يفتحها المعلم.')" class="w-full bg-rose-900/70 text-rose-200 font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 cursor-not-allowed border-2 border-rose-500 text-base md:text-lg">
+                    <span>🔴 المعلم مغلق اللعبة (الدخول مقفل مؤقتاً)</span>
+                   </button>`;
 
             const box = document.getElementById('app-center');
             box.style.backgroundColor = '#11221c';
             box.style.borderColor = '#23473a';
             box.innerHTML = `
                 <div class="space-y-4 py-3">
-                    <div class="inline-block bg-[#1f3d32] border border-emerald-500/40 text-emerald-300 px-4 py-1 rounded-full text-xs font-bold">
-                        🏆 نهائي ركلات الترجيح التفاعلية
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="inline-block bg-[#1f3d32] border border-emerald-500/40 text-emerald-300 px-4 py-1 rounded-full text-xs font-bold">
+                            🏆 نهائي ركلات الترجيح التفاعلية
+                        </div>
+                        ${liveBannerHtml}
                     </div>
                     <div>
                         <h2 class="text-2xl md:text-4xl font-black text-white tracking-wide">
@@ -588,9 +634,7 @@
                     </div>
 
                     <div class="space-y-3 pt-2 max-w-md mx-auto">
-                        <button type="button" onclick="openStudentLoginModal()" class="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-emerald-300 text-base md:text-lg">
-                            <span>⚽ دخول الطالب (اكتب اسمك الثلاثي)</span>
-                        </button>
+                        ${studentBtnHtml}
 
                         <button type="button" onclick="openPinModal()" class="w-full bg-[#fbbf24] hover:bg-[#f59e0b] text-slate-950 font-black py-4 px-5 rounded-2xl shadow-xl flex items-center justify-center gap-2 transition cursor-pointer border-2 border-amber-200 text-base md:text-lg">
                             <span>🔐 لوحة تحكم المعلم (أ. عبد الله عكور)</span>
@@ -601,6 +645,10 @@
         }
 
         function openStudentLoginModal() {
+            if (!state.isGameLive) {
+                alert("🔴 المعلم مغلق اللعبة حالياً! انتظر حتى يفتحها المعلم.");
+                return;
+            }
             const old = document.getElementById('student-login-modal');
             if (old) old.remove();
             const modalBox = document.createElement('div');
@@ -656,6 +704,13 @@
             }
         }
 
+        function toggleGameLiveStatus() {
+            state.isGameLive = !state.isGameLive;
+            updateLiveStatusBadgeInHeader();
+            renderTeacherDashboard();
+            pushStateToCloud(state.isGameLive ? "🟢 تم فتح اللعبة للطلاب الآن (مباشر)!" : "🔴 تم إغلاق اللعبة عند الطلاب!");
+        }
+
         function buildMiniStudentPreviewHTML() {
             if (state.isTournamentFinished) {
                 let winnerText = "تعادل الفريقان!";
@@ -681,7 +736,6 @@
 
                 return `
                     <div class="space-y-2 text-center">
-                        <!-- العداد الكبير والبارز في الشاشة المصغرة -->
                         <div class="bg-rose-600 border-2 border-yellow-300 rounded-xl py-1.5 px-3 flex justify-between items-center shadow-lg animate-pulse">
                             <span class="text-xs font-black text-white">⏱️ الوقت المتبقي:</span>
                             <span id="mini-giant-timer" class="text-xl md:text-2xl font-black text-yellow-300 tracking-wider">${formattedTime}</span>
@@ -704,8 +758,43 @@
             return `<div class="bg-slate-900/95 border border-white/20 rounded-xl p-3 text-center"><p class="text-xs md:text-sm font-bold text-emerald-300">${state.lastShotResult || '🟢 الساحة مفتوحة وجاهزة — بانتظار اختيار المعلم للبطل المسدد'}</p></div>`;
         }
 
+        function buildNonParticipantsHTML() {
+            const unassigned = studentsList.filter(s => !state.studentAssignments[s]);
+            if (unassigned.length === 0) {
+                return `<p class="text-xs text-emerald-300 font-bold text-center py-2">✅ جميع الطلاب (29 طالباً) موزَّعون على الفرق.</p>`;
+            }
+            const itemsHtml = unassigned.map(s => `
+                <div class="bg-slate-950 border border-white/15 rounded-xl p-2 flex items-center justify-between gap-1 text-xs">
+                    <span class="font-bold text-slate-300 truncate">${s}</span>
+                    <div class="flex gap-1 shrink-0">
+                        <button type="button" onclick="quickAssignStudent('${s}', 1)" class="px-2 py-0.5 rounded text-[10px] font-black text-white cursor-pointer" style="background:${state.teams[0].color}" title="إضافة للفريق الأول">+1</button>
+                        <button type="button" onclick="quickAssignStudent('${s}', 2)" class="px-2 py-0.5 rounded text-[10px] font-black text-white cursor-pointer" style="background:${state.teams[1].color}" title="إضافة للفريق الثاني">+2</button>
+                    </div>
+                </div>
+            `).join('');
+
+            return `
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-black text-amber-300">👥 الطلاب غير المشاركين / الغائبون (${unassigned.length} طالباً):</span>
+                        <span class="text-[10px] text-slate-400">اضغط +1 أو +2 لإضافته لفريق</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-1.5 max-h-48 overflow-y-auto pr-1">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function quickAssignStudent(studentName, teamId) {
+            state.studentAssignments[studentName] = teamId;
+            renderTeacherDashboard();
+            pushStateToCloud(`✅ تمت إضافة (${studentName}) للفريق وتعميمها!`);
+        }
+
         function renderTeacherDashboard() {
             state.view = 'teacher';
+            updateLiveStatusBadgeInHeader();
             renderWingsForTeacher();
 
             let kicksOptionsHtml = '';
@@ -718,9 +807,14 @@
             box.style.borderColor = '#23473a';
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
-                    <div class="flex justify-between items-center border-b border-white/20 pb-2">
+                    <div class="flex justify-between items-center border-b border-white/20 pb-2 flex-wrap gap-2">
                         <h2 class="text-sm md:text-base font-black text-amber-300">🎛️ لوحة تحكم المعلم السحابية المباشرة</h2>
-                        <button type="button" onclick="renderHome()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow cursor-pointer">العودة للرئيسية</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" id="btn-toggle-game-live" onclick="toggleGameLiveStatus()" class="${state.isGameLive ? 'bg-emerald-600 hover:bg-emerald-500 border-emerald-200' : 'bg-rose-600 hover:bg-rose-500 border-rose-200'} text-white px-3 py-1.5 rounded-xl text-xs font-black shadow border cursor-pointer">
+                                ${state.isGameLive ? '🟢 مباشر (اضغط لإغلاق اللعبة)' : '🔴 اللعبة مغلقة (اضغط لفتحها)'}
+                            </button>
+                            <button type="button" onclick="renderHome()" class="bg-rose-700 hover:bg-rose-600 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow cursor-pointer">العودة للرئيسية</button>
+                        </div>
                     </div>
 
                     <!-- الشاشة المصغرة المباشرة -->
@@ -776,13 +870,18 @@
                         <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow cursor-pointer">📥 استيراد وتحديد الأسئلة من البنك (80 سؤالاً كاملاً)</button>
                     </div>
 
-                    <!-- أزرار الحفظ والتعميم السحابي -->
+                    <!-- أزرار الحفظ والتعميم السحابي وتصفير وبدء الجولة -->
                     <div class="bg-black/55 p-3 rounded-2xl border border-emerald-400/50 space-y-2">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <button type="button" onclick="saveTeamSettings()" class="bg-blue-600 hover:bg-blue-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow cursor-pointer">💾 حفظ إعدادات وترتيب الفرق</button>
                             <button type="button" onclick="saveAndBroadcastAllSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border border-indigo-300 cursor-pointer">📡 حفظ وتعميم كافة الإعدادات والأسئلة سحابياً</button>
                         </div>
-                        <button type="button" onclick="resetAllScores()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-2.5 rounded-xl text-xs shadow cursor-pointer">🔄 تصفير النتائج وبدء دورة جديدة وتعميمها</button>
+                        <button type="button" onclick="resetAllScores()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-black py-3 rounded-xl text-xs shadow-lg border border-emerald-300 cursor-pointer">🔄 تصفير النتائج وتعميم وبدء الجولة الآن</button>
+                    </div>
+
+                    <!-- قسم الطلاب غير المشاركين / الغائبون -->
+                    <div id="non-participants-box" class="bg-black/50 p-3 rounded-2xl border border-amber-400/30">
+                        ${buildNonParticipantsHTML()}
                     </div>
                 </div>
             `;
@@ -794,7 +893,7 @@
             shuffled.forEach((student, idx) => {
                 state.studentAssignments[student] = (idx % 2) + 1;
             });
-            renderWingsForTeacher();
+            renderTeacherDashboard();
             pushStateToCloud("🎲 تم التوزيع العشوائي المتساوٍ وتعميمه سحابياً بنجاح!");
         }
 
@@ -878,6 +977,8 @@
             }
             renderManualModalContent();
             renderWingsForTeacher();
+            const nonPartBox = document.getElementById('non-participants-box');
+            if (nonPartBox) nonPartBox.innerHTML = buildNonParticipantsHTML();
             pushStateToCloud();
         }
 
@@ -951,7 +1052,7 @@
         }
 
         function renderKicksCirclesHTML(teamObj) {
-            const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
+            const teamStudents = studentsList.filter(s => state.studentAssignments[s] === teamObj.id);
             let resultsArr = [];
             teamStudents.forEach(s => {
                 if (state.studentResults[s]) resultsArr = resultsArr.concat(state.studentResults[s]);
@@ -972,8 +1073,8 @@
         }
 
         function renderSingleWingHTML(teamObj) {
-            const teamStudents = studentsList.filter(s => (state.studentAssignments[s] || 1) === teamObj.id);
-            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400">لا توجد أسماء مسندة (استخدم التوزيع العشوائي)</p>' : teamStudents.map(s => {
+            const teamStudents = studentsList.filter(s => state.studentAssignments[s] === teamObj.id);
+            const studentsListHtml = teamStudents.length === 0 ? '<p class="text-[11px] text-slate-400 text-center py-3">لم يتم إسناد لاعبين لهذا الفريق بعد</p>' : teamStudents.map(s => {
                 const isCurrentActive = (state.isShootingOpen && state.activeShooter === s);
                 return `
                     <div onclick="promptShooterApproval('${s}', ${teamObj.id})" class="p-2 rounded-lg border text-xs font-bold cursor-pointer transition flex items-center justify-between ${isCurrentActive ? 'bg-amber-600 border-amber-300 text-white animate-pulse shadow-lg' : 'bg-slate-950 border-white/20 text-slate-200 hover:bg-slate-900'}">
@@ -986,7 +1087,7 @@
             return `
                 <div class="space-y-2">
                     <div class="p-2.5 rounded-xl border-2 text-center shadow" style="background:${teamObj.color}33; border-color:${teamObj.color}">
-                        <h4 class="font-black text-sm text-white">${teamObj.name}</h4>
+                        <h4 class="font-black text-sm text-white">${teamObj.name} (${teamStudents.length})</h4>
                         <p class="text-2xl font-black text-white mt-0.5">${teamObj.score || 0}</p>
                         ${renderKicksCirclesHTML(teamObj)}
                     </div>
@@ -1051,13 +1152,18 @@
             state.studentResults = {};
             state.usedQuestionIndices = [];
             state.isTournamentFinished = false;
-            state.lastShotResult = '🔄 تم تصفير النتائج وبدء دورة جديدة';
-            pushStateToCloud("🔄 تم تصفير النتائج وتعميمها سحابياً للجميع!");
+            state.isGameLive = true;
+            state.lastShotResult = '🟢 تم تصفير النتائج وبدء الجولة الجديدة الآن!';
+            pushStateToCloud("🔄 تم تصفير النتائج وتعميم وبدء الجولة سحابياً للجميع!");
             renderTeacherDashboard();
         }
 
         // شاشة الطالب (يتغير لون خلفية شاشته ليطابق لون فريقه تماماً)
         function enterStudentArenaDirectly() {
+            if (!state.isGameLive) {
+                renderHome();
+                return;
+            }
             if (!myStudentName) {
                 openStudentLoginModal();
                 return;
@@ -1066,7 +1172,7 @@
             renderWingsForStudent();
 
             const myTeam = getStudentAssignedTeam(myStudentName);
-            const teamNameBadge = myTeam ? myTeam.name : 'غير مسند لفريق بعد';
+            const teamNameBadge = myTeam ? myTeam.name : 'مشاهد / غير مسند لفريق';
 
             const box = document.getElementById('app-center');
             box.style.backgroundColor = myTeam ? myTeam.color + '26' : '#11221c';
@@ -1123,6 +1229,10 @@
 
         function refreshStudentArenaUI() {
             if (state.view !== 'student') return;
+            if (!state.isGameLive) {
+                renderHome();
+                return;
+            }
             renderWingsForStudent();
 
             const sharedMini = document.getElementById('student-shared-mini-screen');
