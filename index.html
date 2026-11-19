@@ -244,19 +244,38 @@
             "مصبح محمد المنهالي", "مناف محمد الغامدي", "ناصر فواز الحربي", "يوسف حاتم الرويلي", "يوسف محمد العنزي"
         ];
 
+        // 30 لوناً متمايزاً لـ 29 طالباً + لون احتياطي إضافي
         const teamColorPalette = [
-            { name: "أزرق", hex: "#2563eb" },
             { name: "أحمر", hex: "#dc2626" },
-            { name: "أصفر", hex: "#eab308" },
+            { name: "برتقالي غامق", hex: "#c2410c" },
+            { name: "برتقالي فاتح", hex: "#fb923c" },
+            { name: "بنفسجي غامق", hex: "#6b21a8" },
+            { name: "بنفسجي فاتح", hex: "#c084fc" },
+            { name: "وردي غامق", hex: "#be185d" },
+            { name: "وردي فاتح", hex: "#f472b6" },
+            { name: "رمادي غامق", hex: "#374151" },
+            { name: "رمادي متوسط", hex: "#6b7280" },
+            { name: "رمادي فاتح", hex: "#d1d5db" },
+            { name: "أبيض", hex: "#ffffff" },
+            { name: "أسود", hex: "#090d16" },
+            { name: "سماوي", hex: "#0ea5e9" },
+            { name: "أزرق غامق", hex: "#1e3a8a" },
+            { name: "حبري", hex: "#1d4ed8" },
+            { name: "بحري", hex: "#0369a1" },
+            { name: "أزرق فاتح", hex: "#7dd3fc" },
             { name: "أخضر", hex: "#16a34a" },
-            { name: "برتقالي", hex: "#ea580c" },
-            { name: "بنفسجي", hex: "#9333ea" },
-            { name: "سماوي", hex: "#0891b2" },
-            { name: "وردي", hex: "#db2777" },
+            { name: "أخضر غامق", hex: "#14532d" },
+            { name: "أخضر فاتح", hex: "#86efac" },
             { name: "زمردي", hex: "#059669" },
-            { name: "نيلي", hex: "#4f46e5" },
-            { name: "عنابي", hex: "#be123c" },
-            { name: "ذهبي", hex: "#d97706" }
+            { name: "أصفر", hex: "#eab308" },
+            { name: "أصفر فاتح", hex: "#fde047" },
+            { name: "ذهبي", hex: "#d97706" },
+            { name: "عنابي", hex: "#9f1239" },
+            { name: "نيلي", hex: "#4338ca" },
+            { name: "فيروزي", hex: "#14b8a6" },
+            { name: "زيتوني", hex: "#65a30d" },
+            { name: "مرجاني", hex: "#f43f5e" },
+            { name: "خزامي", hex: "#a855f7" }
         ];
 
         // 104 أسئلة مقتصرة بالكامل على الفصل الدراسي الأول للصف الثالث الابتدائي:
@@ -1162,7 +1181,7 @@
             grid.innerHTML = '';
             for (let i = 0; i < state.teamsCount; i++) {
                 const t = state.teams[i];
-                const swatches = teamColorPalette.map(c => `
+                const swatches = teamColorPalette.slice(0, 12).map(c => `
                     <button type="button" onclick="changeTeamColor(${i}, '${c.hex}')" class="w-5 h-5 rounded-full border border-white hover:scale-125 transition cursor-pointer" style="background:${c.hex}" title="${c.name}"></button>
                 `).join('');
 
@@ -1558,7 +1577,7 @@
                 const colorSwatches = isTeacherView ? `
                     <div class="flex flex-wrap gap-1 mt-1">
                         ${teamColorPalette.map(c => `
-                            <button type="button" onclick="setStudentPointsColor('${s}', '${c.hex}')" class="w-3.5 h-3.5 rounded-full border ${sColor === c.hex ? 'border-white scale-125' : 'border-white/30'} cursor-pointer" style="background:${c.hex}" title="${c.name}"></button>
+                            <button type="button" onclick="setStudentPointsColor('${s}', '${c.hex}')" class="w-3.5 h-3.5 rounded-full border ${sColor === c.hex ? 'border-amber-300 scale-125 ring-1 ring-white' : 'border-white/30'} cursor-pointer" style="background:${c.hex}" title="${c.name}"></button>
                         `).join('')}
                     </div>
                 ` : '';
@@ -1599,7 +1618,7 @@
                     </div>
                     <div class="bg-black/45 border border-white/15 rounded-2xl p-2.5 space-y-2">
                         <div class="flex justify-between items-center flex-wrap gap-1">
-                            <h4 class="text-xs font-black text-sky-300">🌳 مصفوفة الأسماء ومسطرة التقدم (3، 6، 9...) - 29 لاعباً:</h4>
+                            <h4 class="text-xs font-black text-sky-300">🌳 مصفوفة الأسماء ومسطرة التقدم (3، 6، 9...) - 29 لاعباً (${teamColorPalette.length} لوناً):</h4>
                             <span class="text-[10px] text-emerald-300">من لم يسجل تبقى نقاطه دون نقصان</span>
                         </div>
                         <div class="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">${rowsHtml}</div>
@@ -1621,7 +1640,7 @@
                         <p class="text-xl font-black text-white mt-1">هدف: ${state.pointsTarget}</p>
                         <p class="text-[11px] text-emerald-300 mt-0.5">الجولة رقم: ${state.pointsRoundNumber}</p>
                     </div>
-                    <button type="button" onclick="randomizeStudentColors()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-2 rounded-xl text-xs cursor-pointer">🎨 توزيع ألوان اللاعبين عشوائياً</button>
+                    <button type="button" onclick="randomizeStudentColors()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-2 rounded-xl text-xs cursor-pointer">🎨 توزيع ألوان اللاعبين عشوائياً (${teamColorPalette.length} لون)</button>
                 </div>
             `;
 
@@ -1702,13 +1721,13 @@
         }
 
         function randomizeStudentColors() {
-            const shuffledPalette = [...teamColorPalette];
+            const indices = teamColorPalette.map((_, idx) => idx).sort(() => Math.random() - 0.5);
             studentsList.forEach((s, i) => {
-                const randColor = shuffledPalette[(i + Math.floor(Math.random() * shuffledPalette.length)) % shuffledPalette.length].hex;
-                state.studentColors[s] = randColor;
+                const chosenPaletteItem = teamColorPalette[indices[i % indices.length]];
+                state.studentColors[s] = chosenPaletteItem.hex;
             });
             renderPointsTeacherMode();
-            pushStateToCloud("🎨 تم توزيع ألوان اللاعبين عشوائياً وتعميمها!");
+            pushStateToCloud(`🎨 تم توزيع ${teamColorPalette.length} لوناً مختلفاً على اللاعبين عشوائياً وتعميمها!`);
         }
 
         function setStudentPointsColor(studentName, hex) {
