@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بطولة ركلات الترجيح وجمع النقاط - أ. عبد الله عكور</title>
+    <title>ركلات الترجيح وبطولة جمع النقاط - أ. عبد الله عكور</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -144,7 +144,7 @@
     <!-- نافذة بنك الأسئلة الشامل + إضافة سؤال يدوي / تحرير سؤال -->
     <div id="questions-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-sky-400 rounded-3xl max-w-3xl w-full p-5 text-center space-y-3 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الموحد (لغتي وإسلامية + إضافة / تحرير سؤال يدوي)</h3>
+            <h3 class="text-lg font-black text-sky-300">📥 بنك الأسئلة الموحد - الفصل الدراسي الأول (لغتي الوحدات 1-4 + إسلامية توحيد وفقه)</h3>
 
             <!-- خانة إضافة سؤال يدوي / تحرير سؤال -->
             <div class="bg-emerald-950/45 border-2 border-emerald-400/60 rounded-2xl p-3 space-y-2 text-right">
@@ -154,10 +154,10 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                     <div>
-                        <label class="text-[11px] text-purple-200 block mb-1">المادة:</label>
+                        <label class="text-[11px] text-purple-200 block mb-1">المادة (فصل أول):</label>
                         <select id="manual-q-subject" class="w-full bg-slate-950 border border-white/25 rounded-xl p-2 text-xs font-bold text-white">
-                            <option value="لغتي">لغتي</option>
-                            <option value="إسلامية">إسلامية</option>
+                            <option value="لغتي">لغتي (الفصل الأول)</option>
+                            <option value="إسلامية">إسلامية (توحيد وفقه - فصل أول)</option>
                         </select>
                     </div>
                     <div class="md:col-span-2">
@@ -206,7 +206,7 @@
     <div id="competitors-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-[#1b1035] border-2 border-amber-400 rounded-3xl max-w-4xl w-full p-5 text-center space-y-3 shadow-2xl text-white max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-white/15 pb-2">
-                <h3 class="text-base md:text-lg font-black text-amber-300">📊 متابعة الفرق المنافسة وترتيب المتنافسين</h3>
+                <h3 class="text-base md:text-lg font-black text-amber-300">ترتيب الفرق المتنافسة / المتنافسين</h3>
                 <button type="button" onclick="document.getElementById('competitors-modal').classList.add('hidden')" class="bg-rose-700 hover:bg-rose-600 text-white font-black px-3.5 py-1.5 rounded-xl text-xs cursor-pointer">إغلاق ✕</button>
             </div>
             <div id="competitors-modal-body" class="space-y-3 text-right"></div>
@@ -259,88 +259,118 @@
             { name: "ذهبي", hex: "#d97706" }
         ];
 
+        // 104 أسئلة مقتصرة بالكامل على الفصل الدراسي الأول للصف الثالث الابتدائي:
+        // - لغتي: الوحدات 1، 2، 3، 4 (فصل أول فقط)
+        // - إسلامية: التوحيد والفقه (فصل أول فقط)
         const defaultMasterQuestionBank = [
             { subject: "لغتي", text: "كلمة (الشَّمْس) تبدأ بلام شمسية تُكتب ولا تُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "لغتي", text: "كلمة (القَمَر) تبدأ بلام قمرية تُكتب وتُنطق.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "لغتي", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُورَة", "عُصْفُور", "عَصْفَرَة", "عَصَافِر"], correctIndex: 1 },
-            { subject: "لغتي", text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مُدَرِّسُون", "مَدَارِس", "دُرُوس", "دَارِسُون"], correctIndex: 1 },
+            { subject: "لغتي", text: "كلمة (الطَّعَام) تبدأ بلام شمسية وحرفها الشمسي هو:", options: ["الطاء", "اللام", "الألف", "الميم"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (الْكِتَاب) تبدأ بلام قمرية وحرفها القمري هو:", options: ["الكاف", "التاء", "الباء", "الألف"], correctIndex: 0 },
             { subject: "لغتي", text: "التاء المربوطة (ة) تُنطق هاءً عند الوقف وتاءً عند الوصل.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "لغتي", text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف جر"], correctIndex: 1 },
-            { subject: "لغتي", text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 0 },
-            { subject: "لغتي", text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "اسم"], correctIndex: 2 },
-            { subject: "لغتي", text: "اسم الإشارة المناسب للمفرد المذكر (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correctIndex: 0 },
-            { subject: "لغتي", text: "اسم الإشارة المناسب للمفرد المؤنث (.... معلمة متميزة):", options: ["هذا", "هذه", "هؤلاء", "هذان"], correctIndex: 1 },
-            { subject: "لغتي", text: "ضمير المتكلم المناسب للمفرد (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correctIndex: 0 },
-            { subject: "لغتي", text: "ضد كلمة (نَظِيف) هو:", options: ["جَمِيل", "مُتَّسِخ", "كَبِير", "سَرِيع"], correctIndex: 1 },
-            { subject: "لغتي", text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "سَمِين", "كَبِير"], correctIndex: 0 },
-            { subject: "لغتي", text: "المد في كلمة (قالَ) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الفتح"], correctIndex: 2 },
-            { subject: "لغتي", text: "المد في كلمة (صَغِير) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الكسر"], correctIndex: 1 },
-            { subject: "لغتي", text: "المد في كلمة (عُصْفُور) هو مد بـ:", options: ["الواو", "الياء", "الألف", "الضم"], correctIndex: 0 },
-            { subject: "لغتي", text: "مرادف كلمة (جَمِيل) هو:", options: ["قَبِيح", "حَسَن", "صَغِير", "بَعِيد"], correctIndex: 1 },
-            { subject: "لغتي", text: "مرادف كلمة (سَرِيع) هو:", options: ["بَطِيء", "مُسْرِع", "كَسْلَان", "نَائِم"], correctIndex: 1 },
-            { subject: "لغتي", text: "حرف العطف المناسب (دخل محمد ثُمَّ عليٌّ) يفيد:", options: ["الترتيب والتراخي", "السرعة", "التشكيك", "التخيير"], correctIndex: 0 },
-            { subject: "لغتي", text: "حرف العطف المناسب (جاء أحمد فَـخالدٌ) يفيد:", options: ["السرعة والتعقيب", "التراخي", "الشك", "النفي"], correctIndex: 0 },
-            { subject: "لغتي", text: "كلمة (كتاب) تُنوَّن بالفتح هكذا:", options: ["كتاباً", "كتابٌ", "كتابٍ", "الكتاب"], correctIndex: 0 },
-            { subject: "لغتي", text: "كلمة (مدرسة) تُنوَّن بالضم هكذا:", options: ["مدرسةً", "مدرسةٌ", "مدرسةٍ", "المدرسة"], correctIndex: 1 },
+            { subject: "لغتي", text: "الكلمة المختومة بتاء مربوطة من بين الكلمات التالية هي:", options: ["مَدْرَسَة", "بَنَات", "مُنَبِّه", "يَكْتُبُ"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المختومة بتاء مفتوحة هي:", options: ["بَنَات", "مَكْتَبَة", "حَدِيقَة", "سَيَّارَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المختومة بهاء (ه) هي:", options: ["مُنَبِّه", "أُخْت", "طَالِبَة", "مَعْلُومَات"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (نَظِيف) هو:", options: ["مُتَّسِخ", "جَمِيل", "كَبِير", "سَرِيع"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (يُعَانِق) أي:", options: ["يَحْتَضِن", "يَبْتَعِد", "يَغْضَب", "يَسْخَر"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (أَصْدِقَاء) هو:", options: ["صَدِيق", "صَدَاقَة", "مُصَادِق", "صِدْق"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (جَار) هو:", options: ["جِيرَان", "مِجْوَر", "جَارَة", "تِجَارَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب النهي يبدأ بـ:", options: ["لا الناهية", "نعم", "قد", "إنّ"], correctIndex: 0 },
+
+            { subject: "لغتي", text: "مفرد كلمة (عَصَافِير) هو:", options: ["عُصْفُور", "عَصْفَرَة", "صَفِير", "عُصْفُورِيَّة"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (مَدْرَسَة) هو:", options: ["مَدَارِس", "مُدَرِّسُون", "دُرُوس", "دَارِسُون"], correctIndex: 0 },
+            { subject: "لغتي", text: "المد في كلمة (قَالَ) هو مد بـ:", options: ["الألف", "الواو", "الياء", "الفتح"], correctIndex: 0 },
+            { subject: "لغتي", text: "المد في كلمة (صَغِير) هو مد بـ:", options: ["الياء", "الألف", "الواو", "الكسر"], correctIndex: 0 },
+            { subject: "لغتي", text: "المد في كلمة (عُصْفُور) هو مد بـ:", options: ["الواو", "الألف", "الياء", "الضم"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (طَوِيل) هو:", options: ["قَصِير", "عَرِيض", "كَبِير", "سَمِين"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (جَمِيل) هو:", options: ["حَسَن", "قَبِيح", "صَغِير", "بَعِيد"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (سَرِيع) هو:", options: ["مُسْرِع", "بَطِيء", "كَسْلَان", "نَائِم"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف العطف (ثُمَّ) يفيد:", options: ["الترتيب والتراخي", "السرعة المباشرة", "النفي", "الاستفهام"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف العطف (الْفَاءُ) يفيد:", options: ["السرعة والتعقيب", "التراخي الطويل", "التخيير", "الشك"], correctIndex: 0 },
+            { subject: "لغتي", text: "اسم الإشارة للمفرد المذكر القريب (.... تلميذ مجتهد):", options: ["هذا", "هذه", "هؤلاء", "هاتان"], correctIndex: 0 },
+            { subject: "لغتي", text: "اسم الإشارة للمفرد المؤنث القريب (.... معلمة متميزة):", options: ["هذه", "هذا", "هؤلاء", "هذان"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضمير المتكلم للمفرد المذكر والمؤنث (.... أحب وطني):", options: ["أنا", "نحن", "هو", "هي"], correctIndex: 0 },
+
+            { subject: "لغتي", text: "نوع كلمة (يَكْتُبُ) من أقسام الكلمة:", options: ["فعل مضارع", "فعل ماضٍ", "فعل أمر", "حرف"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع كلمة (كَتَبَ) من أقسام الكلمة:", options: ["فعل ماضٍ", "فعل مضارع", "فعل أمر", "حرف"], correctIndex: 0 },
+            { subject: "لغتي", text: "نوع كلمة (اُكْتُبْ) من أقسام الكلمة:", options: ["فعل أمر", "فعل ماضٍ", "فعل مضارع", "اسم"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (كِتَاب) تُنوَّن بالفتح هكذا:", options: ["كِتَاباً", "كِتَابٌ", "كِتَابٍ", "الْكِتَاب"], correctIndex: 0 },
+            { subject: "لغتي", text: "كلمة (مَدْرَسَة) تُنوَّن بالضم هكذا:", options: ["مَدْرَسَةٌ", "مَدْرَسَةً", "مَدْرَسَةٍ", "الْمَدْرَسَة"], correctIndex: 0 },
             { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سَأَلَ) كُتبت على:", options: ["الألف", "الواو", "الياء", "السطر"], correctIndex: 0 },
-            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سُؤال) كُتبت على:", options: ["الواو", "الألف", "الياء", "السطر"], correctIndex: 0 },
-            { subject: "لغتي", text: "مفرد كلمة (أَقْلَام) هو:", options: ["قَلَم", "قَلَمان", "أَقْلَامَة", "مِقْلَمَة"], correctIndex: 0 },
-            { subject: "لغتي", text: "جمع كلمة (بَيْت) هو:", options: ["بُيُوت", "أبوات", "بيات", "بياوت"], correctIndex: 0 },
-            { subject: "لغتي", text: "المذكر من كلمة (طبيبة) هو:", options: ["طبيب", "معلم", "مهندس", "مدير"], correctIndex: 0 },
-            { subject: "لغتي", text: "المؤنث من كلمة (معلم) هو:", options: ["معلمة", "طالبة", "مديرة", "طبيبة"], correctIndex: 0 },
-            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العاقل (.... زارنا اليوم؟):", options: ["مَنْ", "مَا", "هَل", "أين"], correctIndex: 0 },
-            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن المكان (.... الكتاب؟):", options: ["أَيْنَ", "مَنْ", "مَتَى", "لِمَاذَا"], correctIndex: 0 },
-            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن الزمن (.... تبدأ الحصة؟):", options: ["مَتَى", "مَنْ", "كَيْف", "كم"], correctIndex: 0 },
-            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العدد (.... تلميذاً بالفصل؟):", options: ["كَمْ", "مَنْ", "أين", "كيف"], correctIndex: 0 },
-            { subject: "لغتي", text: "أسلوب النهي يبدأ بـ:", options: ["لا الناهية", "ما النافية", "نعم", "ليت"], correctIndex: 0 },
-            { subject: "لغتي", text: "أسلوب التمني يبدأ بـ:", options: ["لَيْتَ", "لعل", "أن", "قد"], correctIndex: 0 },
-            { subject: "لغتي", text: "الكلمة المختومة بتاء مفتوحة هي:", options: ["بَنَات", "مدرسة", "فاطمة", "سفينة"], correctIndex: 0 },
-            { subject: "لغتي", text: "الكلمة المختومة بهاء (ه) هي:", options: ["مُنَبِّه", "وجهة", "زهرة", "قاعة"], correctIndex: 0 },
-            { subject: "لغتي", text: "ضد كلمة (ذَكَاء) هو:", options: ["غَبَاء", "سُرْعَة", "فَهْم", "نجاح"], correctIndex: 0 },
-            { subject: "لغتي", text: "ضد كلمة (قَوِيّ) هو:", options: ["ضَعِيف", "بَطِيء", "صَغِير", "فقير"], correctIndex: 0 },
-            { subject: "لغتي", text: "مرادف كلمة (شَجَاعَة) هو:", options: ["جُرْأَة", "خَوْف", "حُزْن", "كسل"], correctIndex: 0 },
-            { subject: "لغتي", text: "جمع كلمة (مسلم) هو:", options: ["مُسْلِمُون", "مسلمات", "مسلمان", "إسلام"], correctIndex: 0 },
-            { subject: "لغتي", text: "مفرد كلمة (مساجد) هو:", options: ["مَسْجِد", "ساجد", "سجادة", "مسجدان"], correctIndex: 0 },
-            { subject: "لغتي", text: "الكلمة التي تحوي مداً بالواو:", options: ["عُصُور", "كتاب", "بيت", "شمس"], correctIndex: 0 },
-            { subject: "لغتي", text: "حرف الجر المناسب (سافرتُ .... المطار):", options: ["إِلَى", "في", "على", "عن"], correctIndex: 0 },
-            { subject: "لغتي", text: "حرف الجر المناسب (الكتاب .... الطاولة):", options: ["عَلَى", "إلى", "في", "من"], correctIndex: 0 },
-            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة قطع هي:", options: ["أحمد", "المدرسة", "الكتاب", "البيت"], correctIndex: 0 },
+            { subject: "لغتي", text: "الهمزة المتوسطة في كلمة (سُؤَال) كُتبت على:", options: ["الواو", "الألف", "الياء", "السطر"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (أَقْلَام) هو:", options: ["قَلَم", "قَلَمان", "مِقْلَمَة", "قُلُوم"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (بَيْت) هو:", options: ["بُيُوت", "أَبْوَات", "بَيْتَان", "بَيِّتُون"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (ذَكَاء) هو:", options: ["غَبَاء", "فَهْم", "نَجَاح", "سُرْعَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "ضد كلمة (قَوِيّ) هو:", options: ["ضَعِيف", "شُجَاع", "كَبِير", "سَرِيع"], correctIndex: 0 },
+            { subject: "لغتي", text: "مرادف كلمة (شَجَاعَة) هو:", options: ["جُرْأَة", "خَوْف", "حُزْن", "كَسَل"], correctIndex: 0 },
+            { subject: "لغتي", text: "أسلوب التمني يبدأ بـ:", options: ["لَيْتَ", "لَا", "هَلْ", "مَتَى"], correctIndex: 0 },
+
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العاقل (.... زارنا اليوم؟):", options: ["مَنْ", "مَا", "هَلْ", "أَيْنَ"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن المكان (.... الكتاب؟):", options: ["أَيْنَ", "مَنْ", "مَتَى", "كَمْ"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن الزمن (.... تبدأ الحصة؟):", options: ["مَتَى", "مَنْ", "أَيْنَ", "مَا"], correctIndex: 0 },
+            { subject: "لغتي", text: "أداة الاستفهام للسؤال عن العدد (.... تلميذاً في الفصل؟):", options: ["كَمْ", "مَنْ", "أَيْنَ", "مَتَى"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف الجر المناسب (سافرتُ .... المطار):", options: ["إِلَى", "مَنْ", "هَلْ", "سَوْفَ"], correctIndex: 0 },
+            { subject: "لغتي", text: "حرف الجر المناسب (الكتاب .... الطاولة):", options: ["عَلَى", "مَنْ", "لَيْتَ", "لَا"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة قطع هي:", options: ["أَحْمَد", "الْمَدْرَسَة", "الْكِتَاب", "الْبَيْت"], correctIndex: 0 },
+            { subject: "لغتي", text: "الكلمة المبدوءة بهمزة وصل هي:", options: ["اِجْلِسْ", "أَكَلَ", "أَخَذَ", "أُمّ"], correctIndex: 0 },
+            { subject: "لغتي", text: "مفرد كلمة (مَسَاجِد) هو:", options: ["مَسْجِد", "سَجَّادَة", "سُجُود", "مَسْجُود"], correctIndex: 0 },
+            { subject: "لغتي", text: "جمع كلمة (مُسْلِم) المذكر السالم هو:", options: ["مُسْلِمُون", "مُسْلِمَات", "إِسْلَام", "سِلْم"], correctIndex: 0 },
+            { subject: "لغتي", text: "المذكر من كلمة (طَبِيبَة) هو:", options: ["طَبِيب", "مُعَلِّمَة", "طَالِبَة", "مُدِيرَة"], correctIndex: 0 },
+            { subject: "لغتي", text: "المؤنث من كلمة (مُعَلِّم) هو:", options: ["مُعَلِّمَة", "مُعَلِّمُون", "مُهَنْدِس", "طَبِيب"], correctIndex: 0 },
 
             { subject: "إسلامية", text: "مراتب الدين الإسلامي ثلاث: الإسلام، الإيمان، الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "أعظم مراتب الدين هو الإحسان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد أركان الإسلام خمسة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "الركن الأول من أركان الإسلام هو الشهادتان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الأول من أركان الإسلام هو شهادة أن لا إله إلا الله وأن محمداً رسول الله.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "الركن الثاني من أركان الإسلام هو إقام الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الثالث من أركان الإسلام هو إيتاء الزكاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الرابع من أركان الإسلام هو صوم رمضان.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركن الخامس من أركان الإسلام هو حج بيت الله الحرام لمن استطاع إليه سبيلاً.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد أركان الإيمان ستة أركان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "الركن الأول من أركان الإيمان هو الإيمان بالله.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "نبينا هو محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "ديننا هو الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "ربنا هو الله الذي ربانا وربى جميع العالمين بنعمه.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "ديننا هو الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نبينا هو محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "وُلد نبينا محمد صلى الله عليه وسلم في مكة المكرمة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عام الفيل هو العام الذي وُلد فيه النبي محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم أم النبي محمد صلى الله عليه وسلم هو آمنة بنت وهب.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "اسم والد النبي محمد صلى الله عليه وسلم هو عبد الله.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "كفل النبي صلى الله عليه وسلم بعد وفاة أمه جده عبد المطلب ثم عمه أبو طالب.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "القبلة التي نتوجه إليها في صلاتنا هي الكعبة المشرفة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "مفتاح الجنة هو الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "دخول الخلاء يكون بتقديم الرجل اليسرى.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "الخروج من الخلاء يكون بتقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "الدعاء عند دخول الخلاء: (اللهم إني أعوذ بك من الخبث والخبائث).", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "الذكر عند الخروج من الخلاء: (غفرانك).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نحن نعبد الله وحده لا شريك له.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من أسماء الله الحسنى: الرزاق، العليم، السميع، البصير.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الإحسان أن تعبد الله كأنك تراه، فإن لم تكن تراه فإنه يراك.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "ملائكة الله مخلوقون من نور ولا يعصون الله ما أمرهم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "القرآن الكريم هو كتاب الله المنزل على نبينا محمد صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الرسل عليهم السلام أرسلهم الله لهداية الناس إلى الحق.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الإيمان بالقدر خيره وشره من أركان الإيمان الستة.", options: ["صح", "خطأ"], correctIndex: 0 },
+
+            { subject: "إسلامية", text: "الطهارة والوضوء شرط لصحة الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "يبدأ المسلم وضوءه بالبسملة (بسم الله).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "عدد الصلوات المفروضة في اليوم والليلة خمس صلوات.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد ركعات صلاة الفجر ركعتان.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد ركعات صلاة الظهر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد ركعات صلاة العصر أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد ركعات صلاة المغرب ثلاث ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "عدد ركعات صلاة العشاء أربع ركعات.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "إيتاء الزكاة هو الركن الثالث من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "صوم رمضان هو الركن الرابع من أركان الإسلام.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "حج بيت الله الحرام لمن استطاع إليه سبيلاً هو الركن الخامس.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "وُلد نبينا محمد صلى الله عليه وسلم في مكة المكرمة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "عام الفيل هو العام الذي وُلد فيه النبي صلى الله عليه وسلم.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "اسم أم النبي صلى الله عليه وسلم هو آمنة بنت وهب.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "اسم والد النبي صلى الله عليه وسلم هو عبد الله.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "كفل النبي صلى الله عليه وسلم بعد أمه جده عبد المطلب ثم عمه أبو طالب.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من آداب دخول المسجد تقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "من آداب الخروج من المسجد تقديم الرجل اليسرى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "مفتاح الجنة هو الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "دخول الخلاء يكون بتقديم الرجل اليسرى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الخروج من الخلاء يكون بتقديم الرجل اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الذكر المشروع عند الخروج من الخلاء هو (غفرانك).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الدعاء المشروع عند دخول الخلاء هو: (اللهم إني أعوذ بك من الخبث والخبائث).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "التسمية بقول (بسم الله) مشروعة قبل الأكل والشرب.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نأكل ونشرب باليد اليمنى.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نحمد الله بعد الأكل والشرب بقول (الحمد لله).", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "بر الوالدين وطاعتهما في غير معصية الله من أعظم الأعمال.", options: ["صح", "خطأ"], correctIndex: 0 },
             { subject: "إسلامية", text: "الصدق يهدي إلى البر، والبر يهدي إلى الجنة.", options: ["صح", "خطأ"], correctIndex: 0 },
-            { subject: "إسلامية", text: "التسمية بقول (بسم الله) مشروعة قبل الأكل والشرب.", options: ["صح", "خطأ"], correctIndex: 0 }
+            { subject: "إسلامية", text: "نستقبل القبلة عند الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "الركوع والسجود من أركان الصلاة.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نقول في السجود: (سبحان ربي الأعلى).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نقول في الركوع: (سبحان ربي العظيم).", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نختم الصلاة بالتسليم عن اليمين وعن اليسار.", options: ["صح", "خطأ"], correctIndex: 0 },
+            { subject: "إسلامية", text: "نحافظ على نظافة المسجد ولا نرفع الصوت فيه بغير ذكر أو علم.", options: ["صح", "خطأ"], correctIndex: 0 }
         ];
 
         let masterQuestionBank = defaultMasterQuestionBank.map(q => ({ ...q, options: [...q.options] }));
@@ -712,7 +742,7 @@
         function renderHome() {
             state.view = 'home';
             updateLiveStatusBadgeInHeader();
-            document.getElementById('left-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">ملعب الترجيح ⚽</div>`;
+            document.getElementById('left-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">ركلات الترجيح ⚽</div>`;
             document.getElementById('right-wing-team').innerHTML = `<div class="text-center text-xs text-emerald-300 font-bold p-3">منطقة التتويج 🏆</div>`;
 
             const penaltyBadge = state.isGameLive
@@ -740,19 +770,25 @@
                 <div class="space-y-4 py-3">
                     <div class="flex flex-col items-center gap-2">
                         <div class="inline-block bg-[#1f3d32] border border-emerald-500/40 text-emerald-300 px-4 py-1 rounded-full text-xs font-bold">
-                            🏆 نهائي ركلات الترجيح وبطولة جمع النقاط
+                            🏆 ركلات الترجيح وبطولة جمع النقاط
                         </div>
                         <div class="flex flex-wrap justify-center gap-2">
                             ${penaltyBadge}
                             ${pointsBadge}
                         </div>
                     </div>
-                    <div>
+                    <div class="space-y-1.5">
                         <h2 class="text-2xl md:text-4xl font-black text-white tracking-wide">
-                            ساحة الأبطال التفاعلية ⚽⭐
+                            ركلات الترجيح ⚽⭐
                         </h2>
-                        <p class="text-amber-300 text-xs md:text-sm font-bold mt-2">
-                            مسابقة شاملة في مادة لغتي والدراسات الإسلامية (بنك الأسئلة الموحد) - الصف الثالث الابتدائي
+                        <p class="text-amber-300 text-xs md:text-sm font-bold">
+                            بطولة صف ثالث ابتدائي القائمة على جمع النقاط
+                        </p>
+                        <p class="text-emerald-200 text-xs md:text-sm font-bold">
+                            بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول
+                        </p>
+                        <p class="text-purple-200 text-[11px] md:text-xs">
+                            مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال (${masterQuestionBank.length} سؤالاً)
                         </p>
                     </div>
 
@@ -832,7 +868,7 @@
             state.isGameLive = !state.isGameLive;
             updateLiveStatusBadgeInHeader();
             renderTeacherDashboard();
-            pushStateToCloud(state.isGameLive ? "🟢 تم فتح بطولة ركلات الترجيح للاعبين!" : "🔴 تم إغلاق بطولة ركلات الترجيح!");
+            pushStateToCloud(state.isGameLive ? "🟢 تم فتح لعبة ركلات الترجيح للاعبين!" : "🔴 تم إغلاق لعبة ركلات الترجيح!");
         }
 
         function togglePointsLiveStatus() {
@@ -936,17 +972,6 @@
 
             const myPts = myStudentName ? Number(state.studentPoints[myStudentName] || 0) : null;
 
-            const teamsSummaryHtml = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                    ${state.teams.map(t => `
-                        <div class="p-3 rounded-2xl border-2 text-center" style="background:${t.color}33; border-color:${t.color}">
-                            <p class="text-xs font-black text-white">${t.name}</p>
-                            <p class="text-2xl font-black text-amber-300 mt-0.5">${t.score || 0} هدف</p>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-
             const rowsHtml = ranked.map((item, idx) => {
                 const isMe = myStudentName && isSameStudent(item.name, myStudentName);
                 let relationBadge = '';
@@ -966,9 +991,8 @@
                     <div class="p-2.5 rounded-xl border ${isMe ? 'border-amber-300 bg-amber-500/15' : 'border-white/15 bg-slate-900/90'} flex items-center justify-between gap-2 flex-wrap text-xs">
                         <div class="flex items-center gap-2 min-w-0">
                             <span class="w-6 h-6 rounded-full bg-slate-950 border border-white/25 flex items-center justify-center font-black text-[11px] text-amber-300 shrink-0">${idx+1}</span>
-                            <span class="w-3.5 h-3.5 rounded-full border border-white shrink-0" style="background:${item.color}"></span>
+                            <span class="w-4 h-4 rounded-full border border-white shrink-0 shadow" style="background:${item.color}"></span>
                             <span class="font-black text-white truncate">${item.name}</span>
-                            ${item.team ? `<span class="text-[10px] px-2 py-0.5 rounded font-bold text-white" style="background:${item.team.color}">${item.team.name}</span>` : ''}
                             ${relationBadge}
                         </div>
                         <span class="font-black text-amber-300 shrink-0">${item.pts} نقطة</span>
@@ -977,8 +1001,10 @@
             }).join('');
 
             document.getElementById('competitors-modal-body').innerHTML = `
-                ${teamsSummaryHtml}
-                <div class="space-y-1.5 max-h-[420px] overflow-y-auto pr-1">
+                <div class="bg-black/45 border border-amber-400/35 rounded-2xl p-2.5 text-center">
+                    <p class="text-xs md:text-sm font-black text-amber-300">ترتيب الفرق المتنافسة / المتنافسين (29 متنافساً)</p>
+                </div>
+                <div class="space-y-1.5 max-h-[460px] overflow-y-auto pr-1">
                     ${rowsHtml}
                 </div>
             `;
@@ -988,10 +1014,10 @@
         function buildModeSwitcherBar() {
             return `
                 <div class="bg-slate-950/90 border-2 border-amber-400/50 rounded-2xl p-2.5 flex flex-wrap gap-2 justify-between items-center">
-                    <span class="text-xs font-black text-amber-300">🔀 اختر البطولة:</span>
+                    <span class="text-xs font-black text-amber-300">🔀 اختر اللعبة:</span>
                     <div class="flex gap-2 flex-wrap">
                         <button type="button" onclick="state.teacherMode='penalty'; renderTeacherDashboard();" class="px-3.5 py-2 rounded-xl text-xs font-black cursor-pointer transition border ${state.teacherMode === 'penalty' ? 'bg-emerald-600 text-white border-emerald-200 shadow-lg' : 'bg-slate-900 text-slate-300 border-white/15 hover:bg-slate-800'}">
-                            ⚽ الدخول على بطولة ركلات الترجيح
+                            ⚽ الدخول على ركلات الترجيح
                         </button>
                         <button type="button" onclick="state.teacherMode='points'; renderPointsTeacherMode();" class="px-3.5 py-2 rounded-xl text-xs font-black cursor-pointer transition border ${state.teacherMode === 'points' ? 'bg-amber-500 text-slate-950 border-amber-200 shadow-lg' : 'bg-slate-900 text-slate-300 border-white/15 hover:bg-slate-800'}">
                             ⭐ الدخول على بطولة جمع النقاط
@@ -1021,7 +1047,11 @@
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
                     <div class="flex justify-between items-center border-b border-white/20 pb-2 flex-wrap gap-2">
-                        <h2 class="text-sm md:text-base font-black text-amber-300">🎛️ لوحة تحكم المعلم السحابية المباشرة</h2>
+                        <div>
+                            <h2 class="text-sm md:text-base font-black text-amber-300">🎛️ لوحة تحكم المعلم • ركلات الترجيح</h2>
+                            <p class="text-[11px] text-emerald-300 font-bold">بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول</p>
+                            <p class="text-[10px] text-purple-200">مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال (${masterQuestionBank.length} سؤالاً)</p>
+                        </div>
                         <div class="flex items-center gap-1.5">
                             <button type="button" id="btn-toggle-game-live" onclick="toggleGameLiveStatus()" class="${state.isGameLive ? 'bg-emerald-600 hover:bg-emerald-500 border-emerald-200' : 'bg-rose-600 hover:bg-rose-500 border-rose-200'} text-white px-3 py-1.5 rounded-xl text-xs font-black shadow border cursor-pointer">
                                 ${state.isGameLive ? '🟢 مباشر (اضغط لإغلاق اللعبة)' : '🔴 اللعبة مغلقة (اضغط لفتحها)'}
@@ -1055,7 +1085,7 @@
 
                     <!-- بنك الأسئلة الموحد وإعدادات الوقت وعدد الركلات -->
                     <div class="bg-black/45 p-3 rounded-2xl border border-sky-500/40 space-y-2.5">
-                        <h3 class="text-xs font-black text-sky-300">📚 إعدادات الأسئلة الموحدة ووقت التسديد (1 إلى 5 دقائق) وعدد الركلات:</h3>
+                        <h3 class="text-xs font-black text-sky-300">📚 إعدادات الأسئلة الموحدة (${masterQuestionBank.length} سؤالاً - فصل أول) ووقت التسديد وعدد الركلات:</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                             <div>
                                 <label class="text-[11px] text-purple-200 block mb-1">المادة المطلوبة:</label>
@@ -1082,7 +1112,7 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow cursor-pointer">📥 استيراد وتحديد الأسئلة + إضافة سؤال يدوي في البنك الموحد</button>
+                        <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl text-xs shadow cursor-pointer">📥 استيراد وتحديد الأسئلة + إضافة سؤال يدوي في البنك الموحد (${masterQuestionBank.length} سؤالاً)</button>
                     </div>
 
                     <!-- أزرار الحفظ والتعميم السحابي وتصفير وبدء الجولة -->
@@ -1101,14 +1131,16 @@
 
                     <!-- خط فاصل ثم قسم بطولة جمع النقاط -->
                     <hr class="border-t-2 border-amber-400/50 my-3">
-                    <div class="bg-amber-950/35 border border-amber-400/40 rounded-2xl p-3 flex flex-wrap justify-between items-center gap-2">
-                        <div>
-                            <h3 class="text-xs md:text-sm font-black text-amber-300">⭐ القسم الثاني: بطولة جمع النقاط (مسطرة 3، 6، 9... وحسم بفارق 6 نقاط)</h3>
-                            <p class="text-[11px] text-purple-200">بنك الأسئلة الموحد واللاعبون (29 لاعباً) موحدان مع فتح وإغلاق مستقل.</p>
+                    <div class="bg-amber-950/35 border border-amber-400/40 rounded-2xl p-3 space-y-1.5">
+                        <div class="flex flex-wrap justify-between items-center gap-2">
+                            <h3 class="text-sm md:text-base font-black text-amber-300">⭐ بطولة صف ثالث ابتدائي القائمة على جمع النقاط</h3>
+                            <button type="button" onclick="state.teacherMode='points'; renderPointsTeacherMode();" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow cursor-pointer">
+                                فتح تحكم بطولة النقاط ←
+                            </button>
                         </div>
-                        <button type="button" onclick="state.teacherMode='points'; renderPointsTeacherMode();" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs shadow cursor-pointer">
-                            فتح تحكم بطولة النقاط ←
-                        </button>
+                        <p class="text-xs text-emerald-300 font-bold">بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول</p>
+                        <p class="text-xs text-purple-200 font-semibold">مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال (${masterQuestionBank.length} سؤالاً)</p>
+                        <p class="text-[11px] text-slate-300">تنافس شامل لجميع مادتي لغتي والإسلامية (فقه وتوحيد) - الفصل الدراسي الأول - الصف الثالث الابتدائي.</p>
                     </div>
                 </div>
             `;
@@ -1279,7 +1311,7 @@
                     <div class="p-2.5 rounded-xl bg-slate-900 border ${isChecked ? 'border-emerald-400 bg-emerald-950/30' : 'border-white/10'} text-xs flex items-center justify-between gap-2 hover:bg-slate-800/80 transition">
                         <label for="q-chk-${idx}" class="flex-1 text-right cursor-pointer">
                             <span class="text-amber-300 font-bold">سؤال ${idx+1} [${q.subject}]:</span> <span class="text-white font-semibold">${q.text}</span>
-                            <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')} (الصحيح: ${q.options[q.correctIndex] || q.options[0]})</div>
+                            <div class="text-[10px] text-emerald-300 mt-1">الخيارات: ${q.options.join(' | ')} (الإجابة الصحيحة: ${q.options[q.correctIndex] || q.options[0]})</div>
                         </label>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button type="button" onclick="loadQuestionIntoForm(${idx})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-2 py-1 rounded text-[10px] cursor-pointer">تعديل</button>
@@ -1585,7 +1617,7 @@
             document.getElementById('left-wing-team').innerHTML = `
                 <div class="space-y-2 text-center">
                     <div class="p-2.5 rounded-xl border-2 border-amber-400 bg-amber-500/15">
-                        <h4 class="font-black text-xs text-amber-300">⭐ بطولة جمع النقاط</h4>
+                        <h4 class="font-black text-xs text-amber-300">⭐ بطولة صف ثالث ابتدائي القائمة على جمع النقاط</h4>
                         <p class="text-xl font-black text-white mt-1">هدف: ${state.pointsTarget}</p>
                         <p class="text-[11px] text-emerald-300 mt-0.5">الجولة رقم: ${state.pointsRoundNumber}</p>
                     </div>
@@ -1614,7 +1646,12 @@
             box.innerHTML = `
                 <div class="space-y-3 text-right text-white">
                     <div class="flex justify-between items-center border-b border-white/20 pb-2 flex-wrap gap-2">
-                        <h2 class="text-sm md:text-base font-black text-amber-300">⭐ لوحة تحكم بطولة جمع النقاط</h2>
+                        <div class="space-y-0.5">
+                            <h2 class="text-sm md:text-base font-black text-amber-300">⭐ بطولة صف ثالث ابتدائي القائمة على جمع النقاط</h2>
+                            <p class="text-xs text-emerald-300 font-bold">بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول</p>
+                            <p class="text-[11px] text-purple-200 font-semibold">مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال (${masterQuestionBank.length} سؤالاً)</p>
+                            <p class="text-[10px] text-slate-300">تنافس شامل لجميع مادتي لغتي والإسلامية (فقه وتوحيد) - الفصل الدراسي الأول.</p>
+                        </div>
                         <div class="flex items-center gap-1.5">
                             <button type="button" onclick="togglePointsLiveStatus()" class="${state.isPointsLive ? 'bg-emerald-600 hover:bg-emerald-500 border-emerald-200' : 'bg-rose-600 hover:bg-rose-500 border-rose-200'} text-white px-3 py-1.5 rounded-xl text-xs font-black shadow border cursor-pointer">
                                 ${state.isPointsLive ? '🟢 بطولة النقاط مفتوحة (إغلاق)' : '🔴 بطولة النقاط مغلقة (فتح)'}
@@ -1643,7 +1680,7 @@
                             </div>
                         </div>
 
-                        <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2 rounded-xl text-xs shadow cursor-pointer">📥 إدارة بنك الأسئلة الموحد وإضافة سؤال يدوي</button>
+                        <button type="button" onclick="openQuestionsModal()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-black py-2 rounded-xl text-xs shadow cursor-pointer">📥 إدارة بنك الأسئلة الموحد وإضافة سؤال يدوي (${masterQuestionBank.length} سؤالاً)</button>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-1">
                             <button type="button" onclick="openPointsRoundWithQuestion()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 px-3 rounded-xl text-xs shadow-lg border border-emerald-200 cursor-pointer">
@@ -1783,6 +1820,12 @@
                         <button type="button" onclick="openStudentLoginModal()" class="bg-slate-900/80 hover:bg-slate-900 text-xs px-2.5 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/30">تعديل</button>
                     </div>
 
+                    <div class="text-center space-y-0.5">
+                        <p class="text-xs font-black text-amber-300">ركلات الترجيح</p>
+                        <p class="text-[11px] text-emerald-300 font-bold">بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول</p>
+                        <p class="text-[10px] text-purple-200">مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال</p>
+                    </div>
+
                     <!-- عداد الوقت التنازلي الكبير والبارز للاعب المسدد -->
                     <div id="shot-timer-badge" class="bg-rose-600 border-2 border-yellow-300 text-white font-black py-3 px-4 rounded-2xl text-lg md:text-xl text-center shadow-2xl animate-pulse tracking-wide">
                         ⏱️ الوقت المتبقي: جاهز
@@ -1872,6 +1915,13 @@
                             <button type="button" onclick="openCompetitorsModal()" class="bg-indigo-700 hover:bg-indigo-600 text-xs px-2.5 py-1 rounded-lg text-white font-black cursor-pointer border border-white/30">🏆 متابعة الفرق المنافسة</button>
                             <button type="button" onclick="openStudentLoginModal()" class="bg-slate-900/80 text-xs px-2.5 py-1 rounded-lg text-amber-200 font-bold cursor-pointer border border-white/30">تعديل</button>
                         </div>
+                    </div>
+
+                    <div class="text-center space-y-0.5 bg-black/35 p-2.5 rounded-xl border border-amber-400/30">
+                        <h3 class="text-sm md:text-base font-black text-amber-300">بطولة صف ثالث ابتدائي القائمة على جمع النقاط</h3>
+                        <p class="text-xs text-emerald-300 font-bold">بطولة شاملة لمراجعة الإسلامية ولغتي - الفصل الدراسي الأول</p>
+                        <p class="text-[11px] text-purple-200">مراجعة أسئلة إسلامية توحيد فقه ولغتي شاملة أكثر من 100 سؤال</p>
+                        <p class="text-[10px] text-slate-300">تنافس شامل لجميع مادتي لغتي والإسلامية (فقه وتوحيد) - الفصل الدراسي الأول.</p>
                     </div>
 
                     ${state.pointsRoundOpen ? `
